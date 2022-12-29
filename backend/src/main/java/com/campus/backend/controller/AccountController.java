@@ -4,6 +4,7 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.campus.backend.annotation.AccessLimit;
 import com.campus.backend.service.UserService;
 
 import com.campus.backend.common.dto.LoginDto;
@@ -32,11 +33,12 @@ public class AccountController {
     @Autowired
     JwtUtils jwtUtils;
 
-    //@AccessLimit(seconds=30,days = 60*60*24, perCount = 1, dayCount = 500, needLogin = false)
+    @AccessLimit(seconds=30,days = 60*60*24, perCount = 1, dayCount = 500, needLogin = false)
     @PostMapping("/login")
     public Result login(@Validated @RequestBody LoginDto loginDto, HttpServletResponse response) {
         User user = userService.getOne(new QueryWrapper<User>().eq("username", loginDto.getUsername()));
         Assert.notNull(user, "用户不存在");
+        System.out.println("username="+user.getUsername());
         if(!user.getPassword().equals(SecureUtil.md5(loginDto.getPassword()))){
             return Result.fail("密码不正确");
         }

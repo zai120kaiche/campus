@@ -6,6 +6,17 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       max-lifetime: 30000
+  redis:
+    host: 49.232.222.169
+    port: 6379
+    password: ljh819918
+    jedis:
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: -1ms
+    database: 0
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**Mapper.xml
 server:

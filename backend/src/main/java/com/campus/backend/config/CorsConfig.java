@@ -1,6 +1,6 @@
 package com.campus.backend.config;
 
-//import com.campus.backend.interceptor.AccessLimitInterceptor;
+import com.campus.backend.interceptor.AccessLimitInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -23,13 +23,13 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedHeaders("*");
     }
 
-//    @Autowired
-//    private AccessLimitInterceptor interceptor;
-//
-//
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(interceptor);
-//    }
+    @Autowired
+    private AccessLimitInterceptor interceptor;
+
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(interceptor);
+    }
 }
 
