@@ -9,6 +9,8 @@
 | redis调用接口        |                                                              | src/main/java/com/campus/backend/redis/RedisOperator.java    |
 | shiro+jwt            |                                                              | src/main/java/com/campus/backend/shiro<br>src/main/java/com/campus/backend/config/ShiroConfig.java |
 | 获取登录用户ip并解析 |                                                              | src/main/java/com/campus/backend/tool/GetIpAddressUtil.java  |
+| 发送邮箱验证码       | 参考类文件里面的main函数                                     | src/main/java/com/campus/backend/tool/EmailUtil.java         |
+| 调用openAI           | 参考类文件里面的main函数，当前使用的模型支持联系上下文，所以每次新的对话开始时，需要调用clear()清除一下之前的上下文内容。 | src/main/java/com/campus/backend/tool/openAIUtil.java        |
 
  ## 包管理
 
