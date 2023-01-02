@@ -1,7 +1,9 @@
 <template>
-  <router-view></router-view>
+  <div class="index">
+    <router-view></router-view>
+  </div>
+
 </template>
 
 <style>
-
 </style>

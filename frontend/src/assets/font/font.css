@@ -1,5 +1,7 @@
-/*思源黑体加粗版*/
-@font-face {
-    font-family: SourceHanSans-Bold;
-    src: url("./SourceHanSans-Bold.otf");
-}
+/*思源黑体加粗版和普通版*/
+/*@font-face {*/
+/*    font-family: SourceHanSans-Bold;*/
+/*    src: url('./SourceHansSC-Normal.otf');*/
+/*    font-family: SourceHanSansCN-Normal;*/
+/*    src: url('./SourceHanSansSCC-Bold.otf');*/
+/*}*/
