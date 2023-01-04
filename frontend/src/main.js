@@ -8,10 +8,8 @@ import './assets/font/font.css'
 import ElementPlus from 'element-plus'
 import ElementUI from 'element-plus'
 import 'element-plus/dist/index.css'
-import 'element-plus/theme-chalk/index.css'
-import locale from 'element-plus/lib/locale/lang/zh-cn'
 
-
-createApp(App).use(store).use(router).mount('#app')
-App.use(ElementUI)
-App.use(ElementPlus,{locale})
+const app = createApp(App)
+app.use(ElementPlus)
+app.use(ElementUI)
+app.use(router).use(store).mount("#app")

@@ -12,8 +12,18 @@
     <pic style="position: absolute;width:479px;height:210px;margin-left:458px;margin-top:253px"><img alt="一起走进校园生活！" src="../assets/images/校园.png"></pic>
     <part3>
       <border style="position:absolute;width:430px;height:410px;left:123px;top:42px;background: white;border-radius: 12px;">
-        这是密码登录验证页面
+        <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
+          <el-menu-item index="1" style="font-family: 'SourceHanSans-Normal';font-size: 24pt;"><a href="/">密码登录</a></el-menu-item>
+          <el-menu-item index="2" style="font-family: 'SourceHanSans-Normal';font-size: 24pt;color: #D8D8D8"><a href="/login2">短信登录</a></el-menu-item>
+        </el-menu>
+        <ft style="font-family: 'SourceHanSans-Normal';font-size:12pt;left:15px;position:absolute">没有账号？<a href="/register">注册</a></ft>
+        <form>
+          <input1 style="left:0px;top:16px"><el-input size="large" v-model="phoneNumber" placeholder="手机" clearable/></input1>
+          <input1 style="left:0px;top:110px"><el-input size="large" type="password" v-model="passWord" placeholder="密码" clearable show-password/></input1>
+        </form>
+        <button1><el-button type="primary" size="large" plain>登录</el-button></button1>
       </border>
+
       <ft style="position:absolute;left:207px;top:424px;font-family:'SourceHanSans-Normal';font-size:12pt;color:#C4CDD5;">
       注册登录即代表同意<a style="color:#1449AA" href="/userAgreement">用户协议</a>和<a style="color:#1449AA" href="/privacy">隐私政策</a>
     </ft>
@@ -25,9 +35,7 @@
 export default {
   name: 'login1',
   components: {
-    data(){
 
-    }
   }
 }
 </script>
@@ -113,5 +121,24 @@ servebar {
   height:16px;
   left:155px;
   top:785px;
+}
+form {
+  position:absolute;
+  width: 377px;
+  height: 147px;
+  left: 32px;
+  top:136px;
+}
+input1 {
+  position: absolute;
+  width:350px;
+  height:37px;
+}
+button1 {
+  position: absolute;
+  width:336px;
+  height:42px;
+  left:165px;
+  top:304px;
 }
 </style>

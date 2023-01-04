@@ -12,7 +12,11 @@
     <pic style="position: absolute;width:479px;height:210px;margin-left:458px;margin-top:253px"><img alt="一起走进校园生活！" src="../assets/images/校园.png"></pic>
     <part3>
       <border style="position:absolute;width: 430px;height:410px;left:123px;top:42px;background: white;border-radius: 12px;">
-        这是短信验证登录页面
+        <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
+          <el-menu-item index="1" style="font-family: 'SourceHanSans-Normal';font-size: 24pt;color: #D8D8D8"><a href="/">密码登录</a></el-menu-item>
+          <el-menu-item index="2" style="font-family: 'SourceHanSans-Normal';font-size: 24pt;"><a href="/login2">短信登录</a></el-menu-item>
+        </el-menu>
+        <ft style="font-family: 'SourceHanSans-Normal';font-size: 12pt;left:15px;position:absolute">没有账号？<a href="/register">注册</a></ft>
       </border>
       <ft style="position:absolute;left:207px;top:424px;font-family:'SourceHanSans-Normal';font-size:12pt;color:#C4CDD5;">
         注册登录即代表同意<a style="color:#1449AA" href="/userAgreement">用户协议</a>和<a style="color:#1449AA" href="/privacy">隐私政策</a></ft>
