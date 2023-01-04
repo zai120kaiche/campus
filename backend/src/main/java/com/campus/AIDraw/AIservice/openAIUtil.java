@@ -1,4 +1,4 @@
-package com.campus.backend.tool;
+package com.campus.AIDraw.AIservice;
 
 import java.util.*;
 import cn.hutool.http.*;
