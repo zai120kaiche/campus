@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class EmailUtil {
 
-    private static String str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static String str = "0123456789";
 
     //参数：邮箱地址，验证码。
     public static boolean send_email(String address,String code)
@@ -20,7 +20,7 @@ public class EmailUtil {
             email.setFrom("campusofficial@163.com","campusOfficial");
             email.setAuthentication("campusofficial@163.com","UMQIMPCLHFTVJUUS");
             email.setSubject("【欢迎注册使用】");
-            email.setMsg("您的验证码是："+code+"，如非本人操作请忽略该邮件。");
+            email.setMsg("您的验证码是："+code+"，有效期30s，如非本人操作请忽略该邮件。");
             email.send();
 
             return true;
@@ -47,6 +47,6 @@ public class EmailUtil {
     public static void main(String[] args) {
         //先在本地生成验证码，然后通过邮箱发送，再从前端获取用户输入的验证码与本地生成的验证码做校验
         String code=get_code_6bit();
-        send_email("2570153857@qq.com",code);
+        send_email("2717983753@qq.com",code);
     }
 }

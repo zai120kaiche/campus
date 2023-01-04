@@ -8,6 +8,11 @@ public class Result implements Serializable {
     private int code;//200-correct,!200-error
     private  String msg;
     private  Object data;
+
+    public static Result succ() {
+
+        return succ(200, "操作成功", 0);
+    }
     public static Result succ(Object data) {
 
         return succ(200, "操作成功", data);
