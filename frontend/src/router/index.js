@@ -5,6 +5,14 @@ const routes = [
     path: '/',
     name: 'login',
     component:() => import('../views/login.vue')
+  },{
+    path: '/index/community',
+    name: 'community',
+    component:() => import('../views/community.vue')
+  },{
+    path: '/index/shop',
+    name: 'shop',
+    component:() => import('../views/shop.vue')
   }
 ]
 
