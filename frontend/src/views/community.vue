@@ -8,6 +8,12 @@
         <div style="font-weight: bold">
           分类
         </div>
+        <div style="margin-top: 8%">
+          <button style="background-color: transparent; border-color: transparent">校园吧</button>
+        </div>
+        <div v-for="(type, index) in typeTableData" style="margin-top: 4%">
+          <button style="background-color: transparent; border-color: transparent">{{type.typename}}</button>
+        </div>
       </el-card>
       <el-card style="margin-top: 10%">
 
@@ -96,8 +102,25 @@
 import Header from "@/components/Header";
 export default {
   name: "community",
+  data() {
+    return {
+      typeTableData: []
+    }
+  },
   components: {
     Header
+  },
+  created() {
+    this.typeList(0)
+  },
+  methods: {
+    typeList(currentPage) {
+      let _this = this
+      _this.$axios.get("type/list/all/?currentPage=" + currentPage).then(res =>{
+        _this.typeTableData = res.data.data.records
+        console.log(res.data.data.records)
+      })
+    },
   }
 }
 </script>
