@@ -70,11 +70,65 @@
           <Service />
         </el-icon>
       </el-button>
-      <el-button style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">
-        <el-icon >
-          <Bell />
-        </el-icon>
-      </el-button>
+      <el-popover :visible="visible" placement="top" :width="160">
+        <el-row style="font-weight: bold">
+          <el-icon style="margin-top: 2%">
+            <Grid />
+          </el-icon>
+          <div style="margin-left: 11%">
+            签到
+          </div>
+        </el-row>
+        <template #reference>
+          <el-button style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">
+            <el-icon >
+              <Ticket />
+            </el-icon>
+          </el-button>
+        </template>
+      </el-popover>
+
+      <el-popover :visible="visible" placement="top" :width="160">
+        <el-row style="font-weight: bold">
+          <el-icon style="margin-top: 2%">
+            <Message />
+          </el-icon>
+          <div style="margin-left: 11%">
+            通知中心
+          </div>
+        </el-row>
+        <el-row style="font-weight: bold; margin-top: 5%">
+          <el-icon style="margin-top: 2%">
+            <ChatRound />
+          </el-icon>
+          <div style="margin-left: 11%">
+            私信
+          </div>
+        </el-row>
+        <el-divider style="padding-bottom: 0; margin-top: 10px; margin-bottom: 0"></el-divider>
+        <el-row>
+          <el-col :span="24">
+            <el-button style="background-color: transparent; border-color: transparent">
+              全部已读
+            </el-button>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-button style="background-color: transparent; border-color: transparent">
+              查看所有私信
+            </el-button>
+          </el-col>
+        </el-row>
+        <template #reference>
+          <el-button style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">
+            <el-icon >
+              <Bell />
+            </el-icon>
+          </el-button>
+        </template>
+      </el-popover>
+
 
       <el-avatar :size="40" :src="circleUrl" style="margin-left: 12%"/>
 

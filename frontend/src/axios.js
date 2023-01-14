@@ -5,10 +5,12 @@ import axios from 'axios'
 import store from "./store"
 import router from "./router"
 import $ from 'jquery'
+import {ElMessage} from "element-plus";
 
 createApp(App).config.globalProperties.$=$
 
 axios.defaults.baseURL='http://127.0.0.1:9090'
+
 axios.interceptors.request.use(
     function (config) {
         // console.log("进入请求拦截器！")
