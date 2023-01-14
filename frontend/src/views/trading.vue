@@ -323,4 +323,5 @@ export default {
     margin: 5px 0;
     border-radius: 5%;
 }
+
 </style>
