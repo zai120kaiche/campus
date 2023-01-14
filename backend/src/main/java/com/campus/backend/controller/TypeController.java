@@ -48,8 +48,13 @@ public class TypeController {
             System.out.println(temp);
             typeService.saveOrUpdate(temp);
             return Result.succ(temp);
+        } else {
+            Type current = typeService.getById(temp.getId());
+            current.setTypename(temp.getTypename());
+            typeService.saveOrUpdate(current);
+            return Result.succ(current);
         }
-        return Result.fail("type add fail");
+
     }
 
     //删除类目

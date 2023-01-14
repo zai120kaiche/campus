@@ -17,6 +17,10 @@
           <el-icon><icon-menu /></el-icon>
           <span>学校加盟</span>
         </el-menu-item>
+        <el-menu-item index="3" @click="select(3)">
+          <el-icon><icon-menu /></el-icon>
+          <span>商品分类</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-main>
@@ -57,7 +61,7 @@
                 </template>
               </el-popconfirm>
 
-              <el-button link type="primary" size="small" @click="typeEdit">编辑</el-button>
+              <el-button link type="primary" size="small" @click="typeEdit(scope.row)">编辑</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -108,7 +112,7 @@
                 </template>
               </el-popconfirm>
 
-              <el-button link type="primary" size="small" @click="schoolEdit">编辑</el-button>
+              <el-button link type="primary" size="small" @click="schoolEdit(scope.row)">编辑</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -118,6 +122,57 @@
               :current-page="schoolCurrentPage"
               layout="prev, pager, next"
               :total="schoolTotal"
+              :page-size="10"
+          />
+        </div>
+      </div>
+      <div v-if="selectOption == 3">
+        <div style="font-weight: bold; font-size: xx-large">商品分类</div>
+        <el-input
+            v-model="addTradeType.tradetypename"
+            placeholder="请输入要添加的商品类目"
+            class="input-with-select"
+            style="margin-top: 3%; width: 50%"
+        >
+
+          <template #append>
+            <el-button v-on:click="tradeTypeAdd">
+              <el-icon>
+                <Finished />
+              </el-icon>
+            </el-button>
+          </template>
+        </el-input>
+        <el-table :data="tradeTypeTableData"
+                  border style="width: 100%"
+                  :row-key="tradeTypeTableRow"
+                  empty-text="NAN"
+        >
+          <el-table-column prop="id" label="编号" width="180" />
+          <el-table-column prop="tradetypename" label="类目" width="180" />
+          <el-table-column prop="count" label="数目" width="180" />
+          <el-table-column fixed="right" label="操作" width="120">
+            <template #default="scope">
+              <el-popconfirm title="确定删除该商品类目吗?"
+                             @confirm="tradeTypeDelete(scope.row)"
+                             confirm-button-text="是的"
+                             cancel-button-text="取消"
+              >
+                <template #reference>
+                  <el-button link type="primary" size="small">删除</el-button>
+                </template>
+              </el-popconfirm>
+
+              <el-button link type="primary" size="small" @click="tradeTypeEdit(scope.row)">编辑</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="example-pagination-block">
+          <el-pagination
+              @current-change="tradeTypeTableChange"
+              :current-page="tradeTypeCurrentPage"
+              layout="prev, pager, next"
+              :total="tradeTypeTotal"
               :page-size="10"
           />
         </div>
@@ -133,6 +188,8 @@ import {
   Location,
   Setting,
 } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import type ,{ Action } from 'element-plus'
 import { ElNotification } from 'element-plus'
 export default {
   name: "control",
@@ -158,11 +215,21 @@ export default {
       schoolCurrentPage: 0,
       schoolPages: 0,
       schoolTotal: 0,
+      addTradeType: {
+        id: null,
+        tradetypename: '',
+        count: null
+      },
+      tradeTypeTableData: [],
+      tradeTypeCurrentPage: 0,
+      tradeTypePages: 0,
+      tradeTypeTotal: 0,
     }
   },
   created() {
     this.typeList(0)
     this.schoolList(0)
+    this.tradeTypeList(0)
 
   },
   methods: {
@@ -202,6 +269,31 @@ export default {
         _this.typeList(_this.typeCurrentPage)
       })
     },
+    typeEdit(type){
+      let changeType = type
+      let _this = this
+      ElMessageBox.prompt('请输入要修改的名称', '社区类目修改', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+      })
+          .then(({ value }) => {
+            changeType.typename = value
+            _this.$axios.post("/type/add", changeType).then(res =>{
+              _this.typeList(_this.typeCurrentPage)
+              ElNotification({
+                title: 'Success',
+                message: '类目修改成功',
+                type: 'success',
+              })
+            })
+          })
+          .catch(() => {
+            ElMessage({
+              type: 'info',
+              message: '修改取消',
+            })
+          })
+    },
     schoolAdd() {
       let _this = this
       _this.$axios.post("/school/add", _this.addSchool).then(res => {
@@ -233,7 +325,91 @@ export default {
       _this.$axios.post("/school/delete", data).then(res =>{
         _this.schoolList(_this.schoolCurrentPage)
       })
-    }
+    },
+    schoolEdit(school){
+      let changeSchool = school
+      let _this = this
+      ElMessageBox.prompt('请输入要修改的名称', '学校名称修改', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+      })
+          .then(({ value }) => {
+            changeSchool.schoolname = value
+            _this.$axios.post("/school/add", changeSchool).then(res =>{
+              _this.schoolList(_this.schoolCurrentPage)
+              ElNotification({
+                title: 'Success',
+                message: '名称修改成功',
+                type: 'success',
+              })
+            })
+          })
+          .catch(() => {
+            ElMessage({
+              type: 'info',
+              message: '修改取消',
+            })
+          })
+    },
+
+    tradeTypeAdd() {
+      let _this = this
+      _this.$axios.post("/tradetype/add", _this.addTradeType).then(res => {
+        _this.addTradeType.tradetypename = ''
+        _this.tradeTypeList(_this.tradeTypeCurrentPage)
+        ElNotification({
+          title: 'Success',
+          message: '商品类目添加成功',
+          type: 'success',
+        })
+      })
+    },
+    tradeTypeTableChange(currentPage){
+      let _this = this
+      _this.tradeTypeCurrentPage = currentPage
+      _this.tradeTypeList(currentPage)
+    },
+    tradeTypeList(currentPage) {
+      let _this = this
+      _this.$axios.get("tradetype/list/?currentPage=" + currentPage).then(res =>{
+        _this.tradeTypeTableData = res.data.data.records
+        _this.tradeTypePages = res.data.data.pages
+        _this.tradeTypeTotal = res.data.data.total
+      })
+    },
+
+    tradeTypeDelete(data) {
+      let _this = this
+      _this.$axios.post("/tradetype/delete", data).then(res =>{
+        _this.tradeTypeList(_this.tradeTypeCurrentPage)
+      })
+    },
+    tradeTypeEdit(type){
+      let changeType = type
+      let _this = this
+      console.log(changeType)
+      ElMessageBox.prompt('请输入要修改的名称', '商品类目修改', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+      })
+          .then(({ value }) => {
+            changeType.tradetypename = value
+            _this.$axios.post("/tradetype/add", changeType).then(res =>{
+              _this.tradeTypeList(_this.tradeTypeCurrentPage)
+              ElNotification({
+                title: 'Success',
+                message: '类目修改成功',
+                type: 'success',
+              })
+            })
+          })
+          .catch(() => {
+            ElMessage({
+              type: 'info',
+              message: '修改取消',
+            })
+          })
+    },
   }
 }
 </script>

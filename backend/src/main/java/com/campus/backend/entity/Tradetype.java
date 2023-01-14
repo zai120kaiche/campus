@@ -19,18 +19,17 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("school")
-public class School implements Serializable {
+@TableName("tradetype")
+public class Tradetype implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    private String schoolname;
+    private String tradetypename;
 
     private Integer count;
-    private Integer contentcount;
 
 
 }

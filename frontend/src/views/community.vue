@@ -13,10 +13,10 @@
         <div v-for="(type, index) in typeTableData" style="margin-top: 4%">
           <button v-if="type.id == currentType"
                   style="background-color: #88b0ef; border-color: transparent; width: 100%; border-radius: 5px"
-                  v-on:click="jumpTypeBlock(type.id)">{{ type.typename }}
+                  v-on:click="jumpTypeBlock(type.id, type.typename)">{{ type.typename }}
           </button>
           <button v-else style="background-color: transparent; border-color: transparent"
-                  v-on:click="jumpTypeBlock(type.id)">{{ type.typename }}
+                  v-on:click="jumpTypeBlock(type.id, type.typename)">{{ type.typename }}
           </button>
         </div>
       </el-card>
@@ -154,6 +154,125 @@
           </el-col>
           <el-col :span="3" :offset="4">
             <el-button style="background-color: #A2C9FC">发送</el-button>
+          </el-col>
+        </el-row>
+      </el-card>
+      <el-card v-if="currentTypeName == '校园吧'" style="margin-top: 1%">
+        <el-row>
+          <el-col :span="6">
+            <el-icon style="color: #88b0ef; margin-top: 2%">
+              <Promotion />
+            </el-icon>
+            热门校园吧
+          </el-col>
+          <el-col :offset="6" :span="12">
+            <el-input placeholder="请输入您想参与的校园吧名称"
+                      v-model="schoolInput"
+            >
+              <template #prepend>
+                <el-button style="background-color: transparent; border-color: transparent">
+                  <el-icon>
+                    <Search />
+                  </el-icon>
+
+                </el-button>
+              </template>
+              <template #append>
+                <el-button style="background-color: transparent; border-color: transparent">
+                  <el-icon>
+                    <Camera />
+                  </el-icon>
+
+                </el-button>
+              </template>
+            </el-input>
+          </el-col>
+        </el-row>
+        <el-row >
+          <el-card v-for="(item, index) in schoolTableData"  style="margin-top: 3%; width: 30%; margin-right: 2%; margin-right: 3%">
+            <el-row :gutter="20">
+              <el-col :span="8">
+                <el-avatar></el-avatar>
+              </el-col>
+              <el-col :span="16" style="color: #919191; font-size: small; font-weight: lighter">
+                <el-row>{{item.schoolname}}</el-row>
+                <el-row>
+                  <el-icon style="margin-top: 2%; margin-right: 5%">
+                    <User />
+                  </el-icon>
+                  {{item.count}}</el-row>
+                <el-row>
+                  <el-icon style="margin-top: 2%; margin-right: 5%">
+                    <ChatSquare />
+                  </el-icon>
+                  {{item.contentcount}}</el-row>
+              </el-col>
+            </el-row>
+          </el-card>
+        </el-row>
+
+      </el-card>
+      <el-card v-else-if="currentTypeName == '失物招领'" style="margin-top: 1%">
+        <el-row>
+          <el-col :span="6">
+            <el-icon style="color: #88b0ef; margin-top: 2%">
+              <Promotion />
+            </el-icon>
+            失物查找
+          </el-col>
+          <el-col :span="12">
+            <el-input placeholder="请输入您想寻找的物品名称"
+                      v-model="findInput"
+            >
+              <template #prepend>
+                <el-button style="background-color: transparent; border-color: transparent">
+                  <el-icon>
+                    <Search />
+                  </el-icon>
+
+                </el-button>
+              </template>
+              <template #append>
+                <el-button style="background-color: transparent; border-color: transparent">
+                  <el-icon>
+                    <Camera />
+                  </el-icon>
+
+                </el-button>
+              </template>
+            </el-input>
+          </el-col>
+        </el-row>
+      </el-card>
+      <el-card v-else style="margin-top: 1%">
+        <el-row>
+          <el-col :span="6">
+            <el-icon style="color: #88b0ef; margin-top: 2%">
+              <Promotion />
+            </el-icon>
+            话题查找
+          </el-col>
+          <el-col :span="12">
+            <el-input placeholder="请输入您想查找的话题名称"
+                      v-model="topicInput"
+            >
+              <template #prepend>
+                <el-button style="background-color: transparent; border-color: transparent">
+                  <el-icon>
+                    <Search />
+                  </el-icon>
+
+                </el-button>
+              </template>
+              <template #append>
+                <el-button style="background-color: transparent; border-color: transparent">
+                  <el-icon>
+                    <Camera />
+                  </el-icon>
+
+                </el-button>
+              </template>
+            </el-input>
           </el-col>
         </el-row>
       </el-card>
@@ -325,9 +444,14 @@ export default {
   },
   data() {
     return {
+      findInput: '',
+      topicInput: '',
+      schoolInput: '',
+
       context: '1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111',
       typeTableData: [],
       schoolTableData: [],
+      currentTypeName: '',
       currentType: 0,
       textarea: '',
       typeSelect: '',
@@ -366,8 +490,9 @@ export default {
 
       })
     },
-    jumpTypeBlock(index) {
+    jumpTypeBlock(index, name) {
       this.currentType = index
+      this.currentTypeName = name
     },
 
 
