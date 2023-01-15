@@ -17,6 +17,14 @@ const routes = [
     path: '/back/control',
     name: 'control',
     component:() => import('../views/control')
+  },{
+    path: '/user/info',
+    name: 'user',
+    component:() => import('../views/user')
+  },{
+    path: '/index/community/detail/:communityId',
+    name: 'communitydetail',
+    component:() => import('../views/communitydetail')
   }
 ]
 

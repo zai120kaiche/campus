@@ -16,7 +16,8 @@ import axios from 'axios'
 import "./axios"
 //滑动验证码
 import SlideVerify from 'vue-monoplasty-slide-verify';
-
+//引入动画特效
+import 'animate.css/animate.min.css'
 const app = createApp(App)
 app.config.globalProperties.$axios=axios
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
@@ -24,4 +25,5 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 app.use(ElementPlus)
 app.use(SlideVerify)
+
 app.use(router).use(store).mount("#app")

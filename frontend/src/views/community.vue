@@ -2,8 +2,8 @@
   <div class="page_back page_this"></div>
   <img src="../assets/images/wave.png" alt="" class="ourpage" style="position: fixed;background-color: transparent">
   <Header></Header>
-  <el-container style="margin-bottom: 5%">
-    <el-aside width="14%" style="margin-left: 7%; margin-right: 4%">
+  <el-container style="margin-bottom: 5%" class="  animate__animated animate__fadeIn ">
+    <el-aside class="animate__animated animate__fadeInLeft" width="14%" style="margin-left: 7%; margin-right: 4%">
       <el-card>
         <div style="font-weight: bold">
           分类
@@ -24,7 +24,7 @@
 
       </el-card>
     </el-aside>
-    <el-main style="padding: 0">
+    <el-main class="animate__animated animate__fadeInDown" style="padding: 0">
       <el-card>
         <el-input
             v-model="textarea"
@@ -277,76 +277,79 @@
         </el-row>
       </el-card>
       <el-card v-for="(item, index) in contentList" style="margin-top: 1%">
-        <el-container>
-          <el-header>
-            <el-row>
-              <el-col :span="3">
-                <el-avatar></el-avatar>
-              </el-col>
-              <el-col :span="21">
-                <el-row>
-                  <el-col :span="4">用户名</el-col>
-                  <el-col :span="14" style="color: #919191; font-weight: lighter; font-size: xx-small">类别</el-col>
-                  <el-col :span="6" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: 北京邮电大学</el-col>
-                </el-row>
-                <el-row>2</el-row>
-              </el-col>
-            </el-row>
-
-          </el-header>
           <el-container>
-            <el-aside width="40%">
-              <el-image style="width: 90%; height: 80%; border-radius: 5px" :src="url" :fit="fit" ></el-image>
-            </el-aside>
-            <el-main style="padding: 0; margin-right: 15%">
-              <div style="font-weight: bold; font-size: large">正文标题</div>
-              <div style="margin-top: 2%"></div>
-              <div style="word-wrap:break-word; word-break:break-all;
+            <el-header>
+              <el-row>
+                <el-col :span="3">
+                  <el-avatar></el-avatar>
+                </el-col>
+                <el-col :span="21">
+                  <el-row>
+                    <el-col :span="4">用户名</el-col>
+                    <el-col :span="14" style="color: #919191; font-weight: lighter; font-size: xx-small">类别</el-col>
+                    <el-col :span="6" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: 北京邮电大学</el-col>
+                  </el-row>
+                  <el-row>2</el-row>
+                </el-col>
+              </el-row>
+
+            </el-header>
+            <router-link :to="{name: 'communitydetail', params: {communityId: 1}}">
+              <el-container>
+                <el-aside width="40%">
+                  <el-image style="width: 90%; height: 80%; border-radius: 5px" :src="url" :fit="fit" ></el-image>
+                </el-aside>
+                <el-main style="padding: 0; margin-right: 15%">
+                  <div style="font-weight: bold; font-size: large">正文标题</div>
+                  <div style="margin-top: 2%"></div>
+                  <div style="word-wrap:break-word; word-break:break-all;
               text-overflow:ellipsis;overflow:hidden;display:-webkit-box;
               -webkit-line-clamp:3;-webkit-box-orient:vertical;">{{context}}</div>
-            </el-main>
-          </el-container>
-          <el-divider style="padding-bottom: 0; margin-top: 10px; margin-bottom: 0"></el-divider>
-          <el-footer height="10%">
-            <el-row :gutter="20" style="margin-top: 1%;">
-              <el-col :span="4">
-                <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
-                  <View />
-                </el-icon>
-                0
-              </el-col><el-divider direction="vertical" />
+                </el-main>
+              </el-container>
+            </router-link>
 
-              <el-col :span="4">
-                <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
-                  <Pointer />
-                </el-icon>
-                0
-              </el-col><el-divider direction="vertical" />
-              <el-col :span="4">
-                <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
-                  <ChatDotSquare />
-                </el-icon>
-                0
-              </el-col><el-divider direction="vertical" />
-              <el-col :span="4">
-                <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
-                  <Star />
-                </el-icon>
-                0
-              </el-col><el-divider direction="vertical" />
-              <el-col :span="4">
-                <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
-                  <Share />
-                </el-icon>
-                0
-              </el-col>
-            </el-row>
-          </el-footer>
-        </el-container>
+            <el-divider style="padding-bottom: 0; margin-top: 5%; margin-bottom: 0"></el-divider>
+            <el-footer height="10%">
+              <el-row :gutter="20" style="margin-top: 1%;">
+                <el-col :span="4">
+                  <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+                    <View />
+                  </el-icon>
+                  0
+                </el-col><el-divider direction="vertical" />
+
+                <el-col :span="4">
+                  <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+                    <Pointer />
+                  </el-icon>
+                  0
+                </el-col><el-divider direction="vertical" />
+                <el-col :span="4">
+                  <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+                    <ChatDotSquare />
+                  </el-icon>
+                  0
+                </el-col><el-divider direction="vertical" />
+                <el-col :span="4">
+                  <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+                    <Star />
+                  </el-icon>
+                  0
+                </el-col><el-divider direction="vertical" />
+                <el-col :span="4">
+                  <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+                    <Share />
+                  </el-icon>
+                  0
+                </el-col>
+              </el-row>
+            </el-footer>
+          </el-container>
       </el-card>
 
     </el-main>
-    <el-aside width="14%" style="margin-right: 7%; margin-left: 4%">
+    <el-aside class="animate__animated animate__fadeInRight" width="14%" style="margin-right: 7%; margin-left: 4%">
       <el-card>
         <div style="font-weight: bold">
           我的
@@ -418,7 +421,7 @@
 
       </el-card>
     </el-aside>
-  </el-container>
+  </el-container >
   <Footer></Footer>
 </template>
 
@@ -474,6 +477,7 @@ export default {
   created() {
     this.typeList(0)
     this.schoolList(0)
+    this.$store.commit('SET_INDEX', 1)
   },
   methods: {
     typeList(currentPage) {

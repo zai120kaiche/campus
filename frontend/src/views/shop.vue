@@ -4,7 +4,7 @@
   <Header></Header>
 
   <el-container style="margin-bottom: 5%">
-    <el-aside width="14%" style="margin-left: 7%; margin-right: 4%">
+    <el-aside class="animate__animated animate__fadeInLeft" width="14%" style="margin-left: 7%; margin-right: 4%">
       <el-card>
         <div style="font-weight: bold">
           收闲置
@@ -29,7 +29,7 @@
 
       </el-card>
     </el-aside>
-    <el-main style="padding: 0">
+    <el-main class="animate__animated animate__fadeInDown" style="padding: 0">
       <el-card>
         <el-input
             v-model="textInput"
@@ -181,7 +181,7 @@
 
 
     </el-main>
-    <el-aside width="14%" style="margin-right: 7%; margin-left: 4%">
+    <el-aside class="animate__animated animate__fadeInRight" width="14%" style="margin-right: 7%; margin-left: 4%">
       <el-card>
         <div style="font-weight: bold">
           我的
@@ -270,6 +270,7 @@ export default {
   created() {
     this.tradeTypeList(0)
     this.schoolList(0)
+    this.$store.commit('SET_INDEX', 2)
   },
   data() {
     return {
