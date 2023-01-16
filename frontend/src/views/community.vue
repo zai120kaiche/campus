@@ -27,9 +27,14 @@
     <el-main class="animate__animated animate__fadeInDown" style="padding: 0">
       <el-card>
         <el-input
+          placeholder="请输入发帖主题"
+          v-model="title"
+        ></el-input>
+        <el-input
             v-model="textarea"
             clearable
             type="textarea"
+            style="margin-top: 3%"
             :autosize="{ minRows: 3, maxRows: 7 }"
             placeholder="有什么想法要分享给大家？"
         />
@@ -53,7 +58,7 @@
                       v-for="item in typeTableData"
                       :key="item.typename"
                       :label="item.typename"
-                      :value="item.typename"
+                      :value="item.id"
                   />
                 </el-select>
               </el-col>
@@ -153,7 +158,7 @@
             </el-popover>
           </el-col>
           <el-col :span="3" :offset="4">
-            <el-button style="background-color: #A2C9FC">发送</el-button>
+            <el-button style="background-color: #A2C9FC" v-on:click="sendCommunity">发送</el-button>
           </el-col>
         </el-row>
       </el-card>
@@ -447,6 +452,7 @@ export default {
   },
   data() {
     return {
+      title: '',
       findInput: '',
       topicInput: '',
       schoolInput: '',
@@ -467,7 +473,7 @@ export default {
         {
           name: 2
         }
-      ]
+      ],
     }
   },
   components: {
@@ -498,6 +504,18 @@ export default {
       this.currentType = index
       this.currentTypeName = name
     },
+    sendCommunity() {
+      let _this = this
+      let temp = {
+        owner: 1,
+        title: _this.title,
+        content: _this.textarea,
+        kind: 12
+      }
+      _this.$axios.post("/community/addpost", temp).then(res =>{
+
+      })
+    }
 
 
   }

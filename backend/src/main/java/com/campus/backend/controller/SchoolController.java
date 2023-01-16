@@ -26,12 +26,14 @@ public class SchoolController {
     @Autowired
     SchoolService schoolService;
 
+
     //分页列举所有类目
     @GetMapping("/list")
     public Object list(@RequestParam(defaultValue = "1") Integer currentPage) {
         Page page = new Page(currentPage, 10);
         IPage pageData = schoolService.page(page, new QueryWrapper<School>().orderByAsc("id"));
         return Result.succ(pageData);
+
     }
     //列举所有类目
     @GetMapping("/list/all")
