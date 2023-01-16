@@ -1,5 +1,6 @@
 package com.campus.backend.common.lang;
 
+import com.campus.backend.entity.oss;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -35,6 +36,13 @@ public class Result implements Serializable {
         r.setCode(code);
         r.setMsg(msg);
         r.setData(data);
+        return r;
+    }
+
+
+    public Object put(String fileUrl, oss returnFileUrl) {
+        Result r = new Result();
+        r.setData(returnFileUrl);
         return r;
     }
 }

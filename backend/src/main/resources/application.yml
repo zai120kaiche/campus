@@ -31,3 +31,21 @@ markerhub:
     secret: f4e2e52034348f86b67cde581c0f9eb5
     expire: 604800
     header: Authorization
+# 设置最大支持文件大小
+servlet:
+  multipart:
+    max-file-size: 100MB
+    max-request-size: 1000MB
+# endPoint
+aliyun:
+  endPoint: oss-cn-beijing.aliyuncs.com
+# Bucket
+  urlPrefix: http://landstar.oss-cn-beijing.aliyuncs.com
+# accessKey Id
+  accessKeyId: LTAI5t7BJj2p4tDKgn8TSzqy
+# accessKey Secret
+  accessKeySecret: 2aVQV3mTxehdD03T0KaluF4b6IEoIY
+# BucketName
+  bucketName: landstar
+
+

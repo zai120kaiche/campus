@@ -224,13 +224,14 @@
         </el-row>
       </el-card>
       <el-card style="margin-top: 10%">
-        <div style="font-weight: bold; font-size: small">
-          最多人浏览
-        </div>
-        <el-divider/>
-        <div style="font-weight: bold; font-size: small">
-          最新发布
-        </div>
+        <el-select v-model="orderSelectValue" class="m-2" placeholder="请选择排序方式">
+          <el-option
+              v-for="item in orderSelect"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+          />
+        </el-select>
       </el-card>
       <el-card style="margin-top: 10%">
         <el-row>
@@ -274,6 +275,14 @@ export default {
   },
   data() {
     return {
+      orderSelectValue: '',
+      orderSelect: [{
+        value: 0,
+        label: "按时间排序"
+      },{
+        value: 1,
+        label: "按浏览量排序"
+      },],
       tradeTypeTableData: [],
       schoolTableData: [],
       currentTradeTypeName: '',

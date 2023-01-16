@@ -12,6 +12,7 @@
         </div>
         <div v-for="(type, index) in typeTableData" style="margin-top: 4%">
           <button v-if="type.id == currentType"
+                  class="animate__animated animate__rubberBand"
                   style="background-color: #88b0ef; border-color: transparent; width: 100%; border-radius: 5px"
                   v-on:click="jumpTypeBlock(type.id, type.typename)">{{ type.typename }}
           </button>
@@ -25,10 +26,11 @@
       </el-card>
     </el-aside>
     <el-main class="animate__animated animate__fadeInDown" style="padding: 0">
+
       <el-card>
         <el-input
-          placeholder="请输入发帖主题"
-          v-model="title"
+            placeholder="请输入发帖主题"
+            v-model="title"
         ></el-input>
         <el-input
             v-model="textarea"
@@ -66,34 +68,8 @@
             </el-row>
 
 
-
           </el-col>
-          <el-col :span="5">
 
-
-            <el-row style="font-weight: bold">
-
-              <el-col>
-                <el-select
-                    v-model="schoolSelect"
-                    placeholder="所属学校"
-                    style="width: 100%"
-                    filterable
-                >
-                  <el-option
-                      v-for="item in schoolTableData"
-                      :key="item.schoolname"
-                      :label="item.schoolname"
-                      :value="item.schoolname"
-                  />
-                </el-select>
-              </el-col>
-
-            </el-row>
-
-
-
-          </el-col>
 
           <el-col :span="5">
 
@@ -106,7 +82,6 @@
                     placeholder="发布至"
                     style="width: 100%"
                     filterable
-                    multiple
                 >
                   <el-option
                       v-for="item in schoolTableData"
@@ -120,13 +95,34 @@
             </el-row>
 
 
+          </el-col>
+          <el-col :span="5">
+
+
+            <el-row style="font-weight: bold">
+
+
+              <el-col>
+
+                <el-button style="font-weight: lighter" @click="picDialogVisible = true">
+                  <el-icon style="margin-right: 10%">
+                    <Picture/>
+                  </el-icon>
+                  图片
+                </el-button>
+              </el-col>
+
+
+            </el-row>
+
+
 
           </el-col>
           <el-col :span="2">
             <el-popover :visible="visible" placement="bottom" :width="160">
               <el-row style="font-weight: bold; margin-top: 5%">
                 <el-icon style="margin-top: 2%">
-                  <Avatar />
+                  <Avatar/>
                 </el-icon>
                 <div style="margin-left: 11%">
                   匿名发送
@@ -134,7 +130,7 @@
               </el-row>
               <el-row style="font-weight: bold; margin-top: 5%">
                 <el-icon style="margin-top: 2%">
-                  <Clock />
+                  <Clock/>
                 </el-icon>
                 <div style="margin-left: 11%">
                   定时发送
@@ -142,22 +138,23 @@
               </el-row>
               <el-row style="font-weight: bold; margin-top: 5%">
                 <el-icon style="margin-top: 2%">
-                  <Top />
+                  <Top/>
                 </el-icon>
                 <div style="margin-left: 11%">
                   积分置顶
                 </div>
               </el-row>
               <template #reference>
-                <el-button style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">
-                  <el-icon >
-                    <MoreFilled />
+                <el-button
+                    style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">
+                  <el-icon>
+                    <MoreFilled/>
                   </el-icon>
                 </el-button>
               </template>
             </el-popover>
           </el-col>
-          <el-col :span="3" :offset="4">
+          <el-col :span="3" :offset="2">
             <el-button style="background-color: #A2C9FC" v-on:click="sendCommunity">发送</el-button>
           </el-col>
         </el-row>
@@ -166,7 +163,7 @@
         <el-row>
           <el-col :span="6">
             <el-icon style="color: #88b0ef; margin-top: 2%">
-              <Promotion />
+              <Promotion/>
             </el-icon>
             热门校园吧
           </el-col>
@@ -177,7 +174,7 @@
               <template #prepend>
                 <el-button style="background-color: transparent; border-color: transparent">
                   <el-icon>
-                    <Search />
+                    <Search/>
                   </el-icon>
 
                 </el-button>
@@ -185,7 +182,7 @@
               <template #append>
                 <el-button style="background-color: transparent; border-color: transparent">
                   <el-icon>
-                    <Camera />
+                    <Camera/>
                   </el-icon>
 
                 </el-button>
@@ -193,24 +190,27 @@
             </el-input>
           </el-col>
         </el-row>
-        <el-row >
-          <el-card v-for="(item, index) in schoolTableData"  style="margin-top: 3%; width: 30%; margin-right: 2%; margin-right: 3%">
+        <el-row>
+          <el-card v-for="(item, index) in schoolTableData"
+                   style="margin-top: 3%; width: 30%; margin-right: 2%; margin-right: 3%">
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-avatar></el-avatar>
               </el-col>
               <el-col :span="16" style="color: #919191; font-size: small; font-weight: lighter">
-                <el-row>{{item.schoolname}}</el-row>
+                <el-row>{{ item.schoolname }}</el-row>
                 <el-row>
                   <el-icon style="margin-top: 2%; margin-right: 5%">
-                    <User />
+                    <User/>
                   </el-icon>
-                  {{item.count}}</el-row>
+                  {{ item.count }}
+                </el-row>
                 <el-row>
                   <el-icon style="margin-top: 2%; margin-right: 5%">
-                    <ChatSquare />
+                    <ChatSquare/>
                   </el-icon>
-                  {{item.contentcount}}</el-row>
+                  {{ item.contentcount }}
+                </el-row>
               </el-col>
             </el-row>
           </el-card>
@@ -221,7 +221,7 @@
         <el-row>
           <el-col :span="6">
             <el-icon style="color: #88b0ef; margin-top: 2%">
-              <Promotion />
+              <Promotion/>
             </el-icon>
             失物查找
           </el-col>
@@ -232,7 +232,7 @@
               <template #prepend>
                 <el-button style="background-color: transparent; border-color: transparent">
                   <el-icon>
-                    <Search />
+                    <Search/>
                   </el-icon>
 
                 </el-button>
@@ -240,7 +240,7 @@
               <template #append>
                 <el-button style="background-color: transparent; border-color: transparent">
                   <el-icon>
-                    <Camera />
+                    <Camera/>
                   </el-icon>
 
                 </el-button>
@@ -253,7 +253,7 @@
         <el-row>
           <el-col :span="6">
             <el-icon style="color: #88b0ef; margin-top: 2%">
-              <Promotion />
+              <Promotion/>
             </el-icon>
             话题查找
           </el-col>
@@ -264,7 +264,7 @@
               <template #prepend>
                 <el-button style="background-color: transparent; border-color: transparent">
                   <el-icon>
-                    <Search />
+                    <Search/>
                   </el-icon>
 
                 </el-button>
@@ -272,7 +272,7 @@
               <template #append>
                 <el-button style="background-color: transparent; border-color: transparent">
                   <el-icon>
-                    <Camera />
+                    <Camera/>
                   </el-icon>
 
                 </el-button>
@@ -282,75 +282,81 @@
         </el-row>
       </el-card>
       <el-card v-for="(item, index) in contentList" style="margin-top: 1%">
-          <el-container>
-            <el-header>
-              <el-row>
-                <el-col :span="3">
-                  <el-avatar></el-avatar>
-                </el-col>
-                <el-col :span="21">
-                  <el-row>
-                    <el-col :span="4">用户名</el-col>
-                    <el-col :span="14" style="color: #919191; font-weight: lighter; font-size: xx-small">类别</el-col>
-                    <el-col :span="6" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: 北京邮电大学</el-col>
-                  </el-row>
-                  <el-row>2</el-row>
-                </el-col>
-              </el-row>
+        <el-container>
+          <el-header>
+            <el-row>
+              <el-col :span="3">
+                <el-avatar></el-avatar>
+              </el-col>
+              <el-col :span="21">
+                <el-row>
+                  <el-col :span="4">用户名</el-col>
+                  <el-col :span="14" style="color: #919191; font-weight: lighter; font-size: xx-small">类别</el-col>
+                  <el-col :span="6" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: 北京邮电大学
+                  </el-col>
+                </el-row>
+                <el-row>2</el-row>
+              </el-col>
+            </el-row>
 
-            </el-header>
-            <router-link :to="{name: 'communitydetail', params: {communityId: 1}}">
-              <el-container>
-                <el-aside width="40%">
-                  <el-image style="width: 90%; height: 80%; border-radius: 5px" :src="url" :fit="fit" ></el-image>
-                </el-aside>
-                <el-main style="padding: 0; margin-right: 15%">
-                  <div style="font-weight: bold; font-size: large">正文标题</div>
-                  <div style="margin-top: 2%"></div>
-                  <div style="word-wrap:break-word; word-break:break-all;
+          </el-header>
+          <router-link :to="{name: 'communitydetail', params: {communityId: 1}}">
+            <el-container>
+              <el-aside width="40%">
+                <el-image style="width: 90%; height: 80%; border-radius: 5px" :src="url" :fit="fit"></el-image>
+              </el-aside>
+              <el-main style="padding: 0; margin-right: 15%">
+                <div style="font-weight: bold; font-size: large">正文标题</div>
+                <div style="margin-top: 2%"></div>
+                <div style="word-wrap:break-word; word-break:break-all;
               text-overflow:ellipsis;overflow:hidden;display:-webkit-box;
-              -webkit-line-clamp:3;-webkit-box-orient:vertical;">{{context}}</div>
-                </el-main>
-              </el-container>
-            </router-link>
+              -webkit-line-clamp:3;-webkit-box-orient:vertical;">{{ context }}
+                </div>
+              </el-main>
+            </el-container>
+          </router-link>
 
-            <el-divider style="padding-bottom: 0; margin-top: 5%; margin-bottom: 0"></el-divider>
-            <el-footer height="10%">
-              <el-row :gutter="20" style="margin-top: 1%;">
-                <el-col :span="4">
-                  <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
-                    <View />
-                  </el-icon>
-                  0
-                </el-col><el-divider direction="vertical" />
+          <el-divider style="padding-bottom: 0; margin-top: 5%; margin-bottom: 0"></el-divider>
+          <el-footer height="10%">
+            <el-row :gutter="20" style="margin-top: 1%;">
+              <el-col :span="4">
+                <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+                  <View/>
+                </el-icon>
+                0
+              </el-col>
+              <el-divider direction="vertical"/>
 
-                <el-col :span="4">
-                  <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
-                    <Pointer />
-                  </el-icon>
-                  0
-                </el-col><el-divider direction="vertical" />
-                <el-col :span="4">
-                  <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
-                    <ChatDotSquare />
-                  </el-icon>
-                  0
-                </el-col><el-divider direction="vertical" />
-                <el-col :span="4">
-                  <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
-                    <Star />
-                  </el-icon>
-                  0
-                </el-col><el-divider direction="vertical" />
-                <el-col :span="4">
-                  <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
-                    <Share />
-                  </el-icon>
-                  0
-                </el-col>
-              </el-row>
-            </el-footer>
-          </el-container>
+              <el-col :span="4">
+                <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+                  <Pointer/>
+                </el-icon>
+                0
+              </el-col>
+              <el-divider direction="vertical"/>
+              <el-col :span="4">
+                <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+                  <ChatDotSquare/>
+                </el-icon>
+                0
+              </el-col>
+              <el-divider direction="vertical"/>
+              <el-col :span="4">
+                <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+                  <Star/>
+                </el-icon>
+                0
+              </el-col>
+              <el-divider direction="vertical"/>
+              <el-col :span="4">
+                <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+                  <Share/>
+                </el-icon>
+                0
+              </el-col>
+            </el-row>
+          </el-footer>
+        </el-container>
       </el-card>
 
     </el-main>
@@ -397,13 +403,15 @@
         </el-row>
       </el-card>
       <el-card style="margin-top: 10%">
-        <div style="font-weight: bold; font-size: small">
-          最多人浏览
-        </div>
-        <el-divider/>
-        <div style="font-weight: bold; font-size: small">
-          最新发布
-        </div>
+        <el-select v-model="orderSelectValue" class="m-2" placeholder="请选择排序方式">
+          <el-option
+              v-for="item in orderSelect"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+          />
+        </el-select>
+
       </el-card>
       <el-card style="margin-top: 10%">
         <el-row>
@@ -426,7 +434,22 @@
 
       </el-card>
     </el-aside>
-  </el-container >
+  </el-container>
+  <el-dialog
+      v-model="picDialogVisible"
+      title="添加图片"
+      width="60%"
+      :before-close="handleClose"
+  >
+    <span>请添加您要选择的图片（上限三张）</span>
+    <template #footer>
+      <el-row>
+        <el-col :span="24">
+          <Pic @handleSelect="picSelect"></Pic>
+        </el-col>
+      </el-row>
+    </template>
+  </el-dialog>
   <Footer></Footer>
 </template>
 
@@ -438,6 +461,7 @@ import type, {UploadProps, UploadUserFile} from 'element-plus'
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Pic from "@/components/Pic"
 
 export default {
   name: "community",
@@ -452,6 +476,15 @@ export default {
   },
   data() {
     return {
+      orderSelectValue: '',
+      orderSelect: [{
+        value: 0,
+        label: "按时间排序"
+      },{
+        value: 1,
+        label: "按浏览量排序"
+      },],
+      picDialogVisible: false,
       title: '',
       findInput: '',
       topicInput: '',
@@ -474,11 +507,13 @@ export default {
           name: 2
         }
       ],
+      picList: []
     }
   },
   components: {
     Header,
-    Footer
+    Footer,
+    Pic
   },
   created() {
     this.typeList(0)
@@ -486,6 +521,11 @@ export default {
     this.$store.commit('SET_INDEX', 1)
   },
   methods: {
+    picSelect(res) {
+      let _this = this
+      _this.picList.push(res)
+      console.log(_this.picList)
+    },
     typeList(currentPage) {
       let _this = this
       _this.$axios.get("type/list/all/?currentPage=" + currentPage).then(res => {
@@ -512,7 +552,7 @@ export default {
         content: _this.textarea,
         kind: 12
       }
-      _this.$axios.post("/community/addpost", temp).then(res =>{
+      _this.$axios.post("/community/addpost", temp).then(res => {
 
       })
     }
