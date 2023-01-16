@@ -87,7 +87,7 @@
                       v-for="item in schoolTableData"
                       :key="item.schoolname"
                       :label="item.schoolname"
-                      :value="item.schoolname"
+                      :value="item.id"
                   />
                 </el-select>
               </el-col>
@@ -292,7 +292,7 @@
                 <el-row>
                   <el-col :span="4">用户名</el-col>
                   <el-col :span="14" style="color: #919191; font-weight: lighter; font-size: xx-small">类别</el-col>
-                  <el-col :span="6" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: 北京邮电大学
+                  <el-col :span="6" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: {{schoolTableData[item.university]}}
                   </el-col>
                 </el-row>
                 <el-row>2</el-row>
@@ -306,11 +306,11 @@
                 <el-image style="width: 90%; height: 80%; border-radius: 5px" :src="url" :fit="fit"></el-image>
               </el-aside>
               <el-main style="padding: 0; margin-right: 15%">
-                <div style="font-weight: bold; font-size: large">正文标题</div>
+                <div style="font-weight: bold; font-size: large">{{item.title}}</div>
                 <div style="margin-top: 2%"></div>
                 <div style="word-wrap:break-word; word-break:break-all;
               text-overflow:ellipsis;overflow:hidden;display:-webkit-box;
-              -webkit-line-clamp:3;-webkit-box-orient:vertical;">{{ context }}
+              -webkit-line-clamp:3;-webkit-box-orient:vertical;">{{ item.content }}
                 </div>
               </el-main>
             </el-container>
@@ -327,11 +327,11 @@
               </el-col>
               <el-divider direction="vertical"/>
 
-              <el-col :span="4">
+              <el-col :span="4" v-on:click="like(item.id)">
                 <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
                   <Pointer/>
                 </el-icon>
-                0
+                {{item.likeNum}}
               </el-col>
               <el-divider direction="vertical"/>
               <el-col :span="4">
@@ -476,6 +476,13 @@ export default {
   },
   data() {
     return {
+      getListTable: {
+        order: 0,
+        type: 1,
+        school: null,
+        keyWord: [],
+        current: 0
+      },
       orderSelectValue: '',
       orderSelect: [{
         value: 0,
@@ -490,7 +497,6 @@ export default {
       topicInput: '',
       schoolInput: '',
 
-      context: '1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111',
       typeTableData: [],
       schoolTableData: [],
       currentTypeName: '',
@@ -498,15 +504,8 @@ export default {
       textarea: '',
       typeSelect: '',
       schoolSelect: '',
-      schoolBlockSelect: '',
-      contentList: [
-        {
-          name: 1
-        },
-        {
-          name: 2
-        }
-      ],
+      schoolBlockSelect: -1,
+      contentList: [],
       picList: []
     }
   },
@@ -519,8 +518,30 @@ export default {
     this.typeList(0)
     this.schoolList(0)
     this.$store.commit('SET_INDEX', 1)
+    this.getList(0)
   },
   methods: {
+    getList(index) {
+      let _this = this
+      _this.$axios.post('/community/getPost' ,_this.getListTable).then(res => {
+        console.log(res.data.data)
+        _this.contentList = res.data.data.records
+        console.log(_this.contentList)
+      })
+    },
+    //点赞
+    like(id) {
+      let temp = {
+        uid: 1,
+        objectId: id,
+        type: 0,
+        flag: true
+      }
+      let _this = this
+      _this.$axios.post('/community/doLike', temp).then(res => {
+        console.log(res)
+      })
+    },
     picSelect(res) {
       let _this = this
       _this.picList.push(res)
@@ -546,13 +567,29 @@ export default {
     },
     sendCommunity() {
       let _this = this
+      let typeselect = ''
+      let picselect = ''
+      let i = 0
+      for (i = 0; i < _this.typeSelect.length - 1; i++) {
+        typeselect += _this.typeSelect[i]
+        typeselect += ","
+      }
+      typeselect += _this.typeSelect[i]
+      for (i = 0; i < _this.picList.length - 1; i++) {
+        picselect += _this.picList[i]
+        picselect += ","
+      }
+      picselect += _this.picList[i]
       let temp = {
         owner: 1,
         title: _this.title,
         content: _this.textarea,
-        kind: 12
+        kind: typeselect,
+        university: _this.schoolBlockSelect,
+        pic: picselect
       }
-      _this.$axios.post("/community/addpost", temp).then(res => {
+      console.log(temp)
+      _this.$axios.post("/community/doPost", temp).then(res => {
 
       })
     }

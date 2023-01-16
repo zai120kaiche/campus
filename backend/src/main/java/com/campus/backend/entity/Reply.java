@@ -47,7 +47,5 @@ public class Reply implements Serializable {
 
     private Integer fid;
 
-    private Integer flag;
-
 
 }

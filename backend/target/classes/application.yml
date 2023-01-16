@@ -19,6 +19,8 @@ spring:
     database: 0
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**Mapper.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 server:
   port: 9090
 shiro-redis:

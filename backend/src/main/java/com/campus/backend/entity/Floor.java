@@ -47,7 +47,4 @@ public class Floor implements Serializable {
     @TableField("OWNER")
     private Integer owner;
 
-    private Integer flag;
-
-
 }

@@ -56,7 +56,11 @@ public class Post implements Serializable {
     @TableField("OWNER")
     private Integer owner;
 
-    private Integer kind;
+    private String kind;
+
+    private Integer university;
+
+    private String pic;
 
 
 }
