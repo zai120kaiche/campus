@@ -6,10 +6,10 @@ import java.util.List;
 
 @Data
 public class PostCommentItem {
-    private Floor floor;
-    private List<Reply> replies;
+    private FloorItem floor;
+    private List<ReplyItem> replies;
 
-    public PostCommentItem(Floor floor, List<Reply> replies) {
+    public PostCommentItem(FloorItem floor, List<ReplyItem> replies) {
         this.floor = floor;
         this.replies = replies;
     }

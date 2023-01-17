@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.swing.text.html.parser.Entity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,12 @@ import static com.campus.backend.entity.OrderType.Date;
 @RequestMapping("/community")
 public class CommunityController {
     private int pageSize=20;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private SchoolMapper schoolMapper;
 
     @Autowired
     private PostMapper postMapper;
@@ -48,6 +55,9 @@ public class CommunityController {
     @Autowired
     private CommentMapper commentMapper;
 
+    @Autowired
+    private TypeMapper typeMapper;
+
 //发帖
     @PostMapping("/doPost")
     public Object doPost(@RequestBody Post post, HttpServletRequest request){
@@ -55,6 +65,18 @@ public class CommunityController {
         try {
             String ip = GetIpAddressUtil.getIpInfo(request);
             post.setLocation(ip);
+
+            String kinds = post.getKind();
+            String[] kindSplit = kinds.split(",");
+            String kindNames="";
+            for (int i = 0; i < kindSplit.length; i++) {
+                int kindId = Integer.parseInt(kindSplit[i]);
+                Type type = typeMapper.selectById(kindId);
+                kindNames+=type.getTypename();
+                if(i!=kindSplit.length-1)  kindNames+=",";
+            }
+            post.setKindName(kindNames);
+
             postMapper.insert(post);
         }catch (Exception e)
         {
@@ -67,10 +89,10 @@ public class CommunityController {
     @PostMapping("/getPost")
     public Object getPost(@RequestBody SearchCondition sc)
     {
-        System.out.println("1111111111111111"+sc);
         if(sc.getOrder()==null || sc.getCurrent()==null) return Result.fail("未指定排序类型或页码");
 
         IPage page=new Page(sc.getCurrent(),pageSize);
+        PostPages postPages;
         LambdaQueryWrapper<Post> lqw=new LambdaQueryWrapper<>();
 
         try {
@@ -106,18 +128,19 @@ public class CommunityController {
                     break;
             }
             postMapper.selectPage(page,lqw);
+            postPages=addUserInfoToPost(page,sc.getUid());
         }catch (Exception e)
         {
             e.printStackTrace();
             return Result.fail("SearchCondition出现异常");
         }
-        return Result.succ(page);
+
+        return Result.succ(postPages);
     }
 //点赞
     @PostMapping("/doLike")
     public Object doLike(@RequestBody LikeType likeType)
     {
-        System.out.println("2222222222222"+ likeType);
         if(likeType.getType()==null || likeType.getObjectId()==null ||likeType.getUid()==null )
             return Result.fail("doLike参数缺失");
         TableType tableType = TableType.values()[likeType.getType()];
@@ -192,9 +215,11 @@ public class CommunityController {
     }
 //一级评论
     @PostMapping("/doComment")
-    public Object doComment(@RequestBody Floor floor)
+    public Object doComment(@RequestBody Floor floor,HttpServletRequest request)
     {
         try {
+            String ip = GetIpAddressUtil.getIpInfo(request);
+            floor.setLocation(ip);
             floorMapper.insert(floor);
             Post post = postMapper.selectById(floor.getPid());
             post.setCommentNum(post.getCommentNum()+1);
@@ -208,9 +233,11 @@ public class CommunityController {
     }
 //二级评论
     @PostMapping("/doReply")
-    public Object doReply(@RequestBody Reply reply)
+    public Object doReply(@RequestBody Reply reply,HttpServletRequest request)
     {
         try {
+            String ip = GetIpAddressUtil.getIpInfo(request);
+            reply.setLocation(ip);
             replyMapper.insert(reply);
             Floor floor = floorMapper.selectById(reply.getFid());
             floor.setReplyNum(floor.getReplyNum()+1);
@@ -280,12 +307,30 @@ public class CommunityController {
             PostCommentItem postCommentItem;
             for (int i = 0; i < floors.size(); i++) {
                 Floor floor = floors.get(i);
+                FloorItem floorItem=new FloorItem(floor);
+                Integer uid = floorItem.getOwner();
+                floorItem.setUserName(getUserName(uid));
+
+                floorItem.setLikeFlag(isLike(TableType.floor,requestBody.getUid(),floorItem.getId()));
+
                 IPage<Reply> replyPage=new Page<>(1,pageSize);
                 LambdaQueryWrapper<Reply> lqw1=new LambdaQueryWrapper<>();
                 lqw1.eq(Reply::getFid,floor.getId())
                         .orderByDesc(Reply::getDate);
                 replyMapper.selectPage(replyPage,lqw1);
-                postCommentItem=new PostCommentItem(floor,replyPage.getRecords());
+
+                List<ReplyItem> replyItems=new ArrayList<>();
+                ReplyItem replyItem;
+                for (Reply record : replyPage.getRecords()) {
+                    replyItem=new ReplyItem(record);
+                    replyItem.setUserName(getUserName(replyItem.getOwner()));
+                    if(replyItem.getOthers()!=null)
+                        replyItem.setOthersName(getUserName(replyItem.getOthers()));
+                    replyItem.setLikeFlag(isLike(TableType.reply,requestBody.getUid(),replyItem.getId()));
+                    replyItems.add(replyItem);
+                }
+
+                postCommentItem=new PostCommentItem(floorItem,replyItems);
                 postCommentItems.add(postCommentItem);
             }
 
@@ -294,7 +339,6 @@ public class CommunityController {
             e.printStackTrace();
             return Result.fail("getPostInfo失败");
         }
-        System.out.println("333333333333"+postCommentItems);
         return Result.succ(postCommentItems);
     }
 //获取二级评论
@@ -302,6 +346,8 @@ public class CommunityController {
     public Object getReplies(@RequestBody RepliesInfoRequestBody requestBody)
     {
         IPage<Reply> replyPage=new Page<>(requestBody.getCurrent(),pageSize);
+
+        ReplyPages replyPages=new ReplyPages();
         try {
             OrderType orderType = OrderType.values()[requestBody.getOrder()];
             LambdaQueryWrapper<Reply> lqw=new LambdaQueryWrapper<>();
@@ -318,12 +364,26 @@ public class CommunityController {
                     break;
             }
             replyMapper.selectPage(replyPage,lqw);
+            List<ReplyItem> replyItems=new ArrayList<>();
+            ReplyItem replyItem;
+            for (Reply record : replyPage.getRecords()) {
+                replyItem=new ReplyItem(record);
+                replyItem.setUserName(getUserName(record.getOwner()));
+                if(record.getOthers()!=null)
+                    replyItem.setOthersName(getUserName(record.getOthers()));
+                replyItem.setLikeFlag(isLike(TableType.reply,requestBody.getUid(),record.getId()));
+                replyItems.add(replyItem);
+            }
+
+            replyPages.setRecords(replyItems);
+            replyPages.setInfo(replyPage);
+
         }catch (Exception e)
         {
             e.printStackTrace();
             return Result.fail("getReplies失败");
         }
-        return Result.succ(replyPage);
+        return Result.succ(replyPages);
     }
 //我的收藏
     @PostMapping("/getCollect")
@@ -375,6 +435,7 @@ public class CommunityController {
     public Object getPostById(@RequestBody MyPostInfo info)
     {
         IPage<Post> page=new Page(info.getCurrent(),pageSize);
+        PostPages postPages;
         try {
             LambdaQueryWrapper<Post> lqw=new LambdaQueryWrapper();
             lqw.eq(Post::getOwner,info.getUid());
@@ -400,12 +461,14 @@ public class CommunityController {
                     break;
             }
             postMapper.selectPage(page,lqw);
+            postPages=addUserInfoToPost(page,info.getUid());
+
         }catch (Exception e)
         {
             e.printStackTrace();
             return Result.fail("getPostById失败");
         }
-        return Result.succ(page);
+        return Result.succ(postPages);
     }
 //获取用户所有评论（我的评论）
     @PostMapping("/getAllCommentById")
@@ -424,6 +487,14 @@ public class CommunityController {
                     break;
                 default:
                     break;
+            }
+            for (MyComment record : page.getRecords()) {
+                if(record.getFlag()==1)
+                    record.setLikeFlag(isLike(TableType.floor,info.getUid(),record.getId()));
+                else if(record.getFlag()==2)
+                    record.setLikeFlag(isLike(TableType.reply,info.getUid(),record.getId()));
+                record.setUserName(getUserName(record.getOwner()));
+                record.setOthersName(getUserName(record.getOthers()));
             }
         }catch (Exception e)
         {
@@ -495,5 +566,58 @@ public class CommunityController {
     }
 
 
+    private boolean isLike(TableType tableType,Integer uid,Integer pid)
+    {
+        if(uid==null || pid==null ) return false;
+        if(tableType==TableType.post)
+        {
+            LambdaQueryWrapper<LikePost> lqw=new LambdaQueryWrapper();
+            lqw.eq(LikePost::getUid,uid).eq(LikePost::getPid,pid);
+            List<LikePost> likePosts = likePostMapper.selectList(lqw);
+            if(likePosts.size()!=0) return true;
+            else return false;
+        }
+        else if(tableType==TableType.floor)
+        {
+            LambdaQueryWrapper<LikeFloor> lqw=new LambdaQueryWrapper();
+            lqw.eq(LikeFloor::getUid,uid).eq(LikeFloor::getFid,pid);
+            List<LikeFloor> likeFloors = likeFloorMapper.selectList(lqw);
+            if(likeFloors.size()!=0) return true;
+            else return false;
+        }
+        else if(tableType==TableType.reply)
+        {
+            LambdaQueryWrapper<LikeReply> lqw=new LambdaQueryWrapper<>();
+            lqw.eq(LikeReply::getUid,uid).eq(LikeReply::getRid,pid);
+            List<LikeReply> likeReplies = likeReplyMapper.selectList(lqw);
+            if(likeReplies.size()!=0) return true;
+            else return false;
+        }
+        return false;
+    }
 
+    private String getUserName(int id)
+    {
+        User user = userMapper.selectById(id);
+        return user.getUsername();
+    }
+
+    private PostPages addUserInfoToPost(IPage<Post> page,Integer uid)
+    {
+        PostPages postPages=new PostPages();
+        List<PostItem> postItems=new ArrayList<>();
+        PostItem postItem;
+        for (Post post : page.getRecords()) {
+            postItem=new PostItem(post);
+            Integer universityId = postItem.getUniversity();
+            School school = schoolMapper.selectById(universityId);
+            postItem.setUserName(getUserName(postItem.getOwner()));
+            postItem.setUniversityName(school.getSchoolname());
+            postItem.setLikeFlag(isLike(TableType.post,uid,postItem.getId()));
+            postItems.add(postItem);
+        }
+        postPages.setInfo(page);
+        postPages.setRecords(postItems);
+        return postPages;
+    }
 }

@@ -27,4 +27,8 @@ public class MyComment {
     private Integer others;
 
     private Integer flag;
+
+    private boolean likeFlag=false;
+    private String userName;
+    private String othersName;
 }

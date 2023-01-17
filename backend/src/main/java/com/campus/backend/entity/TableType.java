@@ -3,7 +3,7 @@ package com.campus.backend.entity;
 public enum TableType {
     post(0),
     floor(1),
-    reply(3);
+    reply(2);
 
 
     private final int key;
