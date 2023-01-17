@@ -6,8 +6,12 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+import java.util.Objects;
+
+import javafx.geometry.Pos;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -19,6 +23,7 @@ import lombok.experimental.Accessors;
  * @since 2023-01-15
  */
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("post")
@@ -58,9 +63,33 @@ public class Post implements Serializable {
 
     private String kind;
 
+    @TableField("kindName")
+    private String kindName;
+
     private Integer university;
 
     private String pic;
 
+    public Post(Post post)
+    {
+        if (Objects.nonNull(post))
+        {
+            this.collectNum=post.collectNum;
+            this.commentNum=post.commentNum;
+            this.content=post.content;
+            this.date=post.date;
+            this.forwardNum=post.forwardNum;
+            this.id=post.id;
+            this.kind=post.kind;
+            this.kindName=post.kindName;
+            this.likeNum=post.likeNum;
+            this.location=post.location;
+            this.owner=post.owner;
+            this.pic=post.pic;
+            this.title=post.title;
+            this.university=post.university;
+            this.viewNum=post.viewNum;
+        }
+    }
 
 }

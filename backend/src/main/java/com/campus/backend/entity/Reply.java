@@ -6,8 +6,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+import java.util.Objects;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -19,6 +22,7 @@ import lombok.experimental.Accessors;
  * @since 2023-01-15
  */
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("reply")
@@ -47,5 +51,19 @@ public class Reply implements Serializable {
 
     private Integer fid;
 
+    public Reply(Reply reply)
+    {
+        if(Objects.nonNull(reply))
+        {
+            this.content=reply.content;
+            this.date=reply.date;
+            this.fid=reply.fid;
+            this.id=reply.id;
+            this.likeNum=reply.likeNum;
+            this.location=reply.location;
+            this.others=reply.others;
+            this.owner=reply.owner;
+        }
+    }
 
 }
