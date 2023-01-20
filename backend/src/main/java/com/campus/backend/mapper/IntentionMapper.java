@@ -1,6 +1,6 @@
 package com.campus.backend.mapper;
 
-import com.campus.backend.entity.Tradetype;
+import com.campus.backend.entity.Intention;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -10,9 +10,9 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author campus
- * @since 2023-01-14
+ * @since 2023-01-20
  */
 @Mapper
-public interface TradetypeMapper extends BaseMapper<Tradetype> {
+public interface IntentionMapper extends BaseMapper<Intention> {
 
 }

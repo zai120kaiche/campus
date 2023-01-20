@@ -261,7 +261,7 @@ public class CommunityController {
         }catch (Exception e)
         {
             e.printStackTrace();
-            return Result.fail("doCollect失败");
+            return Result.fail("n ");
         }
         return Result.succ();
     }
@@ -390,6 +390,7 @@ public class CommunityController {
     public Object getCollect(@RequestBody CollectInfoRequestBody requestBody)
     {
         IPage page=new Page(requestBody.getCurrent(),pageSize);
+        PostPages postPages;
         try {
             List<Integer> pids=new ArrayList<>();
             LambdaQueryWrapper<Collect> lqw=new LambdaQueryWrapper<>();
@@ -423,6 +424,7 @@ public class CommunityController {
                     break;
             }
             postMapper.selectPage(page,lqw1);
+//            postPages=addUserInfoToPost(page,requestBody.getUid());
         }catch (Exception e)
         {
             e.printStackTrace();
@@ -596,6 +598,15 @@ public class CommunityController {
         return false;
     }
 
+    private boolean isCollect(Integer uid,Integer pid)
+    {
+        LambdaQueryWrapper<Collect> lqw=new LambdaQueryWrapper<>();
+        lqw.eq(Collect::getUid,uid).eq(Collect::getPid,pid);
+        List<Collect> collects = collectMapper.selectList(lqw);
+        if(collects.size()!=0) return true;
+        else return false;
+    }
+
     private String getUserName(int id)
     {
         User user = userMapper.selectById(id);
@@ -614,6 +625,7 @@ public class CommunityController {
             postItem.setUserName(getUserName(postItem.getOwner()));
             postItem.setUniversityName(school.getSchoolname());
             postItem.setLikeFlag(isLike(TableType.post,uid,postItem.getId()));
+            postItem.setCollectFlag(isCollect(uid,postItem.getId()));
             postItems.add(postItem);
         }
         postPages.setInfo(page);
