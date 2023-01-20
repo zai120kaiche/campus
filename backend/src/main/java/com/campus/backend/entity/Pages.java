@@ -17,6 +17,6 @@ public class Pages {
         this.setPages(page.getPages());
         this.setCurrent(page.getCurrent());
         this.setSize(page.getSize());
-        this.setPages(page.getPages());
+        this.setTotal(page.getTotal());
     }
 }
