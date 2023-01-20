@@ -85,21 +85,58 @@
           </el-col>
 
           <el-card style="margin-top: 2%; width: 100%">
-            <div v-for="item in commentDetail">
+            <div v-for="(item, index) in commentDetail" style="margin-top: 2%">
               <el-row>
                 <el-col :span="8">{{item.floor.userName}}</el-col>
                 <el-col :span="4" :offset="12">{{item.floor.date.split("T")[0]}}</el-col>
               </el-row>
               <el-row style="margin-top: 1%" >
-                <el-link style="word-wrap:break-word; word-break:break-all;" v-on:click="function(){doReplyShow = true, doReplyLimit = true}">{{item.floor.content}}</el-link>
-                <el-input
-                    v-if="doReplyLimit && doReplyShow"
-                    v-model="commentText"
+                <el-row>
+                  <el-link style="word-wrap:break-word; word-break:break-all;" v-on:click="doReplyShowFunc(index)">{{item.floor.content}}</el-link>
+
+                </el-row>
+
+
+
+
+              </el-row>
+              <el-row v-if="item.replies != ''">
+                <el-col :span="3" :offset="21">
+                  <el-icon v-on:click="repliesShow(index)">
+                    <ArrowDown />
+                  </el-icon>
+                </el-col>
+              </el-row>
+              <el-card v-if="item.showReplies" style="margin-top: 2%">
+                <div v-for="(reply, index) in item.replies" style="margin-top: 2%; padding: 0">
+                  <el-row>
+                    <el-col :span="8">{{reply.userName}}</el-col>
+                    <el-col :span="6" :offset="10">{{reply.date.split("T")[0]}}</el-col>
+                  </el-row>
+                  <el-row style="margin-top: 1%" >
+                    <el-row>
+                      <el-link style="word-wrap:break-word; word-break:break-all;">{{reply.content}}</el-link>
+
+                    </el-row>
+
+
+
+
+                  </el-row>
+                  <el-divider></el-divider>
+                </div>
+              </el-card>
+              <el-row v-if="item.doReplyLimit && doReplyShow" style="margin-top: 2%">
+                <el-col :span="20"><el-input
+
+                    v-model="replyText"
                     :rows="2"
                     type="textarea"
                     placeholder="请发表评论"
-                />
-
+                /></el-col>
+                <el-col :span="3" :offset="1">
+                  <el-button style="margin-top: 20%" v-on:click="doReply(index)">发送</el-button>
+                </el-col>
               </el-row>
             </div>
           </el-card>
@@ -185,13 +222,17 @@ export default {
   data() {
     return {
       doReplyShow: false,
-      doReplyLimit: false,
+      doReplyLimit: -1,
+
+      repliesShowLimit: -1,
+
       communityId: 0,
       postDetail: {},
       commentDetail: [],
       srcList: [],
       userId: localStorage.getItem("userId"),
-      commentText: ''
+      commentText: '',
+      replyText: ''
     }
   },
   created() {
@@ -279,8 +320,53 @@ export default {
         owner: _this.userId
       }
       _this.$axios.post("/community/doComment", temp).then(res =>{
-        console.log(res.data.data)
+        _this.commentText = ''
+        _this.getComment()
       })
+    },
+    doReplyShowFunc(index){
+
+
+      let _this = this
+
+      if(_this.doReplyLimit == -1){
+        _this.doReplyLimit = index
+        _this.doReplyShow = !_this.doReplyShow
+      } else{
+        _this.doReplyShow = !_this.doReplyShow
+
+        _this.commentDetail[_this.doReplyLimit].doReplyLimit = false
+        _this.doReplyLimit = index
+      }
+      _this.commentDetail[index].doReplyLimit = true
+
+
+    },
+    //二级评论
+    doReply(index){
+      let _this = this
+      let temp = {
+        content: _this.replyText,
+        owner: _this.userId,
+        fid: _this.commentDetail[index].floor.id
+      }
+      _this.$axios.post("/community/doReply", temp).then(res =>{
+        _this.replyText = ''
+        _this.getComment()
+      })
+    },
+    repliesShow(index) {
+      let _this = this
+
+      if(_this.repliesShowLimit == -1){
+        _this.repliesShowLimit = index
+
+      } else{
+
+        _this.commentDetail[_this.repliesShowLimit].showReplies = false
+        _this.repliesShowLimit = index
+      }
+      _this.commentDetail[index].showReplies = true
     }
   }
 }
