@@ -12,7 +12,7 @@
         </div>
         <div v-for="(type, index) in typeTableData" style="margin-top: 4%">
           <button v-if="type.id == currentType"
-                  class="animate__animated animate__rubberBand"
+
                   style="background-color: #88b0ef; border-color: transparent; width: 100%; border-radius: 5px"
                   v-on:click="jumpTypeBlock(type.id, type.typename)">{{ type.typename }}
           </button>
@@ -227,11 +227,11 @@
           </el-col>
           <el-col :span="12">
             <el-input placeholder="请输入您想寻找的物品名称"
-                      v-model="findInput"
+                      v-model="keyWord"
             >
               <template #prepend>
                 <el-button style="background-color: transparent; border-color: transparent">
-                  <el-icon>
+                  <el-icon v-on:click="getList(1, 2)">
                     <Search/>
                   </el-icon>
 
@@ -259,11 +259,11 @@
           </el-col>
           <el-col :span="12">
             <el-input placeholder="请输入您想查找的话题名称"
-                      v-model="topicInput"
+                      v-model="keyWord"
             >
               <template #prepend>
                 <el-button style="background-color: transparent; border-color: transparent">
-                  <el-icon>
+                  <el-icon v-on:click="getList(1, 2)">
                     <Search/>
                   </el-icon>
 
@@ -281,29 +281,40 @@
           </el-col>
         </el-row>
       </el-card>
+      <el-card style="margin-top: 1%">
+        <el-select  style="margin-left: 55%" v-model="orderSelectValue" class="m-2" placeholder="请选择排序方式">
+          <el-option v-on:click="getList(1, 3)"
+                     v-for="item in orderSelect"
+                     :key="item.value"
+                     :label="item.label"
+                     :value="item.value"
+          />
+        </el-select>
+
+      </el-card>
       <el-card v-for="(item, index) in contentList" style="margin-top: 1%">
         <el-container>
           <el-header>
             <el-row>
               <el-col :span="3">
-                <el-avatar></el-avatar>
+                <el-avatar :src="item.avatar"></el-avatar>
               </el-col>
               <el-col :span="21">
                 <el-row>
-                  <el-col :span="4">用户名</el-col>
-                  <el-col :span="14" style="color: #919191; font-weight: lighter; font-size: xx-small">类别</el-col>
-                  <el-col :span="6" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: {{schoolTableData[item.university]}}
+                  <el-col :span="8">{{item.authorname}}</el-col>
+                  <el-col :span="8" style="color: #919191; font-weight: lighter; font-size: xx-small">类别: {{item.kindName}}</el-col>
+                  <el-col :span="8" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: {{item.universityName}}
                   </el-col>
                 </el-row>
-                <el-row>2</el-row>
+
               </el-col>
             </el-row>
 
           </el-header>
-          <router-link :to="{name: 'communitydetail', params: {communityId: 1}}">
+          <router-link :to="{name: 'communitydetail', params: {communityId: item.id}}">
             <el-container>
               <el-aside width="40%">
-                <el-image style="width: 90%; height: 80%; border-radius: 5px" :src="url" :fit="fit"></el-image>
+                <el-image v-if="item.pic != '' && item.pic != 'undefined'" style="width: 90%; height: 80%; border-radius: 5px" :src="item.pic" :fit="'fill'"></el-image>
               </el-aside>
               <el-main style="padding: 0; margin-right: 15%">
                 <div style="font-weight: bold; font-size: large">{{item.title}}</div>
@@ -323,11 +334,17 @@
                 <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
                   <View/>
                 </el-icon>
-                0
+                {{item.viewNum}}
               </el-col>
               <el-divider direction="vertical"/>
 
-              <el-col :span="4" v-on:click="like(item.id)">
+              <el-col v-if="item.likeFlag" :span="4" v-on:click="dislike(item.id)">
+                <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%; color: #88b0ef">
+                  <Pointer />
+                </el-icon>
+                {{item.likeNum}}
+              </el-col>
+              <el-col v-else :span="4" v-on:click="like(item.id)">
                 <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
                   <Pointer/>
                 </el-icon>
@@ -338,25 +355,35 @@
                 <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
                   <ChatDotSquare/>
                 </el-icon>
-                0
+                {{item.commentNum}}
               </el-col>
               <el-divider direction="vertical"/>
-              <el-col :span="4">
+              <el-col :span="4" v-on:click="collect(item.id)">
                 <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
                   <Star/>
                 </el-icon>
-                0
+                {{item.collectNum}}
               </el-col>
               <el-divider direction="vertical"/>
               <el-col :span="4">
                 <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
                   <Share/>
                 </el-icon>
-                0
+                {{item.forwardNum}}
               </el-col>
             </el-row>
           </el-footer>
         </el-container>
+      </el-card>
+      <el-card style="margin-top: 1%; padding: 0">
+        <el-pagination
+            @current-change="currentPageChange"
+            :current-page="currentPage"
+            layout="prev, pager, next"
+            :total="currentTotal"
+            :page-size="5"
+            style="width: 100%; margin: 0"
+        />
       </el-card>
 
     </el-main>
@@ -392,27 +419,10 @@
               收藏夹
             </div>
           </el-col>
-          <el-col :span="12">
-            <el-iocn>
-              <FolderDelete style="width: 30%"/>
-            </el-iocn>
-            <div>
-              草稿箱
-            </div>
-          </el-col>
+
         </el-row>
       </el-card>
-      <el-card style="margin-top: 10%">
-        <el-select v-model="orderSelectValue" class="m-2" placeholder="请选择排序方式">
-          <el-option
-              v-for="item in orderSelect"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-          />
-        </el-select>
 
-      </el-card>
       <el-card style="margin-top: 10%">
         <el-row>
           <el-col :span="12">
@@ -457,7 +467,7 @@
 import {ref} from 'vue'
 import {Plus} from '@element-plus/icons-vue'
 
-import type, {UploadProps, UploadUserFile} from 'element-plus'
+import type, {ElNotification, UploadProps, UploadUserFile} from 'element-plus'
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -476,21 +486,37 @@ export default {
   },
   data() {
     return {
+      visible: false,
+      keyWord: '',
+      userInfo: {
+
+      },
+      userId: localStorage.getItem("userId"),
       getListTable: {
-        order: 0,
-        type: 1,
+        uid: localStorage.getItem("userId"),
+        order: 1,
+        type: null,
         school: null,
         keyWord: [],
-        current: 0
+        current: 1
       },
       orderSelectValue: '',
       orderSelect: [{
         value: 0,
-        label: "按时间排序"
+        label: "按点赞量排序"
       },{
         value: 1,
+        label: "按时间排序"
+      },{
+        value: 2,
         label: "按浏览量排序"
-      },],
+      },{
+        value: 3,
+        label: "按评论数排序"
+      },{
+        value: 4,
+        label: "按收藏数排序"
+      }],
       picDialogVisible: false,
       title: '',
       findInput: '',
@@ -504,9 +530,12 @@ export default {
       textarea: '',
       typeSelect: '',
       schoolSelect: '',
-      schoolBlockSelect: -1,
+      schoolBlockSelect: null,
       contentList: [],
-      picList: []
+      picList: [],
+      //  分页
+      currentTotal: 6,
+      currentPage: 1,
     }
   },
   components: {
@@ -518,27 +547,90 @@ export default {
     this.typeList(0)
     this.schoolList(0)
     this.$store.commit('SET_INDEX', 1)
-    this.getList(0)
+    this.getList(1, 0)
   },
   methods: {
-    getList(index) {
+    created() {
+      this.typeList(0)
+      this.schoolList(0)
+      this.$store.commit('SET_INDEX', 1)
+      this.getList(0)
+    },
+    getList(index, flag) {
       let _this = this
+      if(flag == 0){
+        _this.getListTable.keyWord = []
+        _this.getListTable.type = null
+        _this.getListTable.school = null
+        _this.getListTable.order = 1
+      }
+      else if(flag == 2){
+        let temp = _this.keyWord.split(' ')
+        for(let i = 0; i < temp.length; i ++){
+          _this.getListTable.keyWord.push(temp[i])
+        }
+      } else if(flag == 3){
+        _this.getListTable.order = _this.orderSelectValue
+      }
       _this.$axios.post('/community/getPost' ,_this.getListTable).then(res => {
         console.log(res.data.data)
         _this.contentList = res.data.data.records
+        _this.currentTotal = res.data.data.total
+        _this.dealPic()
+      })
+    },
+    dealPic() {
+      let _this = this
+      for (let i = 0; i < _this.contentList.length; i++) {
+        if(_this.contentList[i].pic.search(",") != -1){
+          _this.contentList[i].pic = _this.contentList[i].pic.split(",")[0]
+        }
+
+        let temp = {
+          id: parseInt(_this.contentList[i].owner)
+        }
+        _this.$axios.post('/user/index', temp).then(res =>{
+
+          _this.contentList[i].authorname = res.data.data.username
+          _this.contentList[i].avatar = res.data.data.avatar
+        })
+
+      }
+    },
+    currentPageChange(currentPage){
+      let _this = this
+      _this.getListTable.current = currentPage
+      _this.currentPage = currentPage
+      _this.$axios.post('/community/getPost' ,_this.getListTable).then(res => {
+        console.log(res.data.data)
+        _this.contentList = res.data.data.records
+        _this.dealPic()
         console.log(_this.contentList)
+        _this.currentTotal = res.data.data.total
       })
     },
     //点赞
     like(id) {
+      let _this = this
       let temp = {
-        uid: 1,
+        uid: _this.userId,
         objectId: id,
         type: 0,
         flag: true
       }
-      let _this = this
       _this.$axios.post('/community/doLike', temp).then(res => {
+        _this.getList(_this.currentPage, 0)
+
+      })
+    },
+    //收藏
+    collect(id){
+      let _this = this
+      let temp = {
+        uid: _this.userId,
+        pid: id
+      }
+      _this.$axios.post("/community/doCollect", temp).then(res => {
         console.log(res)
       })
     },
@@ -562,8 +654,11 @@ export default {
       })
     },
     jumpTypeBlock(index, name) {
-      this.currentType = index
-      this.currentTypeName = name
+      let _this = this
+      _this.currentType = index
+      _this.currentTypeName = name
+      _this.getListTable.type = index
+      _this.getList(1, 1)
     },
     sendCommunity() {
       let _this = this
@@ -581,7 +676,7 @@ export default {
       }
       picselect += _this.picList[i]
       let temp = {
-        owner: 1,
+        owner: _this.userId,
         title: _this.title,
         content: _this.textarea,
         kind: typeselect,
@@ -590,12 +685,35 @@ export default {
       }
       console.log(temp)
       _this.$axios.post("/community/doPost", temp).then(res => {
+        if(res.data.code == 200){
+          _this.created()
+          _this.title = ''
+          _this.textarea = ''
+          _this.schoolBlockSelect = ''
+          ElNotification({
+            title: 'Success',
+            message: '发布成功',
+            type: 'success',
+          })
+        } else {
+          ElNotification({
+            title: 'Error',
+            message: '发布失败',
+            type: 'error',
+          })
+        }
 
       })
+    },
+    handleClose(){
+      let _this = this
+      _this.picDialogVisible = false
     }
+  },
 
 
-  }
+
+
 }
 </script>
 

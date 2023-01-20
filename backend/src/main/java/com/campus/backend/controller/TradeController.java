@@ -54,6 +54,7 @@ public class TradeController {
      * 可选参数：pic
      *
      */
+//    发布商品
     @PostMapping("/addCommodity")
     public Object addCommodity(@RequestBody Commodity commodity,HttpServletRequest request){
         try {
@@ -79,7 +80,7 @@ public class TradeController {
         }
         return Result.succ();
     }
-
+//获取商品信息
     @PostMapping("/getCommodity")
     public Object getCommodity(@RequestBody SearchConditionOfCommodity sc){
 
@@ -109,7 +110,7 @@ public class TradeController {
         }
         return Result.succ(commodityPages);
     }
-
+//收藏
     @PostMapping("/doCollect")
     public Object doCollect(@RequestBody Intention intention){
         try {
@@ -124,7 +125,7 @@ public class TradeController {
         }
         return Result.succ();
     }
-
+//商品详情
     @PostMapping("/view")
     public Object addViewNum(@RequestBody Integer cid){
         try {

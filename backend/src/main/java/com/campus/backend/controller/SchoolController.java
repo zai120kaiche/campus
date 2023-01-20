@@ -74,4 +74,9 @@ public class SchoolController {
 
     }
 
+    @PostMapping("/get")
+    public Result getOne(@RequestBody School school){
+        return Result.succ(schoolService.getById(school.getId()));
+    }
+
 }

@@ -23,7 +23,7 @@ import static com.campus.backend.entity.OrderType.Date;
 @RestController
 @RequestMapping("/community")
 public class CommunityController {
-    private int pageSize=20;
+    private int pageSize=5;
 
     @Autowired
     private UserMapper userMapper;
@@ -85,7 +85,18 @@ public class CommunityController {
         }
         return Result.succ();
     }
-//获取帖子
+
+    //单篇详情
+    @PostMapping("/postDetail")
+    public Result postDetail(@RequestBody Post post)
+    {
+        if(post.getId() != null){
+            return Result.succ(postMapper.selectById(post.getId()));
+        } else {
+            return Result.fail("获取失败");
+        }
+    }
+    //获取帖子
     @PostMapping("/getPost")
     public Object getPost(@RequestBody SearchCondition sc)
     {
@@ -286,6 +297,9 @@ public class CommunityController {
     {
         List<PostCommentItem> postCommentItems=new ArrayList<>();
         try {
+            Post post = postMapper.selectById(requestBody.getPid());
+            post.setViewNum(post.getViewNum()+1);
+            postMapper.updateById(post);
             IPage<Floor> floorPage=new Page<>(requestBody.getCurrent(),pageSize);
             OrderType orderType = OrderType.values()[requestBody.getOrder()];
             LambdaQueryWrapper<Floor> lqw=new LambdaQueryWrapper<>();

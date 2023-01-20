@@ -2,7 +2,7 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    index: 1
+    index: 3
   },
   getters: {
     getIndex: state => {

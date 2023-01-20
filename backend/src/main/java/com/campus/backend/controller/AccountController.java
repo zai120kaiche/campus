@@ -33,15 +33,25 @@ public class AccountController {
     @Autowired
     JwtUtils jwtUtils;
 
-    @AccessLimit(seconds=30,days = 60*60*24, perCount = 1, dayCount = 500, needLogin = false)
+    @AccessLimit(seconds=30,days = 60*60*24, perCount = 5, dayCount = 500, needLogin = false)
     @PostMapping("/login")
     public Result login(@Validated @RequestBody LoginDto loginDto, HttpServletResponse response) {
-        User user = userService.getOne(new QueryWrapper<User>().eq("username", loginDto.getUsername()));
-        Assert.notNull(user, "用户不存在");
-        System.out.println("username="+user.getUsername());
-        if(!user.getPassword().equals(SecureUtil.md5(loginDto.getPassword()))){
-            return Result.fail("密码不正确");
+        String phoneOrEmail = loginDto.getPhoneOrEmail();
+        Integer flag = loginDto.getFlag();
+        User user;
+        System.out.println(loginDto);
+        if(phoneOrEmail.contains("@")){
+            user = userService.getOne(new QueryWrapper<User>().eq("email", phoneOrEmail));
+        } else {
+            user = userService.getOne(new QueryWrapper<User>().eq("phone", phoneOrEmail));
         }
+        Assert.notNull(user, "用户不存在");
+        if(flag == null){
+            if(!user.getPassword().equals(SecureUtil.md5(loginDto.getPassword()))){
+                return Result.fail("密码不正确");
+            }
+        }
+
         String jwt = jwtUtils.generateToken(user.getId());
         response.setHeader("Authorization", jwt);
         response.setHeader("Access-control-Expose-Headers", "Authorization");
@@ -57,6 +67,7 @@ public class AccountController {
                 .put("username", user.getUsername())
                 .put("avatar", user.getAvatar())
                 .put("email", user.getEmail())
+                .put("phone", user.getPhone())
                 .map()
         );
     }
@@ -66,5 +77,27 @@ public class AccountController {
     public Result logout() {
         SecurityUtils.getSubject().logout();
         return Result.succ(null);
+    }
+
+    @PostMapping("register")
+    public Result register(@RequestBody User user){
+
+        int count = userService.count(new QueryWrapper<User>().eq("phone", user.getPhone()))
+                + userService.count(new QueryWrapper<User>().eq("email", user.getEmail()));
+        if(count > 0){
+            return Result.succ(1);
+        } else {
+            user.setPassword(SecureUtil.md5(user.getPassword()));
+            userService.saveOrUpdate(user);
+
+        }
+
+        return Result.succ();
+    }
+
+    @PostMapping("user/index")
+    public Result getUserInfo(@RequestBody User user){
+        User re = userService.getById(user.getId());
+        return Result.succ(re);
     }
 }

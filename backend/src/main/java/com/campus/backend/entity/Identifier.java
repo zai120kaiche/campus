@@ -25,11 +25,8 @@ public class Identifier implements Serializable {
 
     private Integer id;
 
-    @TableField("emailAddress")
-    private String emailAddress;
-
-    @TableField("phoneNumber")
-    private Integer phoneNumber;
+    @TableField("phoneOrEmail")
+    private String phoneOrEmail;
 
     private Integer identifier;
 

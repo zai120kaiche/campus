@@ -4,10 +4,8 @@
       <el-row>
         <el-col :span="12">
           <el-row>
-            <el-col :span="4">logo</el-col>
-            <el-col :span="2">星屿</el-col>
-
-            <el-col :span="6">| 校园生活平台</el-col>
+            <el-col :span="4"><el-image style="width: 80%; height: 80%; z-index: 1; background-color: transparent" :src="require('../assets/images/logo.png')"
+                                        :fit="'fill'"></el-image></el-col>
           </el-row>
         </el-col>
 
@@ -42,17 +40,17 @@
             </el-row>
             <el-row>
               <el-col :offset="2">
-                <el-input style="margin-top: 8%; width: 80%" v-model="id" placeholder="手机号/邮箱"/>
+                <el-input style="margin-top: 8%; width: 80%" v-model="loginData.phoneOrEmail" placeholder="手机号/邮箱"/>
               </el-col>
             </el-row>
             <el-row>
               <el-col :offset="2">
-                <el-input style="margin-top: 5%; width: 80%" v-model="password" placeholder="密码"/>
+                <el-input style="margin-top: 5%; width: 80%" v-model="loginData.password" placeholder="密码"/>
               </el-col>
             </el-row>
             <el-row>
               <el-col :offset="2">
-                <el-button style="margin-top: 5%; width: 80%" color="#4a86e8">登录</el-button>
+                <el-button style="margin-top: 5%; width: 80%" color="#4a86e8" v-on:click="loginSend">登录</el-button>
               </el-col>
             </el-row>
 
@@ -64,24 +62,24 @@
             </el-row>
             <el-row>
               <el-col :offset="2">
-                <el-input style="margin-top: 3%; width: 80%" v-model="id" placeholder="手机号">
+                <el-input style="margin-top: 3%; width: 80%" v-model="sendData.phoneOrEmail" placeholder="手机号/邮箱">
                   <template #prepend>+ 86</template>
                 </el-input>
               </el-col>
             </el-row>
-            <el-row style="margin-top: 3%; width: 80%; margin-left: 1%">
-              <el-col :offset="2">
-                <Slider status="{{status}}"
-                        :successFun="smsSendSucc()"
-                        :errorFun="smsSendFail()"></Slider>
-              </el-col>
-            </el-row>
+            <!--            <el-row style="margin-top: 3%; width: 80%; margin-left: 1%">-->
+            <!--              <el-col :offset="2">-->
+            <!--                <Slider status="{{status}}"-->
+            <!--                        :successFun="smsSendSucc()"-->
+            <!--                        :errorFun="smsSendFail()"></Slider>-->
+            <!--              </el-col>-->
+            <!--            </el-row>-->
 
             <el-row>
               <el-col :offset="2">
-                <el-input style="margin-top: 3%; width: 48%" v-model="id" placeholder="验证码"/>
+                <el-input style="margin-top: 3%; width: 48%" v-model="checkNumber" placeholder="验证码"/>
                 <el-button v-if="sms_send == true" style="margin-top: 3%; width: 29%; margin-left: 3%" color="#4a86e8"
-                           @click="sendSms()">发送验证码
+                           @click="sendSms2()">发送验证码
                 </el-button>
                 <el-button v-else style="margin-top: 3%; width: 29%; margin-left: 3%" color="#4a86e8" disabled>
                   {{ sms_submit }}
@@ -92,7 +90,7 @@
 
             <el-row>
               <el-col :offset="2">
-                <el-button style="margin-top: 5%; width: 80%" color="#4a86e8">登录</el-button>
+                <el-button style="margin-top: 5%; width: 80%" color="#4a86e8" v-on:click="loginBySms">登录</el-button>
               </el-col>
             </el-row>
           </div>
@@ -134,7 +132,7 @@
           </el-row>
           <el-row>
             <el-col :offset="2">
-              <el-input style="margin-top: 1%; width: 80%" v-model="id" placeholder="用户名"/>
+              <el-input style="margin-top: 1%; width: 80%" v-model="registerData.username" placeholder="用户名"/>
             </el-col>
           </el-row>
           <el-row>
@@ -142,7 +140,7 @@
           </el-row>
           <el-row>
             <el-col :offset="2">
-              <el-input style="margin-top: 1%; width: 80%" v-model="id" placeholder="手机号/邮箱"/>
+              <el-input style="margin-top: 1%; width: 80%" v-model="sendData.phoneOrEmail" placeholder="手机号/邮箱"/>
             </el-col>
           </el-row>
           <el-row>
@@ -150,7 +148,7 @@
           </el-row>
           <el-row>
             <el-col :offset="2">
-              <el-input style="margin-top: 1%; width: 80%" v-model="id" placeholder="密码"/>
+              <el-input show-password style="margin-top: 1%; width: 80%" v-model="registerData.password" placeholder="密码"/>
             </el-col>
           </el-row>
           <el-row>
@@ -158,7 +156,7 @@
           </el-row>
           <el-row>
             <el-col :offset="2">
-              <el-input style="margin-top: 1%; width: 48%" v-model="id" placeholder="验证码"/>
+              <el-input style="margin-top: 1%; width: 48%" v-model="checkNumber" placeholder="验证码"/>
               <el-button v-if="sms_send == true" style="margin-top: 1%; width: 29%; margin-left: 3%" color="#4a86e8"
                          @click="sendSms()">发送验证码
               </el-button>
@@ -169,7 +167,7 @@
           </el-row>
           <el-row>
             <el-col :offset="2">
-              <el-button style="margin-top: 5%; width: 80%" color="#4a86e8">注册</el-button>
+              <el-button style="margin-top: 5%; width: 80%" color="#4a86e8" v-on:click="smsCheck">注册</el-button>
             </el-col>
           </el-row>
           <div style="text-align: center; margin-top: 3%">
@@ -190,8 +188,8 @@
       <el-row>
         <el-col :span="6">
           <el-row>
-            <el-col :span="12">智能客服 | logo</el-col>
-            <el-col :span="11" :offset="1">星屿@qq.com</el-col>
+            <el-col :span="12">智能客服 | <el-icon style="padding-top: 5%"><User /></el-icon></el-col>
+            <el-col :span="11" :offset="1">xingyuls@163.com</el-col>
           </el-row>
         </el-col>
 
@@ -234,7 +232,7 @@
 
 <script>
 import Slider from '@/components/Slider.vue'
-import { ElMessageBox } from 'element-plus'
+import {ElMessageBox, ElNotification} from 'element-plus'
 export default {
   name: "login",
   components: {
@@ -242,9 +240,26 @@ export default {
   },
   data() {
     return {
+      checkNumber: '',
       activeIndex: 1,
       id: '',
       password: '',
+      loginData: {
+        phoneOrEmail: '',
+        password: ''
+      },
+      phoneOrEmail: '',
+      registerData: {
+        id: null,
+        username: '',
+        password: '',
+        email: '',
+        phone: ''
+      },
+      sendData: {
+        identifier: 0,
+        phoneOrEmail: ''
+      },
       ruleForm: {
         type: []
       },
@@ -258,7 +273,7 @@ export default {
       dialogVisible: false,
       secretVisible: false,
       //flag判断注册还是登录
-      loginOrRegister: true
+      loginOrRegister: true,
 
     }
   },
@@ -266,25 +281,212 @@ export default {
     //发送验证码
     sendSms() {
       let _this = this
-      _this.sms_send = false
-      _this.sms_submit = 30
-      var times = setInterval(() => {
-        _this.sms_submit--; //递减
-        if (_this.sms_submit <= 0) {
-          // <=0 变成获取按钮
-          _this.sms_send = true;
-          clearInterval(times);
-        }
-      }, 1000); //1000毫秒后执行
+      if(_this.sendData.phoneOrEmail == '' || _this.registerData.username == ''){
+        ElNotification({
+          title: 'Error',
+          message: '账号不能为空',
+          type: 'error',
+        })
+      } else {
+        if(_this.sendData.phoneOrEmail.search("@") != -1){
 
+          _this.$axios.post('/identify/send', _this.sendData).then(res =>{
+            ElNotification({
+              title: 'Success',
+              message: '验证码发送成功',
+              type: 'success',
+            })
+          })
+          _this.sms_send = false
+          _this.sms_submit = 60
+          var times = setInterval(() => {
+            _this.sms_submit--; //递减
+            if (_this.sms_submit <= 0) {
+              // <=0 变成获取按钮
+              _this.sms_send = true;
+              clearInterval(times);
+            }
+          }, 1000); //1000毫秒后执行
+        } else {
+          if(_this.sendData.phoneOrEmail.length != 11){
+            ElNotification({
+              title: 'Error',
+              message: '手机格式不正确',
+              type: 'error',
+            })
+          } else {
+            _this.$axios.post('/identify/send', _this.sendData).then(res =>{
+              ElNotification({
+                title: 'Success',
+                message: '验证码发送成功',
+                type: 'success',
+              })
+            })
+            _this.sms_send = false
+            _this.sms_submit = 60
+            var times = setInterval(() => {
+              _this.sms_submit--; //递减
+              if (_this.sms_submit <= 0) {
+                // <=0 变成获取按钮
+                _this.sms_send = true;
+                clearInterval(times);
+              }
+            }, 1000); //1000毫秒后执行
+          }
+        }
+      }
+
+
+
+    },
+    sendSms2() {
+      let _this = this
+      console.log(_this.sliderCheck)
+
+      if(_this.sendData.phoneOrEmail == ''){
+        ElNotification({
+          title: 'Error',
+          message: '账号不能为空',
+          type: 'error',
+        })
+      } else {
+        if(_this.sendData.phoneOrEmail.search("@") != -1){
+
+          _this.$axios.post('/identify/send', _this.sendData).then(res =>{
+            ElNotification({
+              title: 'Success',
+              message: '验证码发送成功',
+              type: 'success',
+            })
+          })
+          _this.sms_send = false
+          _this.sms_submit = 60
+          var times = setInterval(() => {
+            _this.sms_submit--; //递减
+            if (_this.sms_submit <= 0) {
+              // <=0 变成获取按钮
+              _this.sms_send = true;
+              clearInterval(times);
+            }
+          }, 1000); //1000毫秒后执行
+        } else {
+          if(_this.sendData.phoneOrEmail.length != 11){
+            ElNotification({
+              title: 'Error',
+              message: '手机格式不正确',
+              type: 'error',
+            })
+          } else {
+            _this.$axios.post('/identify/send', _this.sendData).then(res =>{
+              ElNotification({
+                title: 'Success',
+                message: '验证码发送成功',
+                type: 'success',
+              })
+            })
+            _this.sms_send = false
+            _this.sms_submit = 60
+            var times = setInterval(() => {
+              _this.sms_submit--; //递减
+              if (_this.sms_submit <= 0) {
+                // <=0 变成获取按钮
+                _this.sms_send = true;
+                clearInterval(times);
+              }
+            }, 1000); //1000毫秒后执行
+          }
+        }
+
+      }
 
     },
     smsSendSucc() {
       let _this = this
       _this.sliderCheck = true
+      console.log(_this.sliderCheck)
     },
     smsSendFail() {
-
+      let _this = this
+      console.log(_this.sliderCheck)
+    },
+    smsCheck() {
+      let _this = this
+      _this.sendData.identifier = _this.checkNumber
+      _this.$axios.post('/identify/check', _this.sendData).then(res => {
+        if(res.data.code == 200){
+          _this.registerSend()
+        } else {
+          ElNotification({
+            title: 'Error',
+            message: '验证码不正确',
+            type: 'error',
+          })
+        }
+      })
+    },
+    registerSend() {
+      let _this = this
+      if(_this.sendData.phoneOrEmail.search("@") != -1){
+        _this.registerData.email = _this.sendData.phoneOrEmail
+      } else {
+        _this.registerData.phone = _this.sendData.phoneOrEmail
+      }
+      _this.$axios.post('/register', _this.registerData).then(res =>{
+        if(res.data.data == 1){
+          ElNotification({
+            title: 'Error',
+            message: '账号已存在，请直接登录',
+            type: 'error',
+          })
+        } else {
+          ElNotification({
+            title: 'Success',
+            message: '注册成功',
+            type: 'success',
+          })
+        }
+        _this.login()
+      })
+    },
+    loginSend() {
+      let _this = this
+      _this.$axios.post('login', _this.loginData).then(res =>{
+        console.log(res.data.data)
+        localStorage.setItem("userId", res.data.data.id)
+        localStorage.setItem("userAvatar", res.data.data.avatar)
+        this.$store.commit('SET_INDEX', 3)
+        _this.$router.push('/user')
+      })
+    },
+    loginBySms() {
+      let _this = this
+      _this.sendData.identifier = _this.checkNumber
+      _this.$axios.post('/identify/check', _this.sendData).then(res => {
+        if(res.data.code == 200){
+          _this.loginSendBySms()
+        } else {
+          ElNotification({
+            title: 'Error',
+            message: '验证码不正确',
+            type: 'error',
+          })
+        }
+      })
+    },
+    loginSendBySms() {
+      let _this = this
+      let temp = {
+        phoneOrEmail: _this.sendData.phoneOrEmail,
+        flag: 1,
+        password: 1
+      }
+      _this.$axios.post('/login', temp).then(res =>{
+        console.log(res.data.data)
+        localStorage.setItem("userId", res.data.data.id)
+        localStorage.setItem("userAvatar", res.data.data.avatar)
+        this.$store.commit('SET_INDEX', 3)
+        _this.$router.push('/user')
+      })
     },
     handleSelect(key) {
 

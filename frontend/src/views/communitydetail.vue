@@ -2,29 +2,285 @@
   <div class="page_back page_this"></div>
   <img src="../assets/images/wave.png" alt="" class="ourpage" style="position: fixed;background-color: transparent">
   <Header></Header>
+  <el-container >
+    <el-main style="padding: 0;margin-left: 12%; margin-right: 3%;">
+      <el-card class="  animate__animated animate__fadeIn "  >
+        <el-row>
+          <el-col :span="3">
+            <el-avatar :src="postDetail.avatar"></el-avatar>
+          </el-col>
+          <el-col :span="21">
+            <el-row>
+              <el-col :span="8">{{postDetail.authorname}}</el-col>
+              <el-col :span="8" style="color: #919191; font-weight: lighter; font-size: xx-small">类别: {{postDetail.kindName}}</el-col>
+              <el-col :span="8" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: {{postDetail.universityName}}
+              </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
 
-  <el-card class="  animate__animated animate__fadeIn "></el-card>
+        <div style="margin-top: 6%;margin-bottom: 5%; font-weight: bold; font-size: xx-large">{{postDetail.title}}</div>
+        <el-row style="margin-left: 5%"><el-image v-for="item in postDetail.pic" style="width: 150px; height: 150px;
+                  margin-right: 5%" :src="item" :fit="'fill'"
+                                                  :preview-src-list="postDetail.pic"/></el-row>
+
+        <div style="word-wrap:break-word; word-break:break-all;
+              margin-top: 5%;margin-left: 8%;margin-right: 8%;
+              font-size: large">{{ postDetail.content }}
+        </div>
+
+        <el-row :gutter="20" style="margin-top: 1%;">
+          <el-col :span="4">
+            <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+              <View/>
+            </el-icon>
+            {{postDetail.viewNum}}
+          </el-col>
+          <el-divider direction="vertical"/>
+
+          <el-col :span="4" v-on:click="like(postDetail.id)">
+            <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+              <Pointer/>
+            </el-icon>
+            {{postDetail.likeNum}}
+          </el-col>
+          <el-divider direction="vertical"/>
+          <el-col :span="4">
+            <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+              <ChatDotSquare/>
+            </el-icon>
+            {{postDetail.commentNum}}
+          </el-col>
+          <el-divider direction="vertical"/>
+          <el-col :span="4" v-on:click="collect(postDetail.id)">
+            <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+              <Star/>
+            </el-icon>
+            {{postDetail.collectNum}}
+          </el-col>
+          <el-divider direction="vertical"/>
+          <el-col :span="4">
+            <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+              <Share/>
+            </el-icon>
+            {{postDetail.forwardNum}}
+          </el-col>
+        </el-row>
+      </el-card>
+
+
+      <el-card style="margin-top: 1%">
+        <el-row >评论</el-row>
+        <el-row style="margin-top: 2%">
+          <el-col :span="20">
+            <el-input
+                v-model="commentText"
+                :rows="2"
+                type="textarea"
+                placeholder="请发表评论"
+            />
+          </el-col>
+          <el-col :span="3" :offset="1">
+            <el-button style="margin-top: 20%" v-on:click="doComment">发送</el-button>
+          </el-col>
+
+          <el-card style="margin-top: 2%; width: 100%">
+            <div v-for="item in commentDetail">
+              <el-row>
+                <el-col :span="8">{{item.floor.userName}}</el-col>
+                <el-col :span="4" :offset="12">{{item.floor.date.split("T")[0]}}</el-col>
+              </el-row>
+              <el-row style="margin-top: 1%" >
+                <el-link style="word-wrap:break-word; word-break:break-all;" v-on:click="function(){doReplyShow = true, doReplyLimit = true}">{{item.floor.content}}</el-link>
+                <el-input
+                    v-if="doReplyLimit && doReplyShow"
+                    v-model="commentText"
+                    :rows="2"
+                    type="textarea"
+                    placeholder="请发表评论"
+                />
+
+              </el-row>
+            </div>
+          </el-card>
+
+
+        </el-row>
+      </el-card>
+
+    </el-main>
+    <el-aside class="animate__animated animate__fadeInRight" width="16%" style="margin-right: 12%; margin-left: 2%">
+      <el-card>
+        <div style="font-weight: bold">
+          我的
+        </div>
+        <el-row style="text-align: center; font-size: small; margin-top: 10%">
+          <el-col :span="12">
+            <el-iocn>
+              <EditPen style="width: 30%"/>
+            </el-iocn>
+            <div>
+              帖子
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <el-iocn>
+              <Document style="width: 30%"/>
+            </el-iocn>
+            <div>
+              回帖
+            </div>
+          </el-col>
+        </el-row>
+        <el-row style="text-align: center; font-size: small; margin-top: 10%">
+          <el-col :span="12">
+            <el-iocn>
+              <FolderOpened style="width: 30%"/>
+            </el-iocn>
+            <div>
+              收藏夹
+            </div>
+          </el-col>
+
+        </el-row>
+      </el-card>
+
+      <el-card style="margin-top: 10%">
+        <el-row>
+          <el-col :span="12">
+            <div style="font-weight: bold">
+              社区公告
+
+            </div>
+          </el-col>
+          <el-col :span="8" :offset="4">
+            <div style="color: #919191">
+              进入
+              <el-icon style="margin-right: 0; margin-left: 0">
+                <ArrowRightBold/>
+              </el-icon>
+            </div>
+
+          </el-col>
+        </el-row>
+
+      </el-card>
+    </el-aside>
+
+
+  </el-container>
+  <Footer></Footer>
+
 </template>
 
 <script>
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 export default {
   name: "communitydetail",
   components: {
-    Header
+    Header,
+    Footer
   },
   data() {
     return {
-      communityId: 0
+      doReplyShow: false,
+      doReplyLimit: false,
+      communityId: 0,
+      postDetail: {},
+      commentDetail: [],
+      srcList: [],
+      userId: localStorage.getItem("userId"),
+      commentText: ''
     }
   },
   created() {
-
+    this.init()
+    this.getComment()
   },
   methods: {
+    //点赞
+    like(id) {
+
+      let _this = this
+      let temp = {
+        uid: _this.userId,
+        objectId: id,
+        type: 0,
+        flag: true
+      }
+      _this.$axios.post('/community/doLike', temp).then(res => {
+        console.log(res.data)
+        _this.init()
+
+      })
+    },
+    //收藏
+    collect(id){
+      let _this = this
+      let temp = {
+        uid: _this.userId,
+        pid: id
+      }
+      _this.$axios.post("/community/doCollect", temp).then(res => {
+        console.log(res)
+      })
+
+    },
     init() {
       let _this = this
       _this.communityId = _this.$route.params.communityId
+      let temp = {
+        id: _this.communityId
+      }
+      _this.$axios.post('/community/postDetail', temp).then(res=>{
+        _this.postDetail = res.data.data
+
+        _this.postDetail.pic = _this.postDetail.pic.split(",")
+
+        let temp1 = {
+          id: parseInt(_this.postDetail.owner)
+        }
+        let temp2 = {
+          id: res.data.data.university
+        }
+        _this.$axios.post('/user/index', temp1).then(res =>{
+          console.log(res.data.data)
+          _this.postDetail.authorname = res.data.data.username
+          _this.postDetail.avatar = res.data.data.avatar
+
+          console.log(temp2)
+          _this.$axios.post('/school/get', temp2).then(res =>{
+            console.log(res.data.data)
+            _this.postDetail.universityName = res.data.data.schoolname
+          })
+        })
+      })
+    },
+    getComment(){
+      let _this = this
+      let temp = {
+        uid: _this.userId,
+        pid: _this.communityId,
+        current: 1,
+        order: 0
+      }
+      _this.$axios.post("/community/getPostInfo", temp).then(res =>{
+        _this.commentDetail = res.data.data
+        console.log(_this.commentDetail)
+      })
+    },
+    //一级评论
+    doComment() {
+      let _this = this
+      let temp = {
+        content: _this.commentText,
+        pid: _this.postDetail.id,
+        owner: _this.userId
+      }
+      _this.$axios.post("/community/doComment", temp).then(res =>{
+        console.log(res.data.data)
+      })
     }
   }
 }

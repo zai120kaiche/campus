@@ -38,6 +38,7 @@ servlet:
   multipart:
     max-file-size: 100MB
     max-request-size: 1000MB
+# 阿里云存储
 # endPoint
 aliyun:
   endPoint: oss-cn-beijing.aliyuncs.com
@@ -49,5 +50,13 @@ aliyun:
   accessKeySecret: 2aVQV3mTxehdD03T0KaluF4b6IEoIY
 # BucketName
   bucketName: landstar
+# 腾讯云验证码
+tencent:
+  msm:
+    id: AKIDNZZOzeI2f44ysJcjcKnDVo8RiyBIExqh
+    secret: pbbZadXxAAzd8VhgfV9d2LUWM4au0zpT
+    appId: 1400791565
+    signName: 星屿阁个人网
+    templateId: 1672106
 
 

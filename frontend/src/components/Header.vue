@@ -1,37 +1,44 @@
 <template>
   <el-row style="background-color: transparent; font-weight: bold; font-size: x-large">
     <el-col :offset="2" :span="4">
-      <el-image style="width: 80%; height: 80%; z-index: 1; background-color: transparent" :src="require('../assets/images/login_back.png')"
+      <el-image style="width: 80%; height: 80%; z-index: 1; background-color: transparent"
+                :src="require('../assets/images/logo.png')"
                 :fit="'fill'"></el-image>
     </el-col>
     <el-col :span="6" style="margin-top: 3%">
-      <el-button v-if="index == 1" style="background-color: transparent; border-color: transparent; font-size: large; color: #333333">
+      <el-button v-if="index == 1"
+                 style="background-color: transparent; border-color: transparent; font-size: large; color: #333333">
         <el-icon style="margin-right: 1%">
-          <House />
+          <House/>
         </el-icon>
         <div>
           学生社区
         </div>
       </el-button>
-      <el-button v-if="index == 2" style="background-color: transparent; border-color: transparent; font-size: large; color: #919191" v-on:click="changeCommunity">
+      <el-button v-if="index == 2 || index == 3"
+                 style="background-color: transparent; border-color: transparent; font-size: large; color: #919191"
+                 v-on:click="changeCommunity">
         <el-icon style="margin-right: 1%">
-          <House />
+          <House/>
         </el-icon>
         <div>
           学生社区
         </div>
       </el-button>
-      <el-button v-if="index == 2" style="background-color: transparent; border-color: transparent; font-size: large; color: #333333">
+      <el-button v-if="index == 2"
+                 style="background-color: transparent; border-color: transparent; font-size: large; color: #333333">
         <el-icon style="margin-right: 1%">
-          <Money />
+          <Money/>
         </el-icon>
         <div>
           二手易物
         </div>
       </el-button>
-      <el-button v-if="index == 1" style="background-color: transparent; border-color: transparent; font-size: large; color: #919191" v-on:click="changeGood">
+      <el-button v-if="index == 1 || index == 3"
+                 style="background-color: transparent; border-color: transparent; font-size: large; color: #919191"
+                 v-on:click="changeGood">
         <el-icon style="margin-right: 1%">
-          <Money />
+          <Money/>
         </el-icon>
         <div>
           二手易物
@@ -48,7 +55,7 @@
         <template #prepend>
           <el-button style="background-color: transparent; border-color: transparent">
             <el-icon>
-              <Search />
+              <Search/>
             </el-icon>
 
           </el-button>
@@ -56,7 +63,7 @@
         <template #append>
           <el-button style="background-color: transparent; border-color: transparent">
             <el-icon>
-              <Camera />
+              <Camera/>
             </el-icon>
 
           </el-button>
@@ -65,33 +72,35 @@
       </el-input>
     </el-col>
     <el-col :span="5" :offset="1" style="margin-top: 2%">
-      <el-button style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">
-        <el-icon >
-          <Service />
+      <el-button
+          style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">
+        <el-icon>
+          <Service/>
         </el-icon>
       </el-button>
-      <el-popover :visible="visible" placement="top" :width="160">
+      <el-popover :visible="false" placement="top" :width="160">
         <el-row style="font-weight: bold">
           <el-icon style="margin-top: 2%">
-            <Grid />
+            <Grid/>
           </el-icon>
           <div style="margin-left: 11%">
             签到
           </div>
         </el-row>
         <template #reference>
-          <el-button style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">
-            <el-icon >
-              <Ticket />
+          <el-button
+              style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">
+            <el-icon>
+              <Ticket/>
             </el-icon>
           </el-button>
         </template>
       </el-popover>
 
-      <el-popover :visible="visible" placement="top" :width="160">
+      <el-popover :visible="false" placement="top" :width="160">
         <el-row style="font-weight: bold">
           <el-icon style="margin-top: 2%">
-            <Message />
+            <Message/>
           </el-icon>
           <div style="margin-left: 11%">
             通知中心
@@ -99,7 +108,7 @@
         </el-row>
         <el-row style="font-weight: bold; margin-top: 5%">
           <el-icon style="margin-top: 2%">
-            <ChatRound />
+            <ChatRound/>
           </el-icon>
           <div style="margin-left: 11%">
             私信
@@ -121,16 +130,17 @@
           </el-col>
         </el-row>
         <template #reference>
-          <el-button style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">
-            <el-icon >
-              <Bell />
+          <el-button
+              style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">
+            <el-icon>
+              <Bell/>
             </el-icon>
           </el-button>
         </template>
       </el-popover>
 
 
-      <el-avatar :size="40" :src="circleUrl" style="margin-left: 12%"/>
+      <el-avatar v-on:click="changeUser" :size="40" :src="avatarUrl" style="margin-left: 12%"/>
 
     </el-col>
   </el-row>
@@ -138,14 +148,16 @@
 </template>
 
 <script>
-import { Search } from '@element-plus/icons-vue'
+import {Search} from '@element-plus/icons-vue'
+
 export default {
   name: "Header",
   data() {
     let index = this.getIndexed()
     return {
       index: index,
-      searchInput: ''
+      searchInput: '',
+      avatarUrl: localStorage.getItem("userAvatar")
     }
   },
   methods: {
@@ -161,6 +173,11 @@ export default {
       this.$store.commit('SET_INDEX', 2)
 
       this.$router.push("/index/shop")
+    },
+    changeUser() {
+      this.$store.commit('SET_INDEX', 3)
+
+      this.$router.push("/user")
     }
   }
 }

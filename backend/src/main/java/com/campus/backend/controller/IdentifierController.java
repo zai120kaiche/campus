@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static com.campus.backend.tool.EmailUtil.get_code_6bit;
 import static com.campus.backend.tool.EmailUtil.send_email;
+import static com.campus.backend.tool.PhoneUtil.send_phone;
 
 /**
  * <p>
@@ -33,29 +34,33 @@ public class IdentifierController {
     @Autowired
     RedisOperator redisOperator;
 
-    /* 用户邮箱验证码发送 */
-    /* 限制次数：30s一次 */
-    @AccessLimit(seconds=30,days = 60*60*24, perCount = 1, dayCount = 50000, needLogin = false)
-    @PostMapping("/identify/email/send")
+    /* 用户验证码发送 */
+    /* 限制次数：60s一次 */
+    @AccessLimit(seconds=60,days = 60*60*24, perCount = 1, dayCount = 50000, needLogin = false)
+    @PostMapping("/identify/send")
     public Object emailSend(@RequestBody Identifier identifier) {
         String code=get_code_6bit();
-        String emailAddress = identifier.getEmailAddress();
+        String phoneOrEmail = identifier.getPhoneOrEmail();
 
-        redisOperator.set(emailAddress, code, 30);
+        redisOperator.set(phoneOrEmail, code, 60);
+        if(phoneOrEmail.contains("@")){
+            send_email(phoneOrEmail, code);
+        } else {
+            send_phone(phoneOrEmail, code);
+        }
 
-        send_email(emailAddress, code);
         return Result.succ();
     }
 
-    /* 用户邮箱验证码检验 */
-    /* 限制次数：30s十次 */
-    @AccessLimit(seconds=30,days = 60*60*24, perCount = 10, dayCount = 50000, needLogin = false)
-    @PostMapping("/identify/email/check")
+    /* 用户验证码检验 */
+    /* 限制次数：60s十次 */
+    @AccessLimit(seconds=60,days = 60*60*24, perCount = 10, dayCount = 50000, needLogin = false)
+    @PostMapping("/identify/check")
     public Object emailCheck(@RequestBody Identifier identifier) {
 
         String code = String.valueOf(identifier.getIdentifier());
-        String emailAddress = identifier.getEmailAddress();
-        String identify = redisOperator.get(emailAddress);
+        String phoneOrEmail = identifier.getPhoneOrEmail();
+        String identify = redisOperator.get(phoneOrEmail);
         if(code.equals(identify))
             return Result.succ();
         else

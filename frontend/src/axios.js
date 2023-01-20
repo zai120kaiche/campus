@@ -38,7 +38,7 @@ axios.interceptors.response.use(
             // 直接拒绝往下面返回结果信息
 
 
-            return Promise.reject(response.data.msg)
+            return response
         }
 
 
