@@ -516,7 +516,6 @@ export default {
     },
     sendSms2() {
       let _this = this
-      console.log(_this.sliderCheck)
 
       if(_this.sendData.phoneOrEmail == ''){
         ElNotification({
@@ -604,7 +603,9 @@ export default {
       } else {
         _this.registerData.phone = _this.sendData.phoneOrEmail
       }
+      console.log(_this.registerData)
       _this.$axios.post('/register', _this.registerData).then(res =>{
+        console.log(res.data)
         if(res.data.data == 1){
           ElNotification({
             title: 'Error',
@@ -628,7 +629,7 @@ export default {
         localStorage.setItem("userId", res.data.data.id)
         localStorage.setItem("userAvatar", res.data.data.avatar)
         this.$store.commit('SET_INDEX', 3)
-        _this.$router.push('/user')
+        this.$router.push({name: "user", params: {flag: 4}})
       })
     },
     loginBySms() {
@@ -658,7 +659,7 @@ export default {
         localStorage.setItem("userId", res.data.data.id)
         localStorage.setItem("userAvatar", res.data.data.avatar)
         this.$store.commit('SET_INDEX', 3)
-        _this.$router.push('/user')
+        this.$router.push({name: "user", params: {flag: 4}})
       })
     },
     handleSelect(key) {

@@ -403,7 +403,7 @@ public class CommunityController {
     @PostMapping("/getCollect")
     public Object getCollect(@RequestBody CollectInfoRequestBody requestBody)
     {
-        IPage page=new Page(requestBody.getCurrent(),pageSize);
+        IPage page=new Page(requestBody.getCurrent(),17);
         PostPages postPages;
         try {
             List<Integer> pids=new ArrayList<>();
@@ -450,7 +450,7 @@ public class CommunityController {
     @PostMapping("/getPostById")
     public Object getPostById(@RequestBody MyPostInfo info)
     {
-        IPage<Post> page=new Page(info.getCurrent(),pageSize);
+        IPage<Post> page=new Page(info.getCurrent(),20);
         PostPages postPages;
         try {
             LambdaQueryWrapper<Post> lqw=new LambdaQueryWrapper();

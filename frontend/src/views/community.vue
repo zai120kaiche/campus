@@ -395,7 +395,7 @@
           我的
         </div>
         <el-row style="text-align: center; font-size: small; margin-top: 10%">
-          <el-col :span="12">
+          <el-col :span="12" v-on:click="toMyPost">
             <el-iocn>
               <EditPen style="width: 30%"/>
             </el-iocn>
@@ -403,7 +403,7 @@
               帖子
             </div>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" >
             <el-iocn>
               <Document style="width: 30%"/>
             </el-iocn>
@@ -413,7 +413,7 @@
           </el-col>
         </el-row>
         <el-row style="text-align: center; font-size: small; margin-top: 10%">
-          <el-col :span="12">
+          <el-col :span="12" v-on:click="toMyPostCollet">
             <el-iocn>
               <FolderOpened style="width: 30%"/>
             </el-iocn>
@@ -556,6 +556,23 @@ export default {
     this.getList(1, 0)
   },
   methods: {
+    toMyPost() {
+      let _this = this
+      this.$store.commit('SET_INDEX', 3)
+      _this.$router.push({
+        name: 'user',
+        params: {flag: 2}
+      })
+    },
+    toMyPostCollet() {
+
+      let _this = this
+      this.$store.commit('SET_INDEX', 3)
+      _this.$router.push({
+        name: 'user',
+        params: {flag: 6}
+      })
+    },
     created() {
       this.typeList(0)
       this.schoolList(0)
@@ -685,7 +702,7 @@ export default {
       }
       picselect += _this.picList[i]
       let temp = {
-        owner: 555,
+        owner: _this.userId,
         title: _this.title,
         content: _this.textarea,
         kind: typeselect,
@@ -699,6 +716,7 @@ export default {
           _this.title = ''
           _this.textarea = ''
           _this.schoolBlockSelect = ''
+          _this.typeSelect = []
           ElNotification({
             title: 'Success',
             message: '发布成功',

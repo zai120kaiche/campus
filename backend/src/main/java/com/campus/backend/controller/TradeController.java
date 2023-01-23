@@ -150,7 +150,8 @@ public class TradeController {
 
     @PostMapping("/getCommodityById")
     public Object getCommodityById(@RequestBody MyPostInfo info){
-        IPage page=new Page(info.getCurrent(),pageSize);
+        System.out.println(info);
+        IPage page=new Page(info.getCurrent(),20);
         CommodityPages commodityPages;
         LambdaQueryWrapper<Commodity> lqw=new LambdaQueryWrapper<>();
         try {
@@ -167,7 +168,7 @@ public class TradeController {
 
     @PostMapping("/getCollect")
     public Object getCollectById(@RequestBody MyPostInfo info){
-        IPage page=new Page(info.getCurrent(),pageSize);
+        IPage page=new Page(info.getCurrent(),17);
         CommodityPages commodityPages;
         List<Integer> cids=new ArrayList<>();
         LambdaQueryWrapper<Intention> lqw=new LambdaQueryWrapper<>();
@@ -192,10 +193,11 @@ public class TradeController {
 
     @PostMapping("/deleteCommodity")
     public Object deleteCommodityById(@RequestBody DeleteInfo info){
+        System.out.println(info);
         int count=0;
         try {
             LambdaQueryWrapper<Commodity> lqw=new LambdaQueryWrapper<>();
-            lqw.in(Commodity::getOwner,info.getObjectIds()).eq(Commodity::getOwner,info.getUid());
+            lqw.in(Commodity::getId,info.getObjectIds()).eq(Commodity::getOwner,info.getUid());
             count=commodityMapper.delete(lqw);
 
         }catch (Exception e)

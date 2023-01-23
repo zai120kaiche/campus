@@ -233,7 +233,7 @@
           我的
         </div>
         <el-row style="text-align: center; font-size: small; margin-top: 10%">
-          <el-col :span="12">
+          <el-col :span="12" v-on:click="toMyTrade">
             <el-iocn>
               <EditPen style="width: 30%"/>
             </el-iocn>
@@ -241,7 +241,7 @@
               发闲置
             </div>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" v-on:click="toMyTrade">
             <el-iocn>
               <Bicycle style="width: 30%"/>
             </el-iocn>
@@ -251,7 +251,7 @@
           </el-col>
         </el-row>
         <el-row style="text-align: center; font-size: small; margin-top: 10%">
-          <el-col :span="12">
+          <el-col :span="12"  v-on:click="toMyTradeCollect">
             <el-iocn>
               <FolderOpened style="width: 30%"/>
             </el-iocn>
@@ -300,6 +300,7 @@
     </template>
   </el-dialog>
   <Footer></Footer>
+  <Tool></Tool>
   <el-drawer v-model="drawer" :direction="'rtl'">
     <template #header>
       <h4 v-if="tradeDetail.tradeFlag">出</h4>
@@ -335,13 +336,15 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Pic from "@/components/Pic"
 import {ElNotification} from "element-plus";
+import Tool from "@/components/Tool";
 
 export default {
   name: "shop",
   components: {
     Header,
     Footer,
-    Pic
+    Pic,
+    Tool
   },
   created() {
     this.tradeTypeList(0)
@@ -406,6 +409,22 @@ export default {
     }
   },
   methods: {
+    toMyTrade() {
+      let _this = this
+      this.$store.commit('SET_INDEX', 3)
+      _this.$router.push({
+        name: 'user',
+        params: {flag: 3}
+      })
+    },
+    toMyTradeCollect() {
+      let _this = this
+      this.$store.commit('SET_INDEX', 3)
+      _this.$router.push({
+        name: 'user',
+        params: {flag: 7}
+      })
+    },
     collectClick(id) {
       let _this = this
       let temp = {

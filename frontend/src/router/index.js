@@ -18,7 +18,7 @@ const routes = [
     name: 'control',
     component:() => import('../views/control')
   },{
-    path: '/user',
+    path: '/user/:flag',
     name: 'user',
     component:() => import('../views/user')
   },{

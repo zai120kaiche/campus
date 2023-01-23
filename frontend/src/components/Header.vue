@@ -177,7 +177,7 @@ export default {
     changeUser() {
       this.$store.commit('SET_INDEX', 3)
 
-      this.$router.push("/user")
+      this.$router.push({name: "user", params: {flag: 4}})
     }
   }
 }

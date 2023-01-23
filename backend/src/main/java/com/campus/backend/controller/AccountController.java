@@ -83,14 +83,15 @@ public class AccountController {
     public Result register(@RequestBody User user){
         System.out.println("user= "+user);
         int count = 0;
-        if(user.getPhone() != null)
-            count = userService.count(new QueryWrapper<User>().eq("phone", user.getPhone()));
-        if(user.getEmail() != null)
-            count = userService.count(new QueryWrapper<User>().eq("email", user.getEmail()));
+        if(user.getPhone() != "")
+            count += userService.count(new QueryWrapper<User>().eq("phone", user.getPhone()));
+        if(user.getEmail() != "")
+            count += userService.count(new QueryWrapper<User>().eq("email", user.getEmail()));
         if(user.getUsername() == null || user.getPassword() == null){
             return Result.fail("账号信息缺失");
         }
         else if(count > 0){
+            System.out.println("count= "+count);
             return Result.succ(1);
         } else {
             user.setPassword(SecureUtil.md5(user.getPassword()));
