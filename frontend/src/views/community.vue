@@ -1,24 +1,26 @@
 <template>
+
   <div class="page_back page_this"></div>
+
   <img src="../assets/images/wave.png" alt="" class="ourpage" style="position: fixed;background-color: transparent">
   <Header></Header>
   <el-container style="margin-bottom: 5%" class="  animate__animated animate__fadeIn ">
     <el-aside class="animate__animated animate__fadeInLeft" width="14%" style="margin-left: 7%; margin-right: 4%">
-      <el-card>
+      <el-card >
         <div style="font-weight: bold">
           分类
         </div>
         <div style="margin-top: 8%">
         </div>
-        <div v-for="(type, index) in typeTableData" style="margin-top: 4%">
-          <button v-if="type.id == currentType"
+        <div v-for="(type, index) in typeTableData" style="margin-top: 4%;">
+          <div v-if="type.id == currentType"
 
-                  style="background-color: #88b0ef; border-color: transparent; width: 100%; border-radius: 5px"
+                  style="color: #88b0ef; border-color: transparent; width: 100%; border-radius: 5px;text-align: center"
                   v-on:click="jumpTypeBlock(type.id, type.typename)">{{ type.typename }}
-          </button>
-          <button v-else style="background-color: transparent; border-color: transparent"
+          </div>
+          <div v-else style="background-color: transparent; border-color: transparent"
                   v-on:click="jumpTypeBlock(type.id, type.typename)">{{ type.typename }}
-          </button>
+          </div>
         </div>
       </el-card>
       <el-card style="margin-top: 10%">
@@ -119,7 +121,7 @@
 
           </el-col>
           <el-col :span="2">
-            <el-popover :visible="visible" placement="bottom" :width="160">
+            <el-popover  placement="bottom" :width="160" trigger="hover">
               <el-row style="font-weight: bold; margin-top: 5%">
                 <el-icon style="margin-top: 2%">
                   <Avatar/>
@@ -461,6 +463,8 @@
     </template>
   </el-dialog>
   <Footer></Footer>
+  <Tool></Tool>
+
 </template>
 
 <script>
@@ -472,6 +476,7 @@ import type, {ElNotification, UploadProps, UploadUserFile} from 'element-plus'
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Pic from "@/components/Pic"
+import Tool from "@/components/Tool";
 
 export default {
   name: "community",
@@ -541,7 +546,8 @@ export default {
   components: {
     Header,
     Footer,
-    Pic
+    Pic,
+    Tool
   },
   created() {
     this.typeList(0)
@@ -582,9 +588,12 @@ export default {
     dealPic() {
       let _this = this
       for (let i = 0; i < _this.contentList.length; i++) {
-        if(_this.contentList[i].pic.search(",") != -1){
-          _this.contentList[i].pic = _this.contentList[i].pic.split(",")[0]
+        if(_this.contentList[i].pic != null){
+          if(_this.contentList[i].pic.search(",") != -1){
+            _this.contentList[i].pic = _this.contentList[i].pic.split(",")[0]
+          }
         }
+
 
         let temp = {
           id: parseInt(_this.contentList[i].owner)
@@ -676,7 +685,7 @@ export default {
       }
       picselect += _this.picList[i]
       let temp = {
-        owner: _this.userId,
+        owner: 555,
         title: _this.title,
         content: _this.textarea,
         kind: typeselect,
@@ -703,6 +712,12 @@ export default {
           })
         }
 
+      }).catch(res=>{
+        ElNotification({
+          title: 'Error',
+          message: '发布失败，请登录',
+          type: 'error',
+        })
       })
     },
     handleClose(){

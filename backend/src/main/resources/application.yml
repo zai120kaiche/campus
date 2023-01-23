@@ -19,10 +19,10 @@ spring:
     database: 0
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**Mapper.xml
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  #configuration:
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 server:
-  port: 9090
+  port: 8081
 shiro-redis:
   enabled: true
   redis-manager:

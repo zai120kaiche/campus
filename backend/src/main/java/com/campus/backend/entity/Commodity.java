@@ -63,6 +63,10 @@ public class Commodity implements Serializable {
 
     private String pic;
 
+    private Integer price;
+
+
+
     public Commodity(Commodity commodity)
     {
         if(Objects.nonNull(commodity))
@@ -80,6 +84,7 @@ public class Commodity implements Serializable {
             this.pic=commodity.pic;
             this.university=commodity.university;
             this.viewNum=commodity.viewNum;
+            this.price = commodity.price;
         }
     }
 

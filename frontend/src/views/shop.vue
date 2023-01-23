@@ -13,7 +13,7 @@
         </div>
         <div v-for="(type, index) in tradeTypeTableData" style="margin-top: 4%">
           <button v-if="type.id == currentTradeType"
-                  style="background-color: #88b0ef; border-color: transparent; width: 100%; border-radius: 5px"
+                  style="color: #88b0ef; background-color: transparent;border-color: transparent; width: 100%; border-radius: 5px"
                   v-on:click="jumpTypeBlock(type.id, type.tradetypename)">{{ type.tradetypename }}
           </button>
           <button v-else style="background-color: transparent; border-color: transparent"
@@ -21,9 +21,6 @@
           </button>
         </div>
         <el-divider style="padding-bottom: 0; margin-top: 10px; margin-bottom: 0"></el-divider>
-        <div style="font-weight: bold; margin-top: 5%">
-          收闲置
-        </div>
       </el-card>
       <el-card style="margin-top: 10%">
 
@@ -32,13 +29,18 @@
     <el-main class="animate__animated animate__fadeInDown" style="padding: 0">
       <el-card>
         <el-input
-            v-model="textInput"
+            v-model="postData.content"
             clearable
             placeholder="请输入你需要的商品"
         />
+        <el-row style="margin-top: 3%;">
+          <el-input placeholder="请输入您期待的价格" v-model="postData.price">
+
+          </el-input>
+        </el-row>
 
 
-        <el-row style="margin-top: 3%" :gutter="20">
+        <el-row style="margin-top: 3%" :gutter="8">
           <el-col :span="5">
 
 
@@ -50,12 +52,13 @@
                     placeholder="# 类别"
                     style="width: 100%"
                     filterable
+                    multiple
                 >
                   <el-option
                       v-for="item in tradeTypeTableData"
                       :key="item.tradetypename"
                       :label="item.tradetypename"
-                      :value="item.tradetypename"
+                      :value="item.id"
                   />
                 </el-select>
               </el-col>
@@ -71,7 +74,7 @@
 
               <el-col>
                 <el-select
-                    v-model="schoolSelect"
+                    v-model="postData.university"
                     placeholder="所属学校"
                     style="width: 100%"
                     filterable
@@ -80,7 +83,7 @@
                       v-for="item in schoolTableData"
                       :key="item.schoolname"
                       :label="item.schoolname"
-                      :value="item.schoolname"
+                      :value="item.id"
                   />
                 </el-select>
               </el-col>
@@ -89,35 +92,50 @@
 
 
           </el-col>
-
-          <el-col :span="5">
+          <el-col :span="4">
 
 
             <el-row style="font-weight: bold">
 
+
               <el-col>
-                <el-select
-                    v-model="tradeTypeBlockSelect"
-                    placeholder="发布至"
-                    style="width: 100%"
-                    filterable
-                    multiple
-                >
-                  <el-option
-                      v-for="item in tradeTypeTableData"
-                      :key="item.tradetypename"
-                      :label="item.tradetypename"
-                      :value="item.tradetypename"
-                  />
-                </el-select>
+
+                <el-button style="font-weight: lighter" @click="picDialogVisible = true">
+                  <el-icon style="margin-right: 5%">
+                    <Picture/>
+                  </el-icon>
+                  图片
+                </el-button>
               </el-col>
+
 
             </el-row>
 
 
           </el-col>
-          <el-col :span="2">
-            <el-popover :visible="visible" placement="bottom" :width="160">
+          <el-col :span="4">
+            <el-row style="font-weight: bold">
+
+              <el-col>
+                <el-select
+                    v-model="postData.tradeFlag"
+                    placeholder="出/收"
+                    style="width: 100%"
+                    filterable
+                >
+                  <el-option
+                      v-for="item in butOrSaleList"
+                      :key="item.name"
+                      :label="item.name"
+                      :value="item.value"
+                  />
+                </el-select>
+              </el-col>
+
+            </el-row>
+          </el-col>
+          <el-col :span="1">
+            <el-popover trigger="hover" placement="bottom" :width="160">
 
               <el-row style="font-weight: bold; margin-top: 5%">
                 <el-icon style="margin-top: 2%">
@@ -145,43 +163,71 @@
               </template>
             </el-popover>
           </el-col>
-          <el-col :span="3" :offset="4">
-            <el-button style="background-color: #A2C9FC">发送</el-button>
+
+          <el-col :span="3" :offset="1">
+            <el-button style="background-color: #A2C9FC" v-on:click="doGoodPost">发送</el-button>
           </el-col>
         </el-row>
       </el-card>
       <el-row>
+
         <el-card v-for="(item, index) in goodList"
-                 style="margin-top: 1%; width: 28%; margin-right: 2%; margin-left: 3%">
+                 style="margin-top: 1%; width: 28%; margin-right: 2%; margin-left: 3%"
+                 v-on:click="getTradeDetail(item.id)">
+
 
           <el-image
               src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
               class="image"
               style="border-radius: 5px"
           />
-          <div style="text-align: center">标题</div>
-          <el-row>
-            <el-col :span="12">￥ 1</el-col>
-            <el-col :span="3" :offset="9">收</el-col>
+          <div style="text-align: center;color: #333333;word-wrap:break-word; word-break:break-all;
+              text-overflow:ellipsis;overflow:hidden;display:-webkit-box;
+              -webkit-line-clamp:1;-webkit-box-orient:vertical;">{{ item.content }}
+          </div>
+          <el-row style="color: #333333">
+            <el-col :span="12">￥ {{ item.price }}</el-col>
+            <el-col v-if="item.tradeFlag" :span="3" :offset="9"
+                    style="font-weight: bold; font-size: large; color: crimson">出
+            </el-col>
+            <el-col v-else :span="4" :offset="8" style="font-weight: bold; font-size: large; color: #7AC23C">收</el-col>
           </el-row>
-          <el-row>
-            <el-col :span="12">0人想要</el-col>
+          <el-row style="color: #333333">
+            <el-col :span="12">{{ item.collectNum }}人想要</el-col>
             <el-col :span="12" style="margin-top: 2%">
               <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
                 <View/>
               </el-icon>
-              0
+              {{ item.viewNum }}
             </el-col>
           </el-row>
 
-          <div :span="6" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: 北京邮电大学</div>
-          <div :span="14" style="color: #919191; font-weight: lighter; font-size: xx-small">时间</div>
+          <div :span="6" style="color: #919191; font-weight: lighter; font-size: xx-small">学校:
+            {{ item.universityName }}
+          </div>
+          <div :span="14" style="color: #919191; font-weight: lighter; font-size: xx-small">时间:
+            {{ item.date.split("T")[0] }}
+          </div>
+
+
         </el-card>
       </el-row>
+
+      <el-card style="margin-top: 1%; padding: 0">
+        <el-pagination
+            @current-change="currentPageChange"
+            :current-page="currentPage"
+            layout="prev, pager, next"
+            :total="currentTotal"
+            :page-size="9"
+            style="width: 100%; margin: 0"
+        />
+      </el-card>
 
 
     </el-main>
     <el-aside class="animate__animated animate__fadeInRight" width="14%" style="margin-right: 7%; margin-left: 4%">
+
       <el-card>
         <div style="font-weight: bold">
           我的
@@ -213,25 +259,8 @@
               收藏夹
             </div>
           </el-col>
-          <el-col :span="12">
-            <el-iocn>
-              <FolderDelete style="width: 30%"/>
-            </el-iocn>
-            <div>
-              草稿箱
-            </div>
-          </el-col>
+
         </el-row>
-      </el-card>
-      <el-card style="margin-top: 10%">
-        <el-select v-model="orderSelectValue" class="m-2" placeholder="请选择排序方式">
-          <el-option
-              v-for="item in orderSelect"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-          />
-        </el-select>
       </el-card>
       <el-card style="margin-top: 10%">
         <el-row>
@@ -255,31 +284,88 @@
       </el-card>
     </el-aside>
   </el-container>
+  <el-dialog
+      v-model="picDialogVisible"
+      title="添加图片"
+      width="60%"
+      :before-close="handleClose"
+  >
+    <span>请添加您要选择的图片（上限三张）</span>
+    <template #footer>
+      <el-row>
+        <el-col :span="24">
+          <Pic @handleSelect="picSelect"></Pic>
+        </el-col>
+      </el-row>
+    </template>
+  </el-dialog>
   <Footer></Footer>
+  <el-drawer v-model="drawer" :direction="'rtl'">
+    <template #header>
+      <h4 v-if="tradeDetail.tradeFlag">出</h4>
+      <h4 v-else>收</h4>
+    </template>
+    <template #default>
+      <el-container style="height: 100%">
+        <el-main style="padding: 0">
+          <el-carousel height="150px" indicator-position="outside" v-if="tradeDetail.pic != 'undefined'">
+            <el-carousel-item v-for="item in tradeDetail.pic" :key="item">
+              <el-image :src="item"></el-image>
+            </el-carousel-item>
+          </el-carousel>
+        </el-main>
+        <el-aside width="60%">
+          <el-row
+              style="word-wrap:break-word; word-break:break-all;margin-left: 10%; margin-right: 10%;font-size: large">
+            {{ tradeDetail.content }}
+          </el-row>
+        </el-aside>
+      </el-container>
+    </template>
+    <template #footer>
+      <div style="flex: auto">
+        <el-button type="primary" @click="collectClick(tradeDetail.id)">收藏</el-button>
+      </div>
+    </template>
+  </el-drawer>
 </template>
 
 <script>
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Pic from "@/components/Pic"
+import {ElNotification} from "element-plus";
 
 export default {
   name: "shop",
   components: {
     Header,
-    Footer
+    Footer,
+    Pic
   },
   created() {
     this.tradeTypeList(0)
     this.schoolList(0)
     this.$store.commit('SET_INDEX', 2)
+    this.getGoodList(1, 0)
   },
   data() {
     return {
+      drawer: false,
+      tradeDetail: {},
+      butOrSaleList: [{
+        name: "出",
+        value: true
+      }, {
+        name: "收",
+        value: false
+      }],
+      picDialogVisible: false,
       orderSelectValue: '',
       orderSelect: [{
         value: 0,
         label: "按时间排序"
-      },{
+      }, {
         value: 1,
         label: "按浏览量排序"
       },],
@@ -288,29 +374,164 @@ export default {
       currentTradeTypeName: '',
       currentTradeType: 0,
       textInput: '',
-      tradeTypeSelect: '',
+      tradeTypeSelect: [],
       schoolSelect: '',
       tradeTypeBlockSelect: '',
-      goodList: [
-        {
-          name: 1
-        },
-        {
-          name: 2
-        },
-        {
-          name: 2
-        },
-        {
-          name: 2
-        },
-        {
-          name: 2
-        }
-      ]
+      goodList: [],
+      picList: [],
+      currentPage: 1,
+      currentTotal: 0,
+
+
+      selectData: {
+        uid: localStorage.getItem("userId"),
+        type: null,
+        school: null,
+        keyWord: [],
+        current: 1,
+        tradeFlag: null,
+
+      },
+      postData: {
+        content: '',
+        tradeFlag: null,
+        owner: localStorage.getItem("userId"),
+        kind: '',
+        university: '',
+        pic: '',
+        price: null
+      },
+      visible: false,
+      userId: localStorage.getItem("userId"),
     }
   },
   methods: {
+    collectClick(id) {
+      let _this = this
+      let temp = {
+        uid: _this.userId,
+        cid: id
+      }
+      _this.$axios.post("/trade/doCollect", temp).then(res => {
+        if (res.data.code == 200) {
+          ElNotification({
+            title: 'Success',
+            message: '已加入收藏',
+            type: 'success',
+          })
+        }
+      }).catch(res => {
+        ElNotification({
+          title: 'Error',
+          message: '收藏失败，请查看是否已加入收藏',
+          type: 'error',
+        })
+      })
+    },
+    getTradeDetail(id) {
+      let _this = this
+      _this.$axios.post("/trade/view", {cid: id}).then(res => {
+        _this.tradeDetail = res.data.data
+        console.log(_this.tradeDetail.pic)
+        if (_this.tradeDetail.pic.search(",") != -1 && _this.tradeDetail.pic != null) {
+          _this.tradeDetail.pic = _this.tradeDetail.pic.split(",")
+        } else {
+          let temp = []
+          temp.push(_this.tradeDetail.pic)
+          _this.tradeDetail.pic = temp
+        }
+
+        console.log(_this.tradeDetail)
+        _this.drawer = true
+      })
+    },
+    currentPageChange(current) {
+      let _this = this
+      _this.currentPage = current
+      _this.selectData.current = current
+      _this.$axios.post("/trade/getCommodity", _this.selectData).then(res => {
+        _this.goodList = res.data.data.records
+        console.log(_this.goodList)
+      })
+    },
+    getGoodList(current, flag) {
+      let _this = this
+      if (flag == 0) {
+        _this.selectData.type = null
+        _this.selectData.school = null
+        _this.selectData.keyWord = []
+
+      }
+      _this.$axios.post("/trade/getCommodity", _this.selectData).then(res => {
+        console.log(res.data.data)
+        _this.goodList = res.data.data.records
+        _this.currentTotal = res.data.data.total
+      })
+
+    },
+
+    doGoodPost() {
+      let _this = this
+      let kindselect = ''
+      let picselect = ''
+      let i = 0
+      for (i = 0; i < _this.tradeTypeSelect.length - 1; i++) {
+        kindselect += _this.tradeTypeSelect[i]
+        kindselect += ","
+      }
+      kindselect += _this.tradeTypeSelect[i]
+      for (i = 0; i < _this.picList.length - 1; i++) {
+        picselect += _this.picList[i]
+        picselect += ","
+      }
+      picselect += _this.picList[i]
+      _this.postData.kind = kindselect
+      _this.postData.pic = picselect
+      if (_this.postData.tradeFlag == null) {
+        ElNotification({
+          title: 'Error',
+          message: '请选择卖出还是收入',
+          type: 'error',
+        })
+      } else if (_this.postData.content == '') {
+        ElNotification({
+          title: 'Error',
+          message: '请输入商品描述',
+          type: 'error',
+        })
+      } else if (_this.tradeTypeSelect.length == 0) {
+        ElNotification({
+          title: 'Error',
+          message: '请选择类别',
+          type: 'error',
+        })
+      } else if (_this.postData.university == '') {
+        ElNotification({
+          title: 'Error',
+          message: '请选择所属学校',
+          type: 'error',
+        })
+      } else {
+        _this.$axios.post("/trade/addCommodity", _this.postData).then(res => {
+          _this.postData.content = ''
+          _this.tradeTypeSelect = []
+          _this.postData.tradeFlag = null
+          _this.postData.university = ''
+          _this.postData.pic = ''
+          _this.picList = []
+          _this.postData.price = null
+          _this.getGoodList(_this.selectData.current, 0)
+        }).catch(res=>{
+          ElNotification({
+            title: 'Error',
+            message: '发布失败，请登录',
+            type: 'error',
+          })
+        })
+      }
+
+
+    },
     tradeTypeList(currentPage) {
       let _this = this
       _this.$axios.get("tradetype/list/all/?currentPage=" + currentPage).then(res => {
@@ -326,9 +547,22 @@ export default {
       })
     },
     jumpTypeBlock(index, name) {
-      this.currentTradeType = index
-      this.currentTradeTypeName = name
+      let _this = this
+      _this.currentTradeType = index
+      _this.currentTradeTypeName = name
+      _this.selectData.type = index
+      _this.getGoodList(1, 1)
+
     },
+    picSelect(res) {
+      let _this = this
+      _this.picList.push(res)
+      console.log(_this.picList)
+    },
+    handleClose() {
+      let _this = this
+      _this.picDialogVisible = false
+    }
 
   }
 }

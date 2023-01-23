@@ -8,6 +8,7 @@ import com.campus.backend.common.lang.Result;
 import com.campus.backend.entity.*;
 import com.campus.backend.mapper.*;
 import com.campus.backend.tool.GetIpAddressUtil;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +32,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/trade")
 public class TradeController {
-    private int pageSize=20;
+    private int pageSize=9;
 
     @Autowired
     private UserMapper userMapper;
@@ -99,7 +101,8 @@ public class TradeController {
                     if(i!=keyWord.size()-1) lqw.or();
                 }
             }
-            lqw.eq(sc.getTradeFlag()!=null,Commodity::getTradeFlag,sc.getTradeFlag());
+            lqw.eq(sc.getTradeFlag()!=null,Commodity::getTradeFlag,sc.getTradeFlag())
+                    .eq(Commodity::getFinishFlag,false);
             lqw.orderByDesc(Commodity::getDate);
             commodityMapper.selectPage(page,lqw);
             commodityPages=addUserInfoToCommodity(page, sc.getUid());
@@ -126,18 +129,23 @@ public class TradeController {
         return Result.succ();
     }
 //商品详情
+
+
     @PostMapping("/view")
-    public Object addViewNum(@RequestBody Integer cid){
+    public Object addViewNum(@RequestBody CID cidN) {
+        Integer cid = cidN.getCid();
+
+        System.out.println(cid);
+        Commodity commodity;
         try {
-            Commodity commodity = commodityMapper.selectById(cid);
-            commodity.setViewNum(commodity.getViewNum()+1);
+            commodity = commodityMapper.selectById(cid);
+            commodity.setViewNum(commodity.getViewNum() + 1);
             commodityMapper.updateById(commodity);
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             return Result.fail("addViewNum失败");
         }
-        return Result.succ();
+        return Result.succ(commodity);
     }
 
     @PostMapping("/getCommodityById")

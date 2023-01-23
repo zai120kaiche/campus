@@ -78,7 +78,7 @@
           <Service/>
         </el-icon>
       </el-button>
-      <el-popover :visible="false" placement="top" :width="160">
+      <el-popover trigger="hover" placement="top" :width="160">
         <el-row style="font-weight: bold">
           <el-icon style="margin-top: 2%">
             <Grid/>
@@ -97,7 +97,7 @@
         </template>
       </el-popover>
 
-      <el-popover :visible="false" placement="top" :width="160">
+      <el-popover trigger="hover" placement="top" :width="160">
         <el-row style="font-weight: bold">
           <el-icon style="margin-top: 2%">
             <Message/>

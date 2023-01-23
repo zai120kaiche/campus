@@ -1,7 +1,7 @@
 <template>
   <el-upload
       v-model:file-list="fileList"
-      action="http://127.0.0.1:9090/api/pri/file/upload"
+      action="http://127.0.0.1:8081/api/pri/file/upload"
       list-type="picture-card"
       class="upload-demo"
       :on-preview="handlePictureCardPreview"

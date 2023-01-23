@@ -9,8 +9,8 @@ import {ElMessage} from "element-plus";
 
 createApp(App).config.globalProperties.$=$
 
-axios.defaults.baseURL='http://127.0.0.1:9090'
-
+//axios.defaults.baseURL='http://49.232.222.169:8081'
+axios.defaults.baseURL='http://127.0.0.1:8081'
 axios.interceptors.request.use(
     function (config) {
         // console.log("进入请求拦截器！")
