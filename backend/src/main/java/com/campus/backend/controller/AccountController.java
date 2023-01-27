@@ -95,6 +95,7 @@ public class AccountController {
             return Result.succ(1);
         } else {
             user.setPassword(SecureUtil.md5(user.getPassword()));
+            user.setScore(0);
             userService.saveOrUpdate(user);
         }
         return Result.succ();
@@ -103,6 +104,7 @@ public class AccountController {
     @PostMapping("user/index")
     public Result getUserInfo(@RequestBody User user){
         User re = userService.getById(user.getId());
+        re.setPassword("");
         return Result.succ(re);
     }
 }

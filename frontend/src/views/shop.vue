@@ -177,7 +177,8 @@
 
 
           <el-image
-              src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+              v-if="item.pic != 'undefined'"
+              :src="item.pic.split(',')[0]"
               class="image"
               style="border-radius: 5px"
           />
@@ -326,9 +327,12 @@
     <template #footer>
       <div style="flex: auto">
         <el-button type="primary" @click="collectClick(tradeDetail.id)">收藏</el-button>
+        <el-button type="primary" @click="callSaler(tradeDetail.id, tradeDetail.owner)">联系卖家</el-button>
+        <el-button type="primary" @click="saleOnLine(tradeDetail.id, tradeDetail.owner)">线上交易</el-button>
       </div>
     </template>
   </el-drawer>
+  <Chat :show="userChatDrawer" :chatInit="chatProp" @handleClose="chatHandleClose"></Chat>
 </template>
 
 <script>
@@ -337,6 +341,7 @@ import Footer from "@/components/Footer";
 import Pic from "@/components/Pic"
 import {ElNotification} from "element-plus";
 import Tool from "@/components/Tool";
+import Chat from "@/components/Chat";
 
 export default {
   name: "shop",
@@ -344,7 +349,8 @@ export default {
     Header,
     Footer,
     Pic,
-    Tool
+    Tool,
+    Chat
   },
   created() {
     this.tradeTypeList(0)
@@ -354,6 +360,14 @@ export default {
   },
   data() {
     return {
+      userChatDrawer: false,
+      chatProp: {
+        from: 0,
+        to: 0,
+        tradeId: 0,
+        toUser: {
+        }
+      },
       drawer: false,
       tradeDetail: {},
       butOrSaleList: [{
@@ -409,6 +423,30 @@ export default {
     }
   },
   methods: {
+    chatHandleClose(res){
+      this.userChatDrawer = false
+    },
+    callSaler(id, owner){
+      let _this = this
+      _this.chatProp.from = localStorage.getItem("userId")
+      _this.chatProp.to = owner
+      _this.chatProp.tradeId = true
+      _this.chatProp.tradeDetail = _this.tradeDetail
+      _this.$axios.post("user/index", {id: owner}).then(res=>{
+        _this.chatProp.toUser = res.data.data
+      }).catch(res=>{
+        ElNotification({
+          title: 'Error',
+          message: '此人不存在',
+          type: 'error',
+        })
+      })
+      _this.drawer = false
+      _this.userChatDrawer = true
+    },
+    saleOnLine(id, owner){
+
+    },
     toMyTrade() {
       let _this = this
       this.$store.commit('SET_INDEX', 3)
@@ -451,7 +489,7 @@ export default {
       let _this = this
       _this.$axios.post("/trade/view", {cid: id}).then(res => {
         _this.tradeDetail = res.data.data
-        console.log(_this.tradeDetail.pic)
+        console.log(_this.tradeDetail)
         if (_this.tradeDetail.pic.search(",") != -1 && _this.tradeDetail.pic != null) {
           _this.tradeDetail.pic = _this.tradeDetail.pic.split(",")
         } else {

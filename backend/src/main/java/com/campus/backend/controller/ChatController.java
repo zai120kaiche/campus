@@ -32,7 +32,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
-    private int pageSize=20;
+    private int pageSize=5000;
 
     @Autowired
     private UserMapper userMapper;
@@ -52,14 +52,19 @@ public class ChatController {
     public Object addContent(@RequestBody Chat chat)
     {
         int count=0;
-        try {
-            count=chatMapper.insert(chat);
-        }catch (Exception e)
-        {
-            e.printStackTrace();
-            return Result.fail("addContent失败");
+        if(chat.getSend() != chat.getRecv()){
+            try {
+                count=chatMapper.insert(chat);
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+                return Result.fail("addContent失败");
+            }
+            return Result.succ(count);
+        }else{
+            return  Result.fail("addContent失败");
         }
-        return Result.succ(count);
+
     }
 
     /**

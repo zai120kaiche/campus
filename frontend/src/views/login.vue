@@ -115,6 +115,10 @@
 
 
           </div>
+          <el-row v-on:click="view" style="margin-top: 3%">
+            <el-col :offset="17" :span="5">游客登陆</el-col>
+            <el-col :span="2" style="margin-top: 1%"><el-icon><DArrowRight /></el-icon></el-col>
+          </el-row>
 
 
 
@@ -182,9 +186,15 @@
             <button style="color: deepskyblue; border-color: transparent; background-color: transparent" @click="secretVisible = true">产品隐私政策</button>
 
           </div>
+          <el-row v-on:click="view" style="margin-top: 3%">
+            <el-col :offset="17" :span="5">游客登陆</el-col>
+            <el-col :span="2" style="margin-top: 1%"><el-icon><DArrowRight /></el-icon></el-col>
+          </el-row>
 
 
         </el-card>
+
+
       </el-main>
     </el-container>
     <el-footer style="margin-bottom: 5%; margin-left: 10%">
@@ -453,6 +463,11 @@ export default {
     }
   },
   methods: {
+    view(){
+      this.$router.push('/index/community')
+      localStorage.setItem("userId", null)
+      localStorage.setItem("userAvatar", null)
+    },
     //发送验证码
     sendSms() {
       let _this = this

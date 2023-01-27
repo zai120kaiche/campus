@@ -173,7 +173,7 @@
             <el-input placeholder="请输入您想参与的校园吧名称"
                       v-model="schoolInput"
             >
-              <template #prepend>
+              <template #append>
                 <el-button style="background-color: transparent; border-color: transparent">
                   <el-icon>
                     <Search/>
@@ -181,14 +181,7 @@
 
                 </el-button>
               </template>
-              <template #append>
-                <el-button style="background-color: transparent; border-color: transparent">
-                  <el-icon>
-                    <Camera/>
-                  </el-icon>
 
-                </el-button>
-              </template>
             </el-input>
           </el-col>
         </el-row>
@@ -231,7 +224,7 @@
             <el-input placeholder="请输入您想寻找的物品名称"
                       v-model="keyWord"
             >
-              <template #prepend>
+              <template #append>
                 <el-button style="background-color: transparent; border-color: transparent">
                   <el-icon v-on:click="getList(1, 2)">
                     <Search/>
@@ -239,14 +232,7 @@
 
                 </el-button>
               </template>
-              <template #append>
-                <el-button style="background-color: transparent; border-color: transparent">
-                  <el-icon>
-                    <Camera/>
-                  </el-icon>
 
-                </el-button>
-              </template>
             </el-input>
           </el-col>
         </el-row>
@@ -263,7 +249,7 @@
             <el-input placeholder="请输入您想查找的话题名称"
                       v-model="keyWord"
             >
-              <template #prepend>
+              <template #append>
                 <el-button style="background-color: transparent; border-color: transparent">
                   <el-icon v-on:click="getList(1, 2)">
                     <Search/>
@@ -271,14 +257,7 @@
 
                 </el-button>
               </template>
-              <template #append>
-                <el-button style="background-color: transparent; border-color: transparent">
-                  <el-icon>
-                    <Camera/>
-                  </el-icon>
 
-                </el-button>
-              </template>
             </el-input>
           </el-col>
         </el-row>
@@ -298,12 +277,12 @@
         <el-container>
           <el-header>
             <el-row>
-              <el-col :span="3">
+              <el-col :span="3" v-on:click="callUser(item.owner)">
                 <el-avatar :src="item.avatar"></el-avatar>
               </el-col>
               <el-col :span="21">
                 <el-row>
-                  <el-col :span="8">{{item.authorname}}</el-col>
+                  <el-col :span="8" v-on:click="callUser(item.owner)">{{item.authorname}}</el-col>
                   <el-col :span="8" style="color: #919191; font-weight: lighter; font-size: xx-small">类别: {{item.kindName}}</el-col>
                   <el-col :span="8" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: {{item.universityName}}
                   </el-col>
@@ -464,6 +443,7 @@
   </el-dialog>
   <Footer></Footer>
   <Tool></Tool>
+  <Chat :show="userChatDrawer" :chatInit="chatProp" @handleClose="chatHandleClose"></Chat>
 
 </template>
 
@@ -477,6 +457,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Pic from "@/components/Pic"
 import Tool from "@/components/Tool";
+import Chat from "@/components/Chat";
 
 export default {
   name: "community",
@@ -541,13 +522,22 @@ export default {
       //  分页
       currentTotal: 6,
       currentPage: 1,
+      userChatDrawer: false,
+      chatProp: {
+        from: 0,
+        to: 0,
+        tradeId: false,
+        toUser: {
+        }
+      },
     }
   },
   components: {
     Header,
     Footer,
     Pic,
-    Tool
+    Tool,
+    Chat
   },
   created() {
     this.typeList(0)
@@ -556,6 +546,25 @@ export default {
     this.getList(1, 0)
   },
   methods: {
+    chatHandleClose(res){
+      this.userChatDrawer = false
+    },
+    callUser(userId){
+      let _this = this
+      _this.chatProp.from = localStorage.getItem("userId")
+      _this.chatProp.to = userId
+      _this.$axios.post("user/index", {id: userId}).then(res=>{
+        _this.chatProp.toUser = res.data.data
+      }).catch(res=>{
+        ElNotification({
+          title: 'Error',
+          message: '此人不存在',
+          type: 'error',
+        })
+      })
+      _this.drawer = false
+      _this.userChatDrawer = true
+    },
     toMyPost() {
       let _this = this
       this.$store.commit('SET_INDEX', 3)

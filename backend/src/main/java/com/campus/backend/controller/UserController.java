@@ -33,12 +33,26 @@ public class UserController {
     //修改个人信息
     @PostMapping("/change")
     public Result change(@RequestBody User user){
-        if(user.getId() != null){
-            userService.saveOrUpdate(user);
-            return Result.succ();
-        } else {
-            return Result.fail("信息不存在");
+        try {
+            if(user.getId() != null){
+                User u = userService.getById(user.getId());
+                user.setScore(u.getScore());
+                user.setPassword(u.getPassword());
+                if(user.getPhone().equals("")){
+                    user.setPhone(u.getPhone());
+                }
+                if(user.getEmail().equals("")){
+                    user.setEmail(u.getEmail());
+                }
+                userService.saveOrUpdate(user);
+                return Result.succ();
+            } else {
+                return Result.fail("信息不存在");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+
     }
 
 

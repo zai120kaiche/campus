@@ -208,7 +208,85 @@
             style="width: 100%; margin: 0; bottom: 0; position: absolute"
         />
       </el-card>
-      <el-card v-if="selectFlag == 4"></el-card>
+      <el-card v-if="selectFlag == 4" style="text-align: center">
+        <el-row>
+          <el-col>
+            <el-avatar size="large" :src="userInfo.avatar" v-if="!changeInfoFlag">
+
+            </el-avatar>
+            <el-upload
+                v-if="changeInfoFlag"
+                v-model:file-list="fileList"
+                action="http://49.232.222.169:8081/api/pri/file/upload"
+                list-type="picture-card"
+                class="upload-demo"
+                :on-preview="handlePictureCardPreview"
+                :on-remove="handleRemove"
+                :on-success="handleSucc"
+                :limit="1">
+              <el-icon><Plus /></el-icon>
+            </el-upload>
+          </el-col>
+        </el-row>
+        <el-row style="margin-top: 5%">
+          <el-col style="font-weight: bold" v-if="!changeInfoFlag">
+            {{ userInfo.username }}
+          </el-col>
+
+        </el-row>
+        <div style="font-weight: bold;text-align: left">
+          <el-row style="margin-top: 2%; margin-left: 3%" v-if="changeInfoFlag">
+            <el-row>
+              <el-col :span="8">
+                用户名：
+              </el-col>
+              <el-col :span="15">
+                <el-input :placeholder="userInfo.username" v-model="changeUserInfo.username" style="width: 180%"></el-input>
+              </el-col>
+            </el-row>
+          </el-row>
+          <el-row style="margin-top: 2%; margin-left: 3%">
+            <div v-if="!changeInfoFlag">
+              电子邮箱：{{userInfo.email?userInfo.email:'暂未绑定'}}
+            </div>
+            <div v-else>
+              <el-row>
+                <el-col :span="8">
+                    电子邮箱：
+                </el-col>
+                <el-col :span="15">
+                  <el-input :placeholder="userInfo.email" v-model="changeUserInfo.email" style="width: 180%"></el-input>
+                </el-col>
+              </el-row>
+            </div>
+          </el-row>
+
+          <el-row style="margin-top: 2%; margin-left: 3%">
+            <div v-if="!changeInfoFlag">
+              联系方式：{{userInfo.phone?userInfo.phone:'暂未绑定'}}
+            </div>
+            <div v-else>
+              <el-row>
+                <el-col :span="8">
+                  联系方式：
+                </el-col>
+                <el-col :span="15">
+                  <el-input :placeholder="userInfo.phone" v-model="changeUserInfo.phone" style="width: 180%"></el-input>
+                </el-col>
+              </el-row>
+            </div>
+          </el-row>
+          <el-row style="margin-top: 2%; margin-left: 3%" v-if="!changeInfoFlag">
+            已有积分：{{userInfo.score}}
+          </el-row>
+        </div>
+        <el-row>
+          <el-col :offset="10" >
+            <el-button v-if="!changeInfoFlag" style="border-color: transparent" v-on:click="changeInfoFlag = true">修改信息</el-button>
+            <el-button v-else v-on:click="sendSms">确认修改</el-button>
+          </el-col>
+        </el-row>
+      </el-card>
     </el-main>
   </el-container>
   <el-drawer v-model="drawer" :direction="'rtl'">
@@ -235,6 +313,20 @@
     </template>
 
   </el-drawer>
+  <el-dialog v-model="dialog" title="验证码确认">
+    <div v-if="changeUserInfo.phone != ''">我们将向手机号：{{changeUserInfo.phone}}发送验证码，请注意查收</div>
+    <div v-else-if="changeUserInfo.email != ''">我们将向邮箱：{{changeUserInfo.email}}发送验证码，请注意查收</div>
+    <div v-else>请至少填写手机号或邮箱中的一项</div>
+    <el-input placeholder="请输入验证码" v-model="sms" style="margin-top: 5%"></el-input>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialog = false">关闭</el-button>
+        <el-button type="primary" @click="checkSms">
+          确认修改
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
 
 </template>
 
@@ -253,6 +345,23 @@ export default {
   },
   data() {
     return {
+      sendData: {
+        identifier: 0,
+        phoneOrEmail: ''
+      },
+      sms: '',
+      dialog: false,
+      fileList: [],
+      showPic: false,
+      changeInfoFlag: false,
+      changeUserInfo: {
+        id: localStorage.getItem("userId"),
+        username: '',
+        email: '',
+        phone: '',
+        password: '',
+        avatar: ''
+      },
       userInfo: {
         id: localStorage.getItem("userId")
       },
@@ -291,6 +400,86 @@ export default {
     }
   },
   methods: {
+    sendSms() {
+      let _this = this
+      _this.dialog = true
+      if(_this.changeUserInfo.phone != ''){
+        _this.sendData.phoneOrEmail = _this.changeUserInfo.phone
+        console.log(_this.sendData)
+        _this.$axios.post('/identify/send', _this.sendData).then(res =>{
+          ElNotification({
+            title: 'Success',
+            message: '验证码发送成功',
+            type: 'success',
+          })
+        })
+      }else if(_this.changeUserInfo.email != ''){
+        _this.sendData.phoneOrEmail = _this.changeUserInfo.email
+        _this.$axios.post('/identify/send', _this.sendData).then(res =>{
+          ElNotification({
+            title: 'Success',
+            message: '验证码发送成功',
+            type: 'success',
+          })
+        })
+      }else{
+        ElNotification({
+          title: 'Error',
+          message: '请填写绑定手机号或邮箱',
+          type: 'error',
+        })
+      }
+
+    },
+    checkSms() {
+      let _this = this
+      _this.sendData.identifier = _this.sms
+      _this.$axios.post('/identify/check', _this.sendData).then(res => {
+        if(res.data.code == 200){
+          _this.changeInfo()
+        } else {
+          ElNotification({
+            title: 'Error',
+            message: '验证码不正确',
+            type: 'error',
+          })
+        }
+      })
+    },
+    handlePictureCardPreview (uploadFile) {
+      console.log(uploadFile)
+      this.dialogImageUrl = uploadFile.response.data.returnImgeUrl
+      this.dialogVisible = true
+    },
+    handleRemove() {
+
+    },
+    handleSucc(res) {
+      let _this = this
+      _this.changeUserInfo.avatar = res.data.returnImgeUrl
+    },
+    changeInfo() {
+      let _this = this
+
+      _this.$axios.post("/user/change", _this.changeUserInfo).then(res=>{
+        if(res.data.code == 200){
+          ElNotification({
+            title: 'Success',
+            message: '修改成功',
+            type: 'success',
+          })
+          _this.changeInfoFlag = false
+          _this.sms = ''
+          _this.dialog = false
+        }
+      }).catch(res=>{
+        ElNotification({
+          title: 'Error',
+          message: '修改失败',
+          type: 'error',
+        })
+      })
+    },
     init() {
       let _this = this
       _this.selectFlag = _this.$route.params.flag
@@ -376,6 +565,7 @@ export default {
       }
       _this.$axios.post("user/index", temp).then(res => {
         _this.userInfo = res.data.data
+        _this.changeUserInfo = res.data.data
       })
     },
     changeSelectFlag(index) {

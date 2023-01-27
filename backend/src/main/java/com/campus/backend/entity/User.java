@@ -42,5 +42,6 @@ public class User implements Serializable {
 
     private String des;
 
+    private Integer score;
 
 }

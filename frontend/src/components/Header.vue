@@ -52,7 +52,7 @@
           class="input-with-select"
 
       >
-        <template #prepend>
+        <template #append>
           <el-button style="background-color: transparent; border-color: transparent">
             <el-icon>
               <Search/>
@@ -60,14 +60,7 @@
 
           </el-button>
         </template>
-        <template #append>
-          <el-button style="background-color: transparent; border-color: transparent">
-            <el-icon>
-              <Camera/>
-            </el-icon>
 
-          </el-button>
-        </template>
 
       </el-input>
     </el-col>

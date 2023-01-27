@@ -6,12 +6,12 @@
     <el-main style="padding: 0;margin-left: 12%; margin-right: 3%;">
       <el-card class="  animate__animated animate__fadeIn "  >
         <el-row>
-          <el-col :span="3">
+          <el-col :span="3" v-on:click="callUser(postDetail.owner)">
             <el-avatar :src="postDetail.avatar"></el-avatar>
           </el-col>
           <el-col :span="21">
             <el-row>
-              <el-col :span="8">{{postDetail.authorname}}</el-col>
+              <el-col :span="8"  v-on:click="callUser(postDetail.owner)">{{postDetail.authorname}}</el-col>
               <el-col :span="8" style="color: #919191; font-weight: lighter; font-size: xx-small">类别: {{postDetail.kindName}}</el-col>
               <el-col :span="8" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: {{postDetail.universityName}}
               </el-col>
@@ -207,20 +207,33 @@
 
   </el-container>
   <Footer></Footer>
+  <Chat :show="userChatDrawer" :chatInit="chatProp" @handleClose="chatHandleClose"></Chat>
+
 
 </template>
 
 <script>
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Chat from "@/components/Chat";
+import {ElNotification} from "element-plus";
 export default {
   name: "communitydetail",
   components: {
     Header,
-    Footer
+    Footer,
+    Chat
   },
   data() {
     return {
+      userChatDrawer: false,
+      chatProp: {
+        from: 0,
+        to: 0,
+        tradeId: false,
+        toUser: {
+        }
+      },
       doReplyShow: false,
       doReplyLimit: -1,
 
@@ -240,6 +253,25 @@ export default {
     this.getComment()
   },
   methods: {
+    chatHandleClose(res){
+      this.userChatDrawer = false
+    },
+    callUser(userId){
+      let _this = this
+      _this.chatProp.from = localStorage.getItem("userId")
+      _this.chatProp.to = userId
+      _this.$axios.post("user/index", {id: userId}).then(res=>{
+        _this.chatProp.toUser = res.data.data
+      }).catch(res=>{
+        ElNotification({
+          title: 'Error',
+          message: '此人不存在',
+          type: 'error',
+        })
+      })
+      _this.drawer = false
+      _this.userChatDrawer = true
+    },
     //点赞
     like(id) {
 
