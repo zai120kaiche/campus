@@ -5,11 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.campus.backend.common.lang.Result;
-import com.campus.backend.entity.Chat;
-import com.campus.backend.entity.ChatContentItem;
-import com.campus.backend.entity.ChatContentPages;
-import com.campus.backend.entity.ChatRequestBody;
+import com.campus.backend.entity.*;
 import com.campus.backend.mapper.ChatMapper;
+import com.campus.backend.mapper.ContactsMapper;
 import com.campus.backend.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +37,9 @@ public class ChatController {
 
     @Autowired
     private ChatMapper chatMapper;
+
+    @Autowired
+    private ContactsMapper contactsMapper;
 
     /**
      * 保存一条聊天记录
@@ -110,6 +111,88 @@ public class ChatController {
         return Result.succ(pages);
     }
 
+    /**
+     * 在发起聊天或者收到信息时的时候保存这个联系人列表项
+     * @param contacts 包含（均不为空）：
+     *                 owner：当前用户id,
+     *                 others：对方id
+     * @return
+     */
+    @PostMapping("/establishContact")
+    public Object establishContact(@RequestBody Contacts contacts)
+    {
+        int count=0;
+        try {
+            count=contactsMapper.insert(contacts);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return Result.fail("establishContact失败");
+        }
+        return Result.succ(count);
+    }
+
+    /**
+     * 单方面删除某一聊天项
+     * @param contacts 参数同上
+     * @return
+     */
+    @PostMapping("/deleteContact")
+    public Object deleteContact(@RequestBody Contacts contacts)
+    {
+        int count=0;
+        try {
+            LambdaQueryWrapper<Contacts> lqw=new LambdaQueryWrapper<>();
+            lqw.eq(Contacts::getOwner,contacts.getOwner())
+                    .eq(Contacts::getOthers,contacts.getOthers());
+            count=contactsMapper.delete(lqw);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return Result.fail("deleteContact失败");
+        }
+        return Result.succ(count);
+    }
+
+
+    /**
+     * 获取当前用户的聊天记列表
+     * 两个参数：uid 当前和用户id
+     *        current 当前页码
+     * @return
+     */
+    @PostMapping("/getContactList")
+    public Object getContactList(@RequestBody ContactRequest request)
+    {
+        ContactPage contactPage=new ContactPage();
+        try {
+            User user = userMapper.selectById(request.getUid());
+            if(user==null) return Result.fail("getContactList失败");
+
+            IPage<Contacts> pages=new Page<>(request.getCurrent(),pageSize);
+            LambdaQueryWrapper<Contacts> lqw=new LambdaQueryWrapper();
+            lqw.eq(Contacts::getOwner,request.getUid());
+            contactsMapper.selectPage(pages,lqw);
+            ContactItem contactItem;
+            List<ContactItem> list=new ArrayList<>();
+            for (Contacts record : pages.getRecords()) {
+                User user1 = userMapper.selectById(record.getOthers());
+                contactItem=new ContactItem();
+                contactItem.setOthers(user1.getId());
+                contactItem.setUsername(user1.getUsername());
+                contactItem.setAvatar(user1.getAvatar());
+                list.add(contactItem);
+            }
+            contactPage.setInfo(pages);
+            contactPage.setRecords(list);
+
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return Result.fail("getContactList失败");
+        }
+        return Result.succ(contactPage);
+    }
 
 
 }
