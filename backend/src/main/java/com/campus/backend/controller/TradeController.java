@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.campus.backend.common.lang.Result;
 import com.campus.backend.entity.*;
 import com.campus.backend.mapper.*;
+import com.campus.backend.service.UserService;
 import com.campus.backend.tool.GetIpAddressUtil;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,9 @@ public class TradeController {
 
     @Autowired
     private IntentionMapper intentionMapper;
+
+    @Autowired
+    UserService userService;
 
     /**
      * 发布商品
@@ -151,7 +155,7 @@ public class TradeController {
     @PostMapping("/getCommodityById")
     public Object getCommodityById(@RequestBody MyPostInfo info){
         System.out.println(info);
-        IPage page=new Page(info.getCurrent(),20);
+        IPage page=new Page(info.getCurrent(),10);
         CommodityPages commodityPages;
         LambdaQueryWrapper<Commodity> lqw=new LambdaQueryWrapper<>();
         try {
@@ -168,7 +172,7 @@ public class TradeController {
 
     @PostMapping("/getCollect")
     public Object getCollectById(@RequestBody MyPostInfo info){
-        IPage page=new Page(info.getCurrent(),17);
+        IPage page=new Page(info.getCurrent(),8);
         CommodityPages commodityPages;
         List<Integer> cids=new ArrayList<>();
         LambdaQueryWrapper<Intention> lqw=new LambdaQueryWrapper<>();
@@ -196,9 +200,18 @@ public class TradeController {
         System.out.println(info);
         int count=0;
         try {
-            LambdaQueryWrapper<Commodity> lqw=new LambdaQueryWrapper<>();
-            lqw.in(Commodity::getId,info.getObjectIds()).eq(Commodity::getOwner,info.getUid());
-            count=commodityMapper.delete(lqw);
+            User u = userService.getById(info.getUid());
+            System.out.println(u.getStandard());
+            if(u.getStandard() == 9){
+                LambdaQueryWrapper<Commodity> lqw=new LambdaQueryWrapper<>();
+                lqw.in(Commodity::getId,info.getObjectIds());
+                count = commodityMapper.delete(lqw);
+            }else {
+
+                LambdaQueryWrapper<Commodity> lqw = new LambdaQueryWrapper<>();
+                lqw.in(Commodity::getId, info.getObjectIds()).eq(Commodity::getOwner, info.getUid());
+                count = commodityMapper.delete(lqw);
+            }
 
         }catch (Exception e)
         {

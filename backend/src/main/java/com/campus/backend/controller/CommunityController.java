@@ -7,14 +7,17 @@ import com.campus.backend.common.lang.Result;
 import com.campus.backend.entity.*;
 import com.campus.backend.mapper.*;
 import com.campus.backend.service.PostService;
+import com.campus.backend.service.UserService;
 import com.campus.backend.tool.GetIpAddressUtil;
 import javafx.geometry.Pos;
+import lombok.Data;
 import org.bouncycastle.crypto.engines.AESLightEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.swing.text.html.parser.Entity;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +33,9 @@ public class CommunityController {
 
     @Autowired
     private SchoolMapper schoolMapper;
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     private PostMapper postMapper;
@@ -103,6 +109,58 @@ public class CommunityController {
         if(sc.getOrder()==null || sc.getCurrent()==null) return Result.fail("未指定排序类型或页码");
 
         IPage page=new Page(sc.getCurrent(),pageSize);
+        PostPages postPages;
+        LambdaQueryWrapper<Post> lqw=new LambdaQueryWrapper<>();
+
+        try {
+            lqw.eq(sc.getSchool()!=null,Post::getUniversity,sc.getSchool())
+                    .apply(sc.getType()!=null,"FIND_IN_SET ( '"+ sc.getType() +"',kind )");
+            if(sc.getKeyWord()!=null)
+            {
+                List<String> keyWord=sc.getKeyWord();
+                for (int i = 0; i <keyWord.size(); i++) {
+                    lqw.like(Post::getTitle,keyWord.get(i)).or().like(Post::getContent,keyWord.get(i));
+                    if(i!=keyWord.size()-1) lqw.or();
+                }
+            }
+            OrderType value = OrderType.values()[sc.getOrder()];
+            switch (value)
+            {
+                case Date:
+                    lqw.orderByDesc(Post::getDate);
+                    break;
+                case Like:
+                    lqw.orderByDesc(Post::getLikeNum);
+                    break;
+                case View:
+                    lqw.orderByDesc(Post::getViewNum);
+                    break;
+                case Comment:
+                    lqw.orderByDesc(Post::getCommentNum);
+                    break;
+                case Collect:
+                    lqw.orderByDesc(Post::getCollectNum);
+                    break;
+                default:
+                    break;
+            }
+            postMapper.selectPage(page,lqw);
+            postPages=addUserInfoToPost(page,sc.getUid());
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return Result.fail("SearchCondition出现异常");
+        }
+
+        return Result.succ(postPages);
+    }
+    //获取帖子列表
+    @PostMapping("/getPostList")
+    public Object getPostList(@RequestBody SearchCondition sc)
+    {
+        if(sc.getOrder()==null || sc.getCurrent()==null) return Result.fail("未指定排序类型或页码");
+
+        IPage page=new Page(sc.getCurrent(),10);
         PostPages postPages;
         LambdaQueryWrapper<Post> lqw=new LambdaQueryWrapper<>();
 
@@ -278,10 +336,11 @@ public class CommunityController {
     }
 //分享
     @PostMapping("/doForward")
-    public Object doForward(@RequestBody Integer pid)
+    public Object doForward(@RequestBody CID cid)
     {
         try {
-            Post post = postMapper.selectById(pid);
+
+            Post post = postMapper.selectById(cid.getCid());
             post.setForwardNum(post.getForwardNum()+1);
             postMapper.updateById(post);
         }catch (Exception e)
@@ -403,7 +462,7 @@ public class CommunityController {
     @PostMapping("/getCollect")
     public Object getCollect(@RequestBody CollectInfoRequestBody requestBody)
     {
-        IPage page=new Page(requestBody.getCurrent(),17);
+        IPage page=new Page(requestBody.getCurrent(),8);
         PostPages postPages;
         try {
             List<Integer> pids=new ArrayList<>();
@@ -450,7 +509,7 @@ public class CommunityController {
     @PostMapping("/getPostById")
     public Object getPostById(@RequestBody MyPostInfo info)
     {
-        IPage<Post> page=new Page(info.getCurrent(),20);
+        IPage<Post> page=new Page(info.getCurrent(),10);
         PostPages postPages;
         try {
             LambdaQueryWrapper<Post> lqw=new LambdaQueryWrapper();
@@ -525,9 +584,18 @@ public class CommunityController {
     {
         int count=0;
         try {
-            LambdaQueryWrapper<Post> lqw=new LambdaQueryWrapper<>();
-            lqw.in(Post::getId,info.getObjectIds()).eq(Post::getOwner,info.getUid());
-            count = postMapper.delete(lqw);
+            User u = userService.getById(info.getUid());
+            System.out.println(u.getStandard());
+            if(u.getStandard() == 9){
+                LambdaQueryWrapper<Post> lqw=new LambdaQueryWrapper<>();
+                lqw.in(Post::getId,info.getObjectIds());
+                count = postMapper.delete(lqw);
+            }else{
+                LambdaQueryWrapper<Post> lqw=new LambdaQueryWrapper<>();
+                lqw.in(Post::getId,info.getObjectIds()).eq(Post::getOwner,info.getUid());
+                count = postMapper.delete(lqw);
+            }
+
         }catch (Exception e)
         {
             e.printStackTrace();

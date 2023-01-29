@@ -44,167 +44,130 @@
           <el-menu-item index="1">二手易物</el-menu-item>
         </el-menu>
         <div v-if="activeIndex == 0">
-          <div v-for="item in collectPostData">
-            <div>
-              <el-row gutter="20">
-                <el-col :span="17">
-                  <router-link :to="{name: 'communitydetail', params: {communityId: item.id}}">
-                    <el-row>
-                      <el-col :span="14">{{ item.title }}</el-col>
-                      <el-col :span="10">{{ item.date.split("T")[0] }}</el-col>
-                    </el-row>
-                  </router-link>
-                </el-col>
-                <el-col :span="4">
-                  <el-popconfirm title="确定取消收藏吗?"
-                                 @confirm="collectPostDelete(item.id)"
-                                 confirm-button-text="是的"
-                                 cancel-button-text="取消"
-                  >
-                    <template #reference>
-                      <el-link style="padding: 0; border-color: transparent;font-size: small;">取消收藏</el-link>
-                    </template>
-                  </el-popconfirm>
-                </el-col>
-              </el-row>
+          <el-table :data="collectPostData"
+                    border style="width: 100%"
+                    empty-text="NAN">
+            <el-table-column prop="title" label="标题" width="180" show-overflow-tooltip="true"/>
+            <el-table-column prop="date" label="时间" width="180" show-overflow-tooltip="true"/>
+            <el-table-column fixed="right" label="操作" width="160">
+              <template #default="scope">
+                <el-popconfirm title="确定取消收藏吗?"
+                               @confirm="collectPostDelete(scope.row.id)"
+                               confirm-button-text="确定"
+                               cancel-button-text="取消"
+                >
+                  <template #reference>
+                    <el-button link type="primary" size="small">取消收藏</el-button>
+                  </template>
+                </el-popconfirm>
+                <el-button link type="primary" size="small" v-on:click="forDetail(scope.row.id)">查看详情</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
 
-            </div>
-          </div>
           <el-pagination
               @current-change="collectPostCurrentPageChange"
               :current-page="collectPostCurrentPage"
               layout="prev, pager, next"
               :total="collectPostTotal"
-              :page-size="17"
+              :page-size="8"
               style="width: 100%; margin: 0; bottom: 0; position: absolute"
           />
         </div>
         <div v-if="activeIndex == 1">
-          <div v-for="item in collectTradeData">
-            <div>
-              <el-row gutter="20">
-                <el-col :span="16">
-                  <div>
-                    <el-row v-on:click="getTradeDetail(item.id)" style="color: #88b0ef">
-                      <el-col :span="17">{{ item.content }}</el-col>
-                      <el-col :span="7">{{ item.date.split("T")[0] }}</el-col>
-                    </el-row>
-                  </div>
-                </el-col>
-                <el-col :span="1">
+          <el-table :data="collectTradeData"
+                    border style="width: 100%"
+                    empty-text="NAN">
+            <el-table-column prop="content" label="内容" width="180" show-overflow-tooltip="true"/>
+            <el-table-column prop="date" label="时间" width="180" show-overflow-tooltip="true"/>
+            <el-table-column fixed="right" label="操作" width="160">
+              <template #default="scope">
+                <el-popconfirm title="确定取消收藏吗?"
+                               @confirm="collectTradeDelete(scope.row.id)"
+                               confirm-button-text="确定"
+                               cancel-button-text="取消"
+                >
+                  <template #reference>
+                    <el-button link type="primary" size="small">取消收藏</el-button>
+                  </template>
+                </el-popconfirm>
+                <el-button link type="primary" size="small" v-on:click="getTradeDetail(scope.row.id)">查看详情</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
 
-                  <div v-if="item.tradeFlag" style="color: crimson">出</div>
-                  <div v-else style="color: #7AC23C">收</div>
-                </el-col>
-                <el-col :span="3">
-                  <el-link style="padding: 0; border-color: transparent;font-size: small;" v-on:click="getTradeDetail(item.id)">详情</el-link>
-                </el-col>
-                <el-col :span="4">
-                  <el-popconfirm title="确定取消收藏吗?"
-                                 @confirm="collectTradeDelete(item.id)"
-                                 confirm-button-text="是的"
-                                 cancel-button-text="取消"
-                  >
-                    <template #reference>
-                      <el-link style="padding: 0; border-color: transparent;font-size: small;">取消收藏</el-link>
-                    </template>
-                  </el-popconfirm>
-                </el-col>
-
-              </el-row>
-
-            </div>
-          </div>
           <el-pagination
               @current-change="collectTradeCurrentPageChange"
               :current-page="collectTradeCurrentPage"
               layout="prev, pager, next"
               :total="collectTradeTotal"
-              :page-size="17"
+              :page-size="8"
               style="width: 100%; margin: 0; bottom: 0; position: absolute"
           />
         </div>
 
 
       </el-card>
-      <el-card v-if="selectFlag == 2"  style="min-height: 80%; position: absolute; width: 55%">
-        <div v-for="item in postData">
-          <div>
-            <el-row gutter="20">
-              <el-col :span="17">
-                <router-link :to="{name: 'communitydetail', params: {communityId: item.id}}">
-                  <el-row>
-                    <el-col :span="14">{{ item.title }}</el-col>
-                    <el-col :span="10">{{ item.date.split("T")[0] }}</el-col>
-                  </el-row>
-                </router-link>
-              </el-col>
-              <el-col :span="3">
-                <el-popconfirm title="确定删除该发帖吗?"
-                               @confirm="postDelete(item.id)"
-                               confirm-button-text="是的"
-                               cancel-button-text="取消"
-                >
-                  <template #reference>
-                    <el-link style="padding: 0; border-color: transparent;font-size: small;">删除</el-link>
-                  </template>
-                </el-popconfirm>
-              </el-col>
-            </el-row>
+      <el-card v-if="selectFlag == 2" style="min-height: 80%; position: absolute; width: 55%">
+        <el-table :data="postData"
+                  border style="width: 100%"
+                  empty-text="NAN">
+          <el-table-column prop="title" label="标题" width="180" show-overflow-tooltip="true"/>
+          <el-table-column prop="date" label="时间" width="180" show-overflow-tooltip="true"/>
+          <el-table-column fixed="right" label="操作" width="160">
+            <template #default="scope">
+              <el-popconfirm title="确定删除发帖吗?"
+                             @confirm="postDelete(scope.row.id)"
+                             confirm-button-text="确定"
+                             cancel-button-text="取消"
+              >
+                <template #reference>
+                  <el-button link type="primary" size="small">删除</el-button>
+                </template>
+              </el-popconfirm>
+              <el-button link type="primary" size="small" v-on:click="forDetail(scope.row.id)">查看详情</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
 
-          </div>
-        </div>
+
         <el-pagination
             @current-change="postCurrentPageChange"
             :current-page="postCurrentPage"
             layout="prev, pager, next"
             :total="postTotal"
-            :page-size="20"
+            :page-size="10"
             style="width: 100%; margin: 0; bottom: 0; position: absolute"
         />
       </el-card>
       <el-card v-if="selectFlag == 3" style="min-height: 80%; position: absolute; width: 55%">
-        <div v-for="item in tradeData">
-          <div>
-            <el-row gutter="20">
-              <el-col :span="16">
-                <div>
-                  <el-row v-on:click="getTradeDetail(item.id)" style="color: #88b0ef">
-                    <el-col :span="17">{{ item.content }}</el-col>
-                    <el-col :span="7">{{ item.date.split("T")[0] }}</el-col>
-                  </el-row>
-                </div>
-              </el-col>
-              <el-col :span="1">
+        <el-table :data="tradeData"
+                  border style="width: 100%"
+                  empty-text="NAN">
+          <el-table-column prop="content" label="内容" width="180" show-overflow-tooltip="true"/>
+          <el-table-column prop="date" label="时间" width="180" show-overflow-tooltip="true"/>
+          <el-table-column fixed="right" label="操作" width="160">
+            <template #default="scope">
+              <el-popconfirm title="确定删除商品吗?"
+                             @confirm="tradeDelete(scope.row.id)"
+                             confirm-button-text="确定"
+                             cancel-button-text="取消"
+              >
+                <template #reference>
+                  <el-button link type="primary" size="small">删除</el-button>
+                </template>
+              </el-popconfirm>
+              <el-button link type="primary" size="small" v-on:click="getTradeDetail(scope.row.id)">查看详情</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
 
-                <div v-if="item.tradeFlag" style="color: crimson">出</div>
-                <div v-else style="color: #7AC23C">收</div>
-              </el-col>
-              <el-col :span="3">
-                    <el-link style="padding: 0; border-color: transparent;font-size: small;" v-on:click="getTradeDetail(item.id)">详情</el-link>
-              </el-col>
-              <el-col :span="3">
-                <el-popconfirm title="确定删除该物品吗?"
-                               @confirm="tradeDelete(item.id)"
-                               confirm-button-text="是的"
-                               cancel-button-text="取消"
-                >
-                  <template #reference>
-                    <el-link style="padding: 0; border-color: transparent;font-size: small;">删除</el-link>
-                  </template>
-                </el-popconfirm>
-              </el-col>
-
-            </el-row>
-
-          </div>
-        </div>
         <el-pagination
             @current-change="tradeCurrentPageChange"
             :current-page="tradeCurrentPage"
             layout="prev, pager, next"
             :total="tradeTotal"
-            :page-size="20"
+            :page-size="10"
             style="width: 100%; margin: 0; bottom: 0; position: absolute"
         />
       </el-card>
@@ -224,7 +187,9 @@
                 :on-remove="handleRemove"
                 :on-success="handleSucc"
                 :limit="1">
-              <el-icon><Plus /></el-icon>
+              <el-icon>
+                <Plus/>
+              </el-icon>
             </el-upload>
           </el-col>
         </el-row>
@@ -241,18 +206,19 @@
                 用户名：
               </el-col>
               <el-col :span="15">
-                <el-input :placeholder="userInfo.username" v-model="changeUserInfo.username" style="width: 180%"></el-input>
+                <el-input :placeholder="userInfo.username" v-model="changeUserInfo.username"
+                          style="width: 180%"></el-input>
               </el-col>
             </el-row>
           </el-row>
           <el-row style="margin-top: 2%; margin-left: 3%">
             <div v-if="!changeInfoFlag">
-              电子邮箱：{{userInfo.email?userInfo.email:'暂未绑定'}}
+              电子邮箱：{{ userInfo.email ? userInfo.email : '暂未绑定' }}
             </div>
             <div v-else>
               <el-row>
                 <el-col :span="8">
-                    电子邮箱：
+                  电子邮箱：
                 </el-col>
                 <el-col :span="15">
                   <el-input :placeholder="userInfo.email" v-model="changeUserInfo.email" style="width: 180%"></el-input>
@@ -263,7 +229,7 @@
 
           <el-row style="margin-top: 2%; margin-left: 3%">
             <div v-if="!changeInfoFlag">
-              联系方式：{{userInfo.phone?userInfo.phone:'暂未绑定'}}
+              联系方式：{{ userInfo.phone ? userInfo.phone : '暂未绑定' }}
             </div>
             <div v-else>
               <el-row>
@@ -277,12 +243,14 @@
             </div>
           </el-row>
           <el-row style="margin-top: 2%; margin-left: 3%" v-if="!changeInfoFlag">
-            已有积分：{{userInfo.score}}
+            已有积分：{{ userInfo.score }}
           </el-row>
         </div>
         <el-row>
-          <el-col :offset="10" >
-            <el-button v-if="!changeInfoFlag" style="border-color: transparent" v-on:click="changeInfoFlag = true">修改信息</el-button>
+          <el-col :offset="10">
+            <el-button v-if="!changeInfoFlag" style="border-color: transparent" v-on:click="changeInfoFlag = true">
+              修改信息
+            </el-button>
             <el-button v-else v-on:click="sendSms">确认修改</el-button>
           </el-col>
         </el-row>
@@ -314,8 +282,8 @@
 
   </el-drawer>
   <el-dialog v-model="dialog" title="验证码确认">
-    <div v-if="changeUserInfo.phone != ''">我们将向手机号：{{changeUserInfo.phone}}发送验证码，请注意查收</div>
-    <div v-else-if="changeUserInfo.email != ''">我们将向邮箱：{{changeUserInfo.email}}发送验证码，请注意查收</div>
+    <div v-if="changeUserInfo.phone != ''">我们将向手机号：{{ changeUserInfo.phone }}发送验证码，请注意查收</div>
+    <div v-else-if="changeUserInfo.email != ''">我们将向邮箱：{{ changeUserInfo.email }}发送验证码，请注意查收</div>
     <div v-else>请至少填写手机号或邮箱中的一项</div>
     <el-input placeholder="请输入验证码" v-model="sms" style="margin-top: 5%"></el-input>
     <template #footer>
@@ -400,29 +368,38 @@ export default {
     }
   },
   methods: {
+    forDetail(id){
+      let _this = this
+      _this.$router.push({
+        name: 'communitydetail',
+        params: {
+          communityId: id
+        }
+      })
+    },
     sendSms() {
       let _this = this
       _this.dialog = true
-      if(_this.changeUserInfo.phone != ''){
+      if (_this.changeUserInfo.phone != '') {
         _this.sendData.phoneOrEmail = _this.changeUserInfo.phone
         console.log(_this.sendData)
-        _this.$axios.post('/identify/send', _this.sendData).then(res =>{
+        _this.$axios.post('/identify/send', _this.sendData).then(res => {
           ElNotification({
             title: 'Success',
             message: '验证码发送成功',
             type: 'success',
           })
         })
-      }else if(_this.changeUserInfo.email != ''){
+      } else if (_this.changeUserInfo.email != '') {
         _this.sendData.phoneOrEmail = _this.changeUserInfo.email
-        _this.$axios.post('/identify/send', _this.sendData).then(res =>{
+        _this.$axios.post('/identify/send', _this.sendData).then(res => {
           ElNotification({
             title: 'Success',
             message: '验证码发送成功',
             type: 'success',
           })
         })
-      }else{
+      } else {
         ElNotification({
           title: 'Error',
           message: '请填写绑定手机号或邮箱',
@@ -435,7 +412,7 @@ export default {
       let _this = this
       _this.sendData.identifier = _this.sms
       _this.$axios.post('/identify/check', _this.sendData).then(res => {
-        if(res.data.code == 200){
+        if (res.data.code == 200) {
           _this.changeInfo()
         } else {
           ElNotification({
@@ -446,7 +423,7 @@ export default {
         }
       })
     },
-    handlePictureCardPreview (uploadFile) {
+    handlePictureCardPreview(uploadFile) {
       console.log(uploadFile)
       this.dialogImageUrl = uploadFile.response.data.returnImgeUrl
       this.dialogVisible = true
@@ -461,8 +438,8 @@ export default {
     changeInfo() {
       let _this = this
 
-      _this.$axios.post("/user/change", _this.changeUserInfo).then(res=>{
-        if(res.data.code == 200){
+      _this.$axios.post("/user/change", _this.changeUserInfo).then(res => {
+        if (res.data.code == 200) {
           ElNotification({
             title: 'Success',
             message: '修改成功',
@@ -472,7 +449,7 @@ export default {
           _this.sms = ''
           _this.dialog = false
         }
-      }).catch(res=>{
+      }).catch(res => {
         ElNotification({
           title: 'Error',
           message: '修改失败',
@@ -483,12 +460,12 @@ export default {
     init() {
       let _this = this
       _this.selectFlag = _this.$route.params.flag
-      if(_this.selectFlag == 2 || _this.selectFlag == 3){
+      if (_this.selectFlag == 2 || _this.selectFlag == 3) {
         _this.changeSelectFlag(_this.selectFlag)
-      } else if(_this.selectFlag == 6){
+      } else if (_this.selectFlag == 6) {
         _this.changeSelectFlag(1)
         _this.handleSelect(0)
-      } else if(_this.selectFlag == 7){
+      } else if (_this.selectFlag == 7) {
         _this.changeSelectFlag(1)
         _this.handleSelect(1)
       }
@@ -573,7 +550,7 @@ export default {
       _this.selectFlag = index
       if (index == 2) {
         _this.search(0)
-      } else if(index == 3){
+      } else if (index == 3) {
         _this.search(1)
       }
     },
@@ -608,8 +585,8 @@ export default {
         uid: _this.userInfo.id,
         objectIds: [res]
       }
-      _this.$axios.post("/community/deletePostsByIds", temp).then(res=>{
-        if(res.data.code == 200){
+      _this.$axios.post("/community/deletePostsByIds", temp).then(res => {
+        if (res.data.code == 200) {
           ElNotification({
             title: 'Success',
             message: '删除成功',
@@ -618,7 +595,7 @@ export default {
           _this.postCurrentPageChange(_this.postCurrentPage)
         }
 
-      }).catch(res=>{
+      }).catch(res => {
         ElNotification({
           title: 'Error',
           message: '删除失败',
@@ -632,8 +609,8 @@ export default {
         uid: _this.userInfo.id,
         objectIds: [res]
       }
-      _this.$axios.post("/trade/deleteCommodity", temp).then(res=>{
-        if(res.data.code == 200){
+      _this.$axios.post("/trade/deleteCommodity", temp).then(res => {
+        if (res.data.code == 200) {
           ElNotification({
             title: 'Success',
             message: '删除成功',
@@ -641,7 +618,7 @@ export default {
           })
           _this.tradeCurrentPageChange(_this.tradeCurrentPage)
         }
-      }).catch(res=>{
+      }).catch(res => {
         ElNotification({
           title: 'Error',
           message: '删除失败',
@@ -655,8 +632,8 @@ export default {
         uid: _this.userInfo.id,
         objectIds: [res]
       }
-      _this.$axios.post("/community/deleteCollectByIds", temp).then(res=>{
-        if(res.data.code == 200){
+      _this.$axios.post("/community/deleteCollectByIds", temp).then(res => {
+        if (res.data.code == 200) {
           ElNotification({
             title: 'Success',
             message: '取消收藏成功',
@@ -665,7 +642,7 @@ export default {
           _this.collectPostCurrentPageChange(_this.collectPostCurrentPage)
         }
 
-      }).catch(res=>{
+      }).catch(res => {
         ElNotification({
           title: 'Error',
           message: '取消收藏失败',
@@ -679,8 +656,8 @@ export default {
         uid: _this.userInfo.id,
         objectIds: [res]
       }
-      _this.$axios.post("/trade/deleteCollect", temp).then(res=>{
-        if(res.data.code == 200){
+      _this.$axios.post("/trade/deleteCollect", temp).then(res => {
+        if (res.data.code == 200) {
           ElNotification({
             title: 'Success',
             message: '取消收藏成功',
@@ -688,7 +665,7 @@ export default {
           })
           _this.collectTradeCurrentPageChange(_this.collectTradeCurrentPage)
         }
-      }).catch(res=>{
+      }).catch(res => {
         ElNotification({
           title: 'Error',
           message: '取消收藏失败',

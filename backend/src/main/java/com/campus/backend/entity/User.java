@@ -44,4 +44,6 @@ public class User implements Serializable {
 
     private Integer score;
 
+    private Integer standard;
+
 }

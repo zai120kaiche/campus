@@ -277,12 +277,12 @@
         <el-container>
           <el-header>
             <el-row>
-              <el-col :span="3" v-on:click="callUser(item.owner)">
+              <el-col :span="3" v-on:click="callUserInfo(item.owner)">
                 <el-avatar :src="item.avatar"></el-avatar>
               </el-col>
               <el-col :span="21">
                 <el-row>
-                  <el-col :span="8" v-on:click="callUser(item.owner)">{{item.authorname}}</el-col>
+                  <el-col :span="8" v-on:click="callUserInfo(item.owner)">{{item.authorname}}</el-col>
                   <el-col :span="8" style="color: #919191; font-weight: lighter; font-size: xx-small">类别: {{item.kindName}}</el-col>
                   <el-col :span="8" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: {{item.universityName}}
                   </el-col>
@@ -292,7 +292,7 @@
             </el-row>
 
           </el-header>
-          <router-link :to="{name: 'communitydetail', params: {communityId: item.id}}">
+          <router-link :to="{name: 'communitydetail', params: {communityId: item.id}, query:{likeFlag: item.likeFlag, collectFlag: item.collectFlag}}">
             <el-container>
               <el-aside width="40%">
                 <el-image v-if="item.pic != '' && item.pic != 'undefined'" style="width: 90%; height: 80%; border-radius: 5px" :src="item.pic" :fit="'fill'"></el-image>
@@ -332,21 +332,27 @@
                 {{item.likeNum}}
               </el-col>
               <el-divider direction="vertical"/>
-              <el-col :span="4">
+              <el-col :span="4" v-on:click="forDetail(item.id)">
                 <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
                   <ChatDotSquare/>
                 </el-icon>
                 {{item.commentNum}}
               </el-col>
               <el-divider direction="vertical"/>
-              <el-col :span="4" v-on:click="collect(item.id)">
+              <el-col v-if="item.collectFlag" :span="4">
+                <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%;color: #88b0ef">
+                  <StarFilled/>
+                </el-icon>
+                {{item.collectNum}}
+              </el-col>
+              <el-col v-else :span="4" v-on:click="collect(item.id)">
                 <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
                   <Star/>
                 </el-icon>
                 {{item.collectNum}}
               </el-col>
               <el-divider direction="vertical"/>
-              <el-col :span="4">
+              <el-col :span="4" v-on:click="doCopy('ecampus.chat/index/community/detail/' + item.id, item.id)">
                 <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
                   <Share/>
                 </el-icon>
@@ -443,6 +449,25 @@
   </el-dialog>
   <Footer></Footer>
   <Tool></Tool>
+  <el-drawer v-model="callUserFlag" :direction="'ltr'">
+    <template #header>
+
+      <h4>{{callUserData.username}}</h4>
+    </template>
+    <template #default>
+      <el-avatar :src="callUserData.avatar"></el-avatar>
+      <el-card>
+        <el-row>
+          联系方式：{{callUserData.email?callUserData.email:'暂未绑定'}}
+        </el-row>
+      </el-card>
+    </template>
+    <template #footer>
+      <div style="flex: auto">
+        <el-button type="primary" @click="callUser(callUserData.id)">私聊</el-button>
+        </div>
+    </template>
+  </el-drawer>
   <Chat :show="userChatDrawer" :chatInit="chatProp" @handleClose="chatHandleClose"></Chat>
 
 </template>
@@ -472,6 +497,8 @@ export default {
   },
   data() {
     return {
+      callUserFlag: false,
+      callUserData: {},
       visible: false,
       keyWord: '',
       userInfo: {
@@ -546,15 +573,41 @@ export default {
     this.getList(1, 0)
   },
   methods: {
+    doCopy(url, id){
+      let _this = this
+      _this.$copyText(url).then(function (e) {
+        ElNotification({
+          title: 'Success',
+          message: '已复制分享内容到剪贴板',
+          type: 'success',
+        })
+        console.log(id)
+        _this.$axios.post("community/doForward", {cid: id}).then(res =>{
+          _this.getList(_this.currentPage, 0)
+        })
+      }, function (e) {
+        ElNotification({
+          title: 'Error',
+          message: '分享失败',
+          type: 'error',
+        })
+      })
+
+    },
+    forDetail(id1) {
+      this.$router.push({
+        name: 'communitydetail',
+        params: {communityId: id1}
+      })
+    },
     chatHandleClose(res){
       this.userChatDrawer = false
     },
-    callUser(userId){
+    callUserInfo(userId){
       let _this = this
-      _this.chatProp.from = localStorage.getItem("userId")
-      _this.chatProp.to = userId
       _this.$axios.post("user/index", {id: userId}).then(res=>{
-        _this.chatProp.toUser = res.data.data
+        _this.callUserData = res.data.data
+        _this.callUserFlag = true
       }).catch(res=>{
         ElNotification({
           title: 'Error',
@@ -562,6 +615,13 @@ export default {
           type: 'error',
         })
       })
+    },
+    callUser(userId){
+      let _this = this
+      _this.chatProp.from = localStorage.getItem("userId")
+      _this.chatProp.to = userId
+      _this.chatProp.toUser = _this.callUserData
+      _this.callUserFlag = false
       _this.drawer = false
       _this.userChatDrawer = true
     },
@@ -595,10 +655,12 @@ export default {
         _this.getListTable.type = null
         _this.getListTable.school = null
         _this.getListTable.order = 1
+        _this.keyWord = ''
       }
       else if(flag == 2){
         let temp = _this.keyWord.split(' ')
         for(let i = 0; i < temp.length; i ++){
+          _this.getListTable.keyWord = []
           _this.getListTable.keyWord.push(temp[i])
         }
       } else if(flag == 3){
@@ -666,7 +728,18 @@ export default {
         pid: id
       }
       _this.$axios.post("/community/doCollect", temp).then(res => {
-        console.log(res)
+        _this.getList(_this.currentPage, 0)
+        ElNotification({
+          title: 'Success',
+          message: '收藏成功',
+          type: 'success',
+        })
+      }).catch(res =>{
+        ElNotification({
+          title: 'Error',
+          message: '收藏失败',
+          type: 'error',
+        })
       })
     },
     picSelect(res) {

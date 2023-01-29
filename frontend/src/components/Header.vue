@@ -5,7 +5,7 @@
                 :src="require('../assets/images/logo.png')"
                 :fit="'fill'"></el-image>
     </el-col>
-    <el-col :span="6" style="margin-top: 3%">
+    <el-col :span="8" style="margin-top: 3%">
       <el-button v-if="index == 1"
                  style="background-color: transparent; border-color: transparent; font-size: large; color: #333333">
         <el-icon style="margin-right: 1%">
@@ -15,7 +15,7 @@
           学生社区
         </div>
       </el-button>
-      <el-button v-if="index == 2 || index == 3"
+      <el-button v-if="index == 2 || index == 3 || index == -1"
                  style="background-color: transparent; border-color: transparent; font-size: large; color: #919191"
                  v-on:click="changeCommunity">
         <el-icon style="margin-right: 1%">
@@ -34,7 +34,7 @@
           二手易物
         </div>
       </el-button>
-      <el-button v-if="index == 1 || index == 3"
+      <el-button v-if="index == 1 || index == 3 || index == -1"
                  style="background-color: transparent; border-color: transparent; font-size: large; color: #919191"
                  v-on:click="changeGood">
         <el-icon style="margin-right: 1%">
@@ -45,27 +45,28 @@
         </div>
       </el-button>
     </el-col>
-    <el-col :span="6" style="margin-top: 3%">
-      <el-input
-          v-model="searchInput"
-          placeholder="搜索"
-          class="input-with-select"
+<!--    <el-col :span="6" style="margin-top: 3%">-->
+<!--      <el-input-->
+<!--          v-model="searchInput"-->
+<!--          placeholder="搜索"-->
+<!--          class="input-with-select"-->
 
-      >
-        <template #append>
-          <el-button style="background-color: transparent; border-color: transparent">
-            <el-icon>
-              <Search/>
-            </el-icon>
+<!--      >-->
+<!--        <template #append>-->
+<!--          <el-button style="background-color: transparent; border-color: transparent">-->
+<!--            <el-icon>-->
+<!--              <Search/>-->
+<!--            </el-icon>-->
 
-          </el-button>
-        </template>
+<!--          </el-button>-->
+<!--        </template>-->
 
 
-      </el-input>
-    </el-col>
-    <el-col :span="5" :offset="1" style="margin-top: 2%">
+<!--      </el-input>-->
+<!--    </el-col>-->
+    <el-col :span="5" :offset="5" style="margin-top: 2%">
       <el-button
+          v-on:click="service"
           style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">
         <el-icon>
           <Service/>
@@ -99,7 +100,7 @@
             通知中心
           </div>
         </el-row>
-        <el-row style="font-weight: bold; margin-top: 5%">
+        <el-row style="font-weight: bold; margin-top: 5%" v-on:click="toChatRoom">
           <el-icon style="margin-top: 2%">
             <ChatRound/>
           </el-icon>
@@ -137,6 +138,40 @@
 
     </el-col>
   </el-row>
+  <el-drawer v-model="serviceShow" :direction="'rtl'">
+    <template #header>
+      <h4>客服咨询</h4>
+    </template>
+    <template #default>
+      <el-card  style="width: 100%; height: 100%; overflow: auto">
+        <div v-for="item in chatList">
+          <div v-if="item.who == 0" class="chatBox chatBox-right" style="margin-left: 39%;margin-top: 1%">
+            {{item.content}}
+          </div>
+          <div  v-if="item.who == 1" class="chatBox chatBox-left" style="margin-top: 1%">
+            {{item.content}}
+          </div>
+        </div>
+      </el-card>
+    </template>
+    <template #footer>
+      <el-row gutter="20" style="">
+        <el-col :span="15"><el-input v-model="serviceData"
+                                     placeholder="请输入问题"
+                                     clearable
+                                     type="textarea"
+                                     :rows="3"
+        ></el-input></el-col>
+        <el-col :span="2" >
+          <el-button v-on:click="serviceSend">查询</el-button>
+        </el-col>
+        <el-col :span="2" :offset="2">
+          <el-button v-on:click="cancle">取消</el-button>
+        </el-col>
+
+      </el-row>
+    </template>
+  </el-drawer>
 
 </template>
 
@@ -149,11 +184,32 @@ export default {
     let index = this.getIndexed()
     return {
       index: index,
+      serviceShow: false,
       searchInput: '',
-      avatarUrl: localStorage.getItem("userAvatar")
+      avatarUrl: localStorage.getItem("userAvatar"),
+      chatList: [],
+      serviceData: '',
     }
   },
   methods: {
+    service() {
+      let _this = this
+      _this.serviceShow = true
+    },
+    serviceSend() {
+      let _this = this
+      _this.chatList.push({who: 0, content: _this.serviceData})
+      _this.$axios.post("ai/send", {request: _this.serviceData}).then(res=>{
+
+        _this.chatList.push({who: 1, content: res.data.data})
+      })
+    },
+
+    toChatRoom() {
+      this.$store.commit('SET_INDEX', -1)
+
+      this.$router.push("/user/chatroom")
+    },
     getIndexed() {
       return this.$store.getters.getIndex
     },

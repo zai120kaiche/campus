@@ -18,13 +18,15 @@ import "./axios"
 import SlideVerify from 'vue-monoplasty-slide-verify';
 //引入动画特效
 import 'animate.css/animate.min.css'
-
+//引入复制到剪贴板
+import VueClipboard from 'vue-clipboard2'
 const app = createApp(App)
 app.config.globalProperties.$axios=axios
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
 app.use(ElementPlus)
+app.use(VueClipboard)
 app.use(SlideVerify)
 app.directive('drag', {
     bind: function (el) {
@@ -84,4 +86,5 @@ app.directive('drag', {
         })
     }
 })
+
 app.use(router).use(store).mount("#app")

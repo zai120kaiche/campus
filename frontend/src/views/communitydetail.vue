@@ -5,13 +5,17 @@
   <el-container >
     <el-main style="padding: 0;margin-left: 12%; margin-right: 3%;">
       <el-card class="  animate__animated animate__fadeIn "  >
+        <el-row v-on:click="goOff" style="margin-bottom: 2%">
+          <el-icon style="margin-top: 0.5%"><ArrowLeftBold /></el-icon>
+          返回
+        </el-row>
         <el-row>
-          <el-col :span="3" v-on:click="callUser(postDetail.owner)">
+          <el-col :span="3" v-on:click="callUserInfo(postDetail.owner)">
             <el-avatar :src="postDetail.avatar"></el-avatar>
           </el-col>
           <el-col :span="21">
             <el-row>
-              <el-col :span="8"  v-on:click="callUser(postDetail.owner)">{{postDetail.authorname}}</el-col>
+              <el-col :span="8"  v-on:click="callUserInfo(postDetail.owner)">{{postDetail.authorname}}</el-col>
               <el-col :span="8" style="color: #919191; font-weight: lighter; font-size: xx-small">类别: {{postDetail.kindName}}</el-col>
               <el-col :span="8" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: {{postDetail.universityName}}
               </el-col>
@@ -38,7 +42,13 @@
           </el-col>
           <el-divider direction="vertical"/>
 
-          <el-col :span="4" v-on:click="like(postDetail.id)">
+          <el-col v-if="likeFlag" :span="4" v-on:click="dislike(postDetail.id)">
+            <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%; color: #88b0ef">
+              <Pointer />
+            </el-icon>
+            {{postDetail.likeNum}}
+          </el-col>
+          <el-col v-else :span="4" v-on:click="like(postDetail.id)">
             <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
               <Pointer/>
             </el-icon>
@@ -52,14 +62,20 @@
             {{postDetail.commentNum}}
           </el-col>
           <el-divider direction="vertical"/>
-          <el-col :span="4" v-on:click="collect(postDetail.id)">
+          <el-col v-if="collectFlag" :span="4">
+            <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%;color: #88b0ef">
+              <StarFilled/>
+            </el-icon>
+            {{postDetail.collectNum}}
+          </el-col>
+          <el-col v-else :span="4" v-on:click="collect(postDetail.id)">
             <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
               <Star/>
             </el-icon>
             {{postDetail.collectNum}}
           </el-col>
           <el-divider direction="vertical"/>
-          <el-col :span="4">
+          <el-col :span="4" v-on:click="doCopy('ecampus.chat/index/community/detail/' + postDetail.id, postDetail.id)">
             <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
               <Share/>
             </el-icon>
@@ -207,6 +223,25 @@
 
   </el-container>
   <Footer></Footer>
+  <el-drawer v-model="callUserFlag" :direction="'ltr'">
+    <template #header>
+
+      <h4>{{callUserData.username}}</h4>
+    </template>
+    <template #default>
+      <el-avatar :src="callUserData.avatar"></el-avatar>
+      <el-card>
+        <el-row>
+          联系方式：{{callUserData.email?callUserData.email:'暂未绑定'}}
+        </el-row>
+      </el-card>
+    </template>
+    <template #footer>
+      <div style="flex: auto">
+        <el-button type="primary" @click="callUser(callUserData.id)">私聊</el-button>
+      </div>
+    </template>
+  </el-drawer>
   <Chat :show="userChatDrawer" :chatInit="chatProp" @handleClose="chatHandleClose"></Chat>
 
 
@@ -226,6 +261,10 @@ export default {
   },
   data() {
     return {
+      likeFlag: false,
+      collectFlag: false,
+      callUserFlag: false,
+      callUserData: {},
       userChatDrawer: false,
       chatProp: {
         from: 0,
@@ -253,15 +292,12 @@ export default {
     this.getComment()
   },
   methods: {
-    chatHandleClose(res){
-      this.userChatDrawer = false
-    },
-    callUser(userId){
+    goOff(){this.$router.go(-1)},
+    callUserInfo(userId){
       let _this = this
-      _this.chatProp.from = localStorage.getItem("userId")
-      _this.chatProp.to = userId
       _this.$axios.post("user/index", {id: userId}).then(res=>{
-        _this.chatProp.toUser = res.data.data
+        _this.callUserData = res.data.data
+        _this.callUserFlag = true
       }).catch(res=>{
         ElNotification({
           title: 'Error',
@@ -269,6 +305,33 @@ export default {
           type: 'error',
         })
       })
+    },
+    doCopy(url, id){
+      let _this = this
+      _this.$copyText(url).then(function (e) {
+        ElNotification({
+          title: 'Success',
+          message: '已复制分享内容到剪贴板',
+          type: 'success',
+        })
+      }, function (e) {
+        ElNotification({
+          title: 'Error',
+          message: '分享失败',
+          type: 'error',
+        })
+      })
+
+    },
+    chatHandleClose(res){
+      this.userChatDrawer = false
+    },
+    callUser(userId){
+      let _this = this
+      _this.chatProp.from = localStorage.getItem("userId")
+      _this.chatProp.to = userId
+      _this.chatProp.toUser = _this.callUserData
+      _this.callUserFlag = false
       _this.drawer = false
       _this.userChatDrawer = true
     },
@@ -286,6 +349,7 @@ export default {
         console.log(res.data)
         _this.init()
 
+
       })
     },
     //收藏
@@ -296,18 +360,33 @@ export default {
         pid: id
       }
       _this.$axios.post("/community/doCollect", temp).then(res => {
-        console.log(res)
+        _this.init()
+        ElNotification({
+          title: 'Success',
+          message: '收藏成功',
+          type: 'success',
+        })
+      }).catch(res =>{
+        ElNotification({
+          title: 'Error',
+          message: '收藏失败',
+          type: 'error',
+        })
       })
 
     },
     init() {
       let _this = this
       _this.communityId = _this.$route.params.communityId
+      _this.likeFlag = _this.$route.query.likeFlag
+      _this.collectFlag = _this.$route.query.collectFlag
+      console.log(_this.likeFlag)
       let temp = {
         id: _this.communityId
       }
       _this.$axios.post('/community/postDetail', temp).then(res=>{
         _this.postDetail = res.data.data
+        console.log(_this.postDetail)
 
         _this.postDetail.pic = _this.postDetail.pic.split(",")
 

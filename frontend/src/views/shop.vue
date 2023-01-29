@@ -169,6 +169,31 @@
           </el-col>
         </el-row>
       </el-card>
+      <el-card style="margin-top: 1%">
+        <el-row>
+          <el-col :span="6">
+            <el-icon style="color: #88b0ef; margin-top: 2%">
+              <Promotion/>
+            </el-icon>
+            物品查找
+          </el-col>
+          <el-col :span="12">
+            <el-input placeholder="请输入您想查找的物品名称"
+                      v-model="keyWord"
+            >
+              <template #append>
+                <el-button style="background-color: transparent; border-color: transparent">
+                  <el-icon v-on:click="getGoodList(1, 2)">
+                    <Search/>
+                  </el-icon>
+
+                </el-button>
+              </template>
+
+            </el-input>
+          </el-col>
+        </el-row>
+      </el-card>
       <el-row>
 
         <el-card v-for="(item, index) in goodList"
@@ -177,7 +202,7 @@
 
 
           <el-image
-              v-if="item.pic != 'undefined'"
+              v-if="item.pic != 'undefined' && item.pic != null"
               :src="item.pic.split(',')[0]"
               class="image"
               style="border-radius: 5px"
@@ -360,6 +385,7 @@ export default {
   },
   data() {
     return {
+      keyWord: '',
       userChatDrawer: false,
       chatProp: {
         from: 0,
@@ -517,6 +543,12 @@ export default {
         _this.selectData.type = null
         _this.selectData.school = null
         _this.selectData.keyWord = []
+        _this.keyWord = ''
+
+      } else if(flag == 2){
+
+          _this.selectData.keyWord = []
+          _this.selectData.keyWord.push(_this.keyWord)
 
       }
       _this.$axios.post("/trade/getCommodity", _this.selectData).then(res => {
@@ -608,7 +640,7 @@ export default {
       _this.currentTradeType = index
       _this.currentTradeTypeName = name
       _this.selectData.type = index
-      _this.getGoodList(1, 1)
+      _this.getGoodList(1, 0)
 
     },
     picSelect(res) {

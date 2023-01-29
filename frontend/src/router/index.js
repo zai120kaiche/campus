@@ -22,6 +22,10 @@ const routes = [
     name: 'user',
     component:() => import('../views/user')
   },{
+    path: '/user/chatroom',
+    name: 'chatroom',
+    component:() => import('../views/chatroom')
+  },{
     path: '/user/info',
     name: 'userinfo',
     component:() => import('../views/userinfo')

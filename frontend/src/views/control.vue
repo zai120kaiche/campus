@@ -21,6 +21,18 @@
           <el-icon><icon-menu /></el-icon>
           <span>商品分类</span>
         </el-menu-item>
+        <el-menu-item index="4" @click="select(4)">
+          <el-icon><icon-menu /></el-icon>
+          <span>发帖管理</span>
+        </el-menu-item>
+        <el-menu-item index="5" @click="select(5)">
+          <el-icon><icon-menu /></el-icon>
+          <span>商品管理</span>
+        </el-menu-item>
+        <el-menu-item index="6" @click="select(6)">
+          <el-icon><icon-menu /></el-icon>
+          <span>评论管理</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-main>
@@ -177,8 +189,135 @@
           />
         </div>
       </div>
+      <div v-if="selectOption == 4">
+        <div style="font-weight: bold; font-size: xx-large">发帖管理</div>
+        <el-input
+            v-model="keyWord"
+            placeholder="请输入要搜索的发帖内容"
+            class="input-with-select"
+            style="margin-top: 3%; width: 50%"
+        >
+
+          <template #append>
+            <el-button v-on:click="postSearch">
+              <el-icon>
+                <Search />
+              </el-icon>
+            </el-button>
+          </template>
+        </el-input>
+        <el-table :data="postTableData"
+                  border style="width: 100%"
+                  :row-key="postTableRow"
+                  empty-text="NAN"
+        >
+          <el-table-column prop="id" label="编号" width="180"  show-overflow-tooltip="true"/>
+          <el-table-column prop="title" label="标题" width="180"  show-overflow-tooltip="true"/>
+          <el-table-column prop="content" label="内容" width="180" show-overflow-tooltip="true"/>
+          <el-table-column fixed="right" label="操作" width="120">
+            <template #default="scope">
+              <el-popconfirm title="确定删除该帖子吗?"
+                             @confirm="postDelete(scope.row)"
+                             confirm-button-text="是的"
+                             cancel-button-text="取消"
+              >
+                <template #reference>
+                  <el-button link type="primary" size="small">删除</el-button>
+                </template>
+              </el-popconfirm>
+
+              <el-button link type="primary" size="small" @click="postDetail(scope.row)">查看详情</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="example-pagination-block">
+          <el-pagination
+              @current-change="postTableChange"
+              :current-page="postCurrentPage"
+              layout="prev, pager, next"
+              :total="postTotal"
+              :page-size="10"
+          />
+        </div>
+      </div>
+      <div v-if="selectOption == 5">
+        <div style="font-weight: bold; font-size: xx-large">商品管理</div>
+        <el-input
+            v-model="goodKeyWord"
+            placeholder="请输入要搜索的商品内容"
+            class="input-with-select"
+            style="margin-top: 3%; width: 50%"
+        >
+
+          <template #append>
+            <el-button v-on:click="goodSearch">
+              <el-icon>
+                <Search />
+              </el-icon>
+            </el-button>
+          </template>
+        </el-input>
+        <el-table :data="goodTableData"
+                  border style="width: 100%"
+                  :row-key="goodTableRow"
+                  empty-text="NAN"
+        >
+          <el-table-column prop="id" label="编号" width="180"  show-overflow-tooltip="true"/>
+          <el-table-column prop="content" label="内容" width="180" show-overflow-tooltip="true"/>
+          <el-table-column fixed="right" label="操作" width="120">
+            <template #default="scope">
+              <el-popconfirm title="确定删除该商品吗?"
+                             @confirm="goodDelete(scope.row)"
+                             confirm-button-text="是的"
+                             cancel-button-text="取消"
+              >
+                <template #reference>
+                  <el-button link type="primary" size="small">删除</el-button>
+                </template>
+              </el-popconfirm>
+
+              <el-button link type="primary" size="small" @click="goodDetail(scope.row)">查看详情</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="example-pagination-block">
+          <el-pagination
+              @current-change="goodTableChange"
+              :current-page="goodCurrentPage"
+              layout="prev, pager, next"
+              :total="goodTotal"
+              :page-size="9"
+          />
+        </div>
+      </div>
+
     </el-main>
   </el-container>
+  <el-drawer v-model="goodDrawer" :direction="'rtl'">
+    <template #header>
+      <h4 v-if="tradeDetail.tradeFlag">出</h4>
+      <h4 v-else>收</h4>
+    </template>
+    <template #default>
+      <el-container style="height: 100%">
+        <el-main style="padding: 0">
+          <el-carousel height="150px" indicator-position="outside" v-if="tradeDetail.pic != 'undefined'">
+            <el-carousel-item v-for="item in tradeDetail.pic" :key="item">
+              <el-image :src="item"></el-image>
+            </el-carousel-item>
+          </el-carousel>
+        </el-main>
+        <el-aside width="60%">
+          <el-row
+              style="word-wrap:break-word; word-break:break-all;margin-left: 10%; margin-right: 10%;font-size: large">
+            {{ tradeDetail.content }}
+          </el-row>
+        </el-aside>
+      </el-container>
+    </template>
+    <template #footer>
+    </template>
+  </el-drawer>
 </template>
 
 <script>
@@ -196,7 +335,11 @@ export default {
   data() {
 
     return {
+
+
       selectOption: 1,
+
+
       addType: {
         id: null,
         typename: '',
@@ -206,6 +349,8 @@ export default {
       typeCurrentPage: 0,
       typePages: 0,
       typeTotal: 0,
+
+
       addSchool: {
         id: null,
         schoolname: '',
@@ -215,6 +360,8 @@ export default {
       schoolCurrentPage: 0,
       schoolPages: 0,
       schoolTotal: 0,
+
+
       addTradeType: {
         id: null,
         tradetypename: '',
@@ -224,19 +371,45 @@ export default {
       tradeTypeCurrentPage: 0,
       tradeTypePages: 0,
       tradeTypeTotal: 0,
+
+
+      selectPost: {
+        keyWord: [],
+        current: 1,
+        order: 1
+      },
+      keyWord: '',
+      postTableData: [],
+      postCurrentPage: 0,
+      postTotal: 0,
+
+      goodDrawer: false,
+      tradeDetail: {},
+      selectGood: {
+        keyWord: [],
+        current: 1,
+        order: 1
+      },
+      goodKeyWord: '',
+      goodTableData: [],
+      goodCurrentPage: 0,
+      goodTotal: 0,
+
     }
   },
   created() {
     this.typeList(0)
     this.schoolList(0)
     this.tradeTypeList(0)
-
+    this.postList()
+    this.goodList()
   },
   methods: {
     select(key) {
       let _this = this
       _this.selectOption = key
     },
+
     typeAdd() {
       let _this = this
       _this.$axios.post("/type/add", _this.addType).then(res => {
@@ -262,7 +435,6 @@ export default {
         _this.typeTotal = res.data.data.total
       })
     },
-
     typeDelete(data) {
       let _this = this
       _this.$axios.post("/type/delete", data).then(res =>{
@@ -294,6 +466,7 @@ export default {
             })
           })
     },
+
     schoolAdd() {
       let _this = this
       _this.$axios.post("/school/add", _this.addSchool).then(res => {
@@ -319,7 +492,6 @@ export default {
         _this.schoolTotal = res.data.data.total
       })
     },
-
     schoolDelete(data) {
       let _this = this
       _this.$axios.post("/school/delete", data).then(res =>{
@@ -377,7 +549,6 @@ export default {
         _this.tradeTypeTotal = res.data.data.total
       })
     },
-
     tradeTypeDelete(data) {
       let _this = this
       _this.$axios.post("/tradetype/delete", data).then(res =>{
@@ -410,6 +581,119 @@ export default {
             })
           })
     },
+
+    postList() {
+      let _this = this
+      _this.$axios.post("community/getPostList", _this.selectPost).then(res=>{
+        _this.postTableData = res.data.data.records
+        _this.postTotal = res.data.data.total
+      })
+    },
+    postTableChange(currentPage){
+      let _this = this
+      console.log(currentPage)
+      _this.selectPost.current = currentPage
+      _this.$axios.post("community/getPostList", _this.selectPost).then(res =>{
+        console.log(res.data.data.records)
+        _this.postTableData = res.data.data.records
+        _this.postTotal = res.data.data.total
+      })
+    },
+    postDelete(id){
+
+      let _this = this
+      let temp = {
+        uid:localStorage.getItem("userId"),
+        objectIds: [id.id]
+      }
+      console.log(temp)
+      _this.$axios.post("community/deletePostsByIds", temp).then(res=>{
+        ElNotification({
+          title: 'Success',
+          message: '删除成功',
+          type: 'success',
+        })
+        _this.postList()
+      }).catch(res =>{
+        ElNotification({
+          title: 'Error',
+          message: '没有删除权限',
+          type: 'error',
+        })
+      })
+    },
+    postDetail(id){
+      let _this = this
+      _this.$router.push({
+        name: 'communitydetail',
+        params: {communityId: id.id}
+      })
+    },
+    postSearch() {
+      let _this = this
+      _this.selectPost.keyWord = []
+      _this.selectPost.keyWord.push(_this.keyWord)
+      _this.postList()
+    },
+
+    goodList() {
+      let _this = this
+      _this.$axios.post("trade/getCommodity", _this.selectGood).then(res=>{
+        _this.goodTableData = res.data.data.records
+        _this.goodTotal = res.data.data.total
+      })
+    },
+    goodTableChange(currentPage){
+      let _this = this
+      _this.selectGood.current = currentPage
+      _this.$axios.post("trade/getCommodity", _this.selectGood).then(res =>{
+        _this.goodTableData = res.data.data.records
+        _this.goodTotal = res.data.data.total
+      })
+    },
+    goodDelete(id){
+
+      let _this = this
+      let temp = {
+        uid:localStorage.getItem("userId"),
+        objectIds: [id.id]
+      }
+      console.log(temp)
+      _this.$axios.post("trade/deleteCommodity", temp).then(res=>{
+        ElNotification({
+          title: 'Success',
+          message: '删除成功',
+          type: 'success',
+        })
+        _this.goodList()
+      }).catch(res =>{
+        ElNotification({
+          title: 'Error',
+          message: '没有删除权限',
+          type: 'error',
+        })
+      })
+    },
+    goodDetail(id){
+      let _this = this
+      _this.$axios.post("/trade/view", {cid: id.id}).then(res => {
+        _this.tradeDetail = res.data.data
+        if (_this.tradeDetail.pic.search(",") != -1 && _this.tradeDetail.pic != null) {
+          _this.tradeDetail.pic = _this.tradeDetail.pic.split(",")
+        } else {
+          let temp = []
+          temp.push(_this.tradeDetail.pic)
+          _this.tradeDetail.pic = temp
+        }
+        _this.goodDrawer = true
+      })
+    },
+    goodSearch() {
+      let _this = this
+      _this.selectGood.keyWord = []
+      _this.selectGood.keyWord.push(_this.goodKeyWord)
+      _this.goodList()
+    }
   }
 }
 </script>
