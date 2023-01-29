@@ -323,6 +323,11 @@
           <Pic @handleSelect="picSelect"></Pic>
         </el-col>
       </el-row>
+      <el-row style="margin-top: 2%">
+        <el-col>
+          <el-button v-on:click="picDialogVisible = false">确认上传</el-button>
+        </el-col>
+      </el-row>
     </template>
   </el-dialog>
   <Footer></Footer>

@@ -134,7 +134,7 @@
       </el-popover>
 
 
-      <el-avatar v-on:click="changeUser" :size="40" :src="avatarUrl" style="margin-left: 12%"/>
+      <el-avatar v-on:click="changeUser" :size="40" :src="avatarUrl=='null'?'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png':avatarUrl" style="margin-left: 12%"/>
 
     </el-col>
   </el-row>
@@ -192,6 +192,10 @@ export default {
     }
   },
   methods: {
+    cancle() {
+      let _this = this
+      _this.serviceShow = false
+    },
     service() {
       let _this = this
       _this.serviceShow = true

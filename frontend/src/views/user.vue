@@ -2,7 +2,7 @@
   <div class="page_back page_this"></div>
   <img src="../assets/images/wave.png" alt="" class="ourpage" style="position: fixed;background-color: transparent">
   <Header></Header>
-  <el-container style="margin-left: 10%; margin-right: 10%; height: 100%">
+  <el-container v-if="userInfo.id != 'null'" style="margin-left: 10%; margin-right: 10%; height: 100%">
     <el-aside width="30%" style="margin-right: 5%">
       <el-card style="text-align: center">
         <el-row>
@@ -173,6 +173,15 @@
       </el-card>
       <el-card v-if="selectFlag == 4" style="text-align: center">
         <el-row>
+          <el-col :offset="10">
+            <el-link v-on:click="logout">
+              登出
+              <el-icon><Right /></el-icon>
+            </el-link>
+
+          </el-col>
+        </el-row>
+        <el-row>
           <el-col>
             <el-avatar size="large" :src="userInfo.avatar" v-if="!changeInfoFlag">
 
@@ -247,7 +256,7 @@
           </el-row>
         </div>
         <el-row>
-          <el-col :offset="10">
+          <el-col :offset="10" >
             <el-button v-if="!changeInfoFlag" style="border-color: transparent" v-on:click="changeInfoFlag = true">
               修改信息
             </el-button>
@@ -257,6 +266,10 @@
       </el-card>
     </el-main>
   </el-container>
+  <el-card v-else style="text-align: center;width: 70%; margin-right: 15%;margin-left: 15%;height: 30%;position: absolute">
+    <br>
+    <h2>你还没有登录，点击前往</h2><el-link v-on:click="login"><h2>登录</h2></el-link>
+  </el-card>
   <el-drawer v-model="drawer" :direction="'rtl'">
     <template #header>
       <h4 v-if="tradeDetail.tradeFlag">出</h4>
@@ -305,8 +318,11 @@ import {ElNotification} from "element-plus";
 export default {
   name: "user",
   created() {
-    this.getUserInfo(localStorage.getItem("userId"))
-    this.init()
+    if(localStorage.getItem("userId") != 'null'){
+      this.getUserInfo(localStorage.getItem("userId"))
+      this.init()
+    }
+
   },
   components: {
     Header
@@ -368,6 +384,13 @@ export default {
     }
   },
   methods: {
+    login(){
+      this.$router.push("/")
+    },
+    logout(){
+      localStorage.setItem("userId", null)
+      this.$router.push("/")
+    },
     forDetail(id){
       let _this = this
       _this.$router.push({

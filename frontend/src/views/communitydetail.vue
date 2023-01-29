@@ -62,7 +62,7 @@
             {{postDetail.commentNum}}
           </el-col>
           <el-divider direction="vertical"/>
-          <el-col v-if="collectFlag" :span="4">
+          <el-col v-if="collectFlag" :span="4" v-on:click="disCollect(postDetail.id)">
             <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%;color: #88b0ef">
               <StarFilled/>
             </el-icon>
@@ -106,14 +106,18 @@
                 <el-col :span="8">{{item.floor.userName}}</el-col>
                 <el-col :span="4" :offset="12">{{item.floor.date.split("T")[0]}}</el-col>
               </el-row>
-              <el-row style="margin-top: 1%" >
-                <el-row>
-                  <el-link style="word-wrap:break-word; word-break:break-all;" v-on:click="doReplyShowFunc(index)">{{item.floor.content}}</el-link>
+              <el-row style="margin-top: 2%" >
+                <el-container style="margin-bottom: 2%">
+                  <el-main style="padding: 0">
+                    <el-link style="word-wrap:break-word; word-break:break-all;" v-on:click="doReplyShowFunc(index)">{{item.floor.content}}</el-link>
 
-                </el-row>
-
-
-
+                  </el-main>
+                  <el-aside width="10%">
+                    <el-icon v-if="item.floor.likeFlag" style="color: #88b0ef" v-on:click="doFloorDislike(item.floor.id)"><Pointer /></el-icon>
+                    <el-icon v-else v-on:click="doFloorLike(item.floor.id)"><Pointer /></el-icon>
+                    {{item.floor.likeNum}}
+                  </el-aside>
+                </el-container>
 
               </el-row>
               <el-row v-if="item.replies != ''">
@@ -129,11 +133,19 @@
                     <el-col :span="8">{{reply.userName}}</el-col>
                     <el-col :span="6" :offset="10">{{reply.date.split("T")[0]}}</el-col>
                   </el-row>
-                  <el-row style="margin-top: 1%" >
-                    <el-row>
-                      <el-link style="word-wrap:break-word; word-break:break-all;">{{reply.content}}</el-link>
+                  <el-row style="margin-top: 2%" >
+                    <el-container >
+                      <el-main style="padding: 0">
+                        <el-link style="word-wrap:break-word; word-break:break-all;" >{{reply.content}}</el-link>
 
-                    </el-row>
+                      </el-main>
+                      <el-aside width="10%">
+                        <el-icon v-if="reply.likeFlag" style="color: #88b0ef" v-on:click="doReplyDislike(reply.id)"><Pointer /></el-icon>
+                        <el-icon v-else v-on:click="doReplyLike(reply.id)"><Pointer /></el-icon>
+                        {{reply.likeNum}}
+                      </el-aside>
+                    </el-container>
+
 
 
 
@@ -288,8 +300,10 @@ export default {
     }
   },
   created() {
+    this.initParams()
     this.init()
     this.getComment()
+
   },
   methods: {
     goOff(){this.$router.go(-1)},
@@ -313,6 +327,9 @@ export default {
           title: 'Success',
           message: '已复制分享内容到剪贴板',
           type: 'success',
+        })
+        _this.$axios.post("community/doForward", {cid: id}).then(res =>{
+          _this.init()
         })
       }, function (e) {
         ElNotification({
@@ -346,9 +363,23 @@ export default {
         flag: true
       }
       _this.$axios.post('/community/doLike', temp).then(res => {
-        console.log(res.data)
         _this.init()
-
+        console.log(_this.likeFlag)
+        _this.likeFlag = !_this.likeFlag
+      })
+    },
+    dislike(id) {
+      let _this = this
+      let temp = {
+        uid: _this.userId,
+        objectId: id,
+        type: 0,
+        flag: false
+      }
+      _this.$axios.post('/community/doLike', temp).then(res => {
+        _this.init()
+        console.log(_this.likeFlag)
+        _this.likeFlag = !_this.likeFlag
 
       })
     },
@@ -360,12 +391,14 @@ export default {
         pid: id
       }
       _this.$axios.post("/community/doCollect", temp).then(res => {
-        _this.init()
+
         ElNotification({
           title: 'Success',
           message: '收藏成功',
           type: 'success',
         })
+        _this.init()
+        _this.collectFlag = !_this.collectFlag
       }).catch(res =>{
         ElNotification({
           title: 'Error',
@@ -375,18 +408,57 @@ export default {
       })
 
     },
-    init() {
+    disCollect(id){
+      let _this = this
+      let temp = {
+        uid: _this.userId,
+        objectIds: [id]
+      }
+      _this.$axios.post("/community/deleteCollectByIds", temp).then(res => {
+        if (res.data.code == 200) {
+          ElNotification({
+            title: 'Success',
+            message: '取消收藏成功',
+            type: 'success',
+          })
+
+          _this.init()
+          _this.collectFlag = !_this.collectFlag
+        }
+
+      }).catch(res => {
+        ElNotification({
+          title: 'Error',
+          message: '取消收藏失败',
+          type: 'error',
+        })
+      })
+    },
+    initParams(){
       let _this = this
       _this.communityId = _this.$route.params.communityId
       _this.likeFlag = _this.$route.query.likeFlag
       _this.collectFlag = _this.$route.query.collectFlag
+      if(_this.likeFlag == 'true'){
+        _this.likeFlag = true
+      } else{
+        _this.likeFlag = false
+      }
+      if(_this.collectFlag == 'true'){
+        _this.collectFlag = true
+      } else{
+        _this.collectFlag = false
+      }
+    },
+    init() {
+      let _this = this
+
       console.log(_this.likeFlag)
       let temp = {
         id: _this.communityId
       }
       _this.$axios.post('/community/postDetail', temp).then(res=>{
         _this.postDetail = res.data.data
-        console.log(_this.postDetail)
 
         _this.postDetail.pic = _this.postDetail.pic.split(",")
 
@@ -397,13 +469,9 @@ export default {
           id: res.data.data.university
         }
         _this.$axios.post('/user/index', temp1).then(res =>{
-          console.log(res.data.data)
           _this.postDetail.authorname = res.data.data.username
           _this.postDetail.avatar = res.data.data.avatar
-
-          console.log(temp2)
           _this.$axios.post('/school/get', temp2).then(res =>{
-            console.log(res.data.data)
             _this.postDetail.universityName = res.data.data.schoolname
           })
         })
@@ -478,6 +546,55 @@ export default {
         _this.repliesShowLimit = index
       }
       _this.commentDetail[index].showReplies = true
+    },
+
+    doFloorLike(id){
+      let _this = this
+      let temp = {
+        uid: _this.userId,
+        objectId: id,
+        type: 1,
+        flag: true
+      }
+      _this.$axios.post("community/doLike", temp).then(res=>{
+        _this.getComment()
+      })
+    },
+    doFloorDislike(id){
+      let _this = this
+      let temp = {
+        uid: _this.userId,
+        objectId: id,
+        type: 1,
+        flag: false
+      }
+      _this.$axios.post("community/doLike", temp).then(res=>{
+        _this.getComment()
+      })
+    },
+    doReplyLike(id){
+      let _this = this
+      let temp = {
+        uid: _this.userId,
+        objectId: id,
+        type: 2,
+        flag: true
+      }
+      _this.$axios.post("community/doLike", temp).then(res=>{
+        _this.getComment()
+      })
+    },
+    doReplyDislike(id){
+      let _this = this
+      let temp = {
+        uid: _this.userId,
+        objectId: id,
+        type: 2,
+        flag: false
+      }
+      _this.$axios.post("community/doLike", temp).then(res=>{
+        _this.getComment()
+      })
     }
   }
 }

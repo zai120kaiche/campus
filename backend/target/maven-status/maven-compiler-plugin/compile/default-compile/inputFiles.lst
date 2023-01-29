@@ -4,6 +4,7 @@ D:\campus\backend\src\main\java\com\campus\backend\entity\Commodity.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\FeedbackMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\service\impl\FileUploadServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\SearchConditionOfCommodity.java
+D:\campus\backend\src\main\java\com\campus\backend\entity\ContactItem.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\User.java
 D:\campus\backend\src\main\java\com\campus\backend\service\SchoolService.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\Post.java
@@ -35,6 +36,7 @@ D:\campus\backend\src\main\java\com\campus\backend\service\impl\CommodityService
 D:\campus\backend\src\main\java\com\campus\backend\entity\ChatRequestBody.java
 D:\campus\backend\src\main\java\com\campus\AIDraw\AIservice\openAIUtil.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\ReplyPages.java
+D:\campus\backend\src\main\java\com\campus\backend\entity\ContactPage.java
 D:\campus\backend\src\main\java\com\campus\backend\service\impl\AiServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\AiMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\School.java
@@ -43,6 +45,7 @@ D:\campus\backend\src\main\java\com\campus\backend\controller\SchoolController.j
 D:\campus\backend\src\main\java\com\campus\backend\entity\TableType.java
 D:\campus\backend\src\main\java\com\campus\backend\service\ChatService.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\ChatContentItem.java
+D:\campus\backend\src\main\java\com\campus\backend\entity\ContactRequest.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\FloorMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\Reply.java
 D:\campus\backend\src\main\java\com\campus\backend\service\FloorService.java
@@ -75,8 +78,10 @@ D:\campus\backend\src\main\java\com\campus\backend\entity\Floor.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\Intention.java
 D:\campus\backend\src\main\java\com\campus\backend\service\impl\FeedbackServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\controller\CommunityController.java
+D:\campus\backend\src\main\java\com\campus\backend\mapper\ContactsMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\util\JwtUtils.java
 D:\campus\backend\src\main\java\com\campus\backend\service\CollectService.java
+D:\campus\backend\src\main\java\com\campus\backend\service\impl\ContactsServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\OrderType.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\CollectInfoRequestBody.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\Identifier.java
@@ -90,6 +95,7 @@ D:\campus\backend\src\main\java\com\campus\backend\common\dto\LoginDto.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\CollectMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\MyComment.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\ReplyMapper.java
+D:\campus\backend\src\main\java\com\campus\backend\service\ContactsService.java
 D:\campus\backend\src\main\java\com\campus\backend\common\exception\GlobalExceptionHandler.java
 D:\campus\backend\src\main\java\com\campus\backend\service\impl\IdentifierServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\CommodityPages.java
@@ -104,6 +110,7 @@ D:\campus\backend\src\main\java\com\campus\backend\tool\EmailUtil.java
 D:\campus\backend\src\main\java\com\campus\backend\service\IdentifierService.java
 D:\campus\backend\src\main\java\com\campus\backend\config\ShiroConfig.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\LikeReplyMapper.java
+D:\campus\backend\src\main\java\com\campus\backend\entity\Contacts.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\ChatMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\annotation\AccessLimit.java
 D:\campus\backend\src\main\java\com\campus\backend\util\ShiroUtil.java

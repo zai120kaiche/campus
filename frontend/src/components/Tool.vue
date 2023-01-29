@@ -77,13 +77,38 @@
       <div class="RealtranslationBox">
         <el-card>
           <el-row v-on:click="upper">
-            <el-icon><ArrowUp /></el-icon>
+            <el-tooltip
+                class="box-item"
+                effect="dark"
+                content="置顶"
+                placement="left"
+            >
+              <el-icon><ArrowUp /></el-icon>
+            </el-tooltip>
           </el-row>
           <el-row style="margin-top: 80%" v-on:click="service">
-            <el-icon><Service /></el-icon>
+            <el-row v-on:click="upper">
+              <el-tooltip
+                  class="box-item"
+                  effect="dark"
+                  content="客服"
+                  placement="left"
+              >
+                <el-icon><Service /></el-icon>
+              </el-tooltip>
+            </el-row>
+
           </el-row>
           <el-row style="margin-top: 80%" v-on:click="returnShow = true">
-            <el-icon><ChatLineRound /></el-icon>
+            <el-tooltip
+                class="box-item"
+                effect="dark"
+                content="意见反馈"
+                placement="left"
+            >
+              <el-icon><ChatLineRound /></el-icon>
+            </el-tooltip>
+
           </el-row>
         </el-card>
 

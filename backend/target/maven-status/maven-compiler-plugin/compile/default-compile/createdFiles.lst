@@ -23,6 +23,7 @@ com\campus\backend\entity\Identifier.class
 com\campus\backend\entity\Reply.class
 com\campus\backend\mapper\LikeReplyMapper.class
 com\campus\backend\entity\oss.class
+com\campus\backend\entity\ContactRequest.class
 com\campus\backend\entity\DeleteInfo.class
 com\campus\backend\service\ReplyService.class
 com\campus\backend\entity\ChatContentPages.class
@@ -34,6 +35,7 @@ com\campus\backend\entity\TableType.class
 com\campus\backend\service\PostService.class
 com\campus\backend\entity\RepliesInfoRequestBody.class
 com\campus\backend\entity\PostItem.class
+com\campus\backend\service\impl\ContactsServiceImpl.class
 com\campus\backend\shiro\JwtFilter.class
 com\campus\backend\tool\EmailUtil.class
 com\campus\backend\redis\RedisOperator.class
@@ -54,6 +56,7 @@ com\campus\backend\entity\Commodity.class
 com\campus\backend\mapper\CommentMapper.class
 com\campus\backend\entity\Chat.class
 com\campus\backend\service\impl\CommodityServiceImpl.class
+com\campus\backend\entity\Contacts.class
 com\campus\backend\service\ChatService.class
 com\campus\backend\config\MybatisPlusConfig.class
 com\campus\backend\entity\User.class
@@ -66,6 +69,7 @@ com\campus\backend\entity\School.class
 com\campus\backend\entity\FinishInfo.class
 com\campus\backend\controller\UserController.class
 com\campus\backend\util\MsmConstantUtils.class
+com\campus\backend\mapper\ContactsMapper.class
 com\campus\backend\service\FeedbackService.class
 com\campus\backend\controller\FeedbackController.class
 com\campus\backend\entity\Tradetype.class
@@ -87,9 +91,11 @@ com\campus\backend\entity\SearchConditionOfCommodity.class
 com\campus\backend\controller\ChatController.class
 com\campus\backend\entity\LikeType.class
 com\campus\backend\mapper\ChatMapper.class
+com\campus\backend\entity\ContactItem.class
 com\campus\backend\service\IdentifierService.class
 com\campus\backend\entity\Ai.class
 com\campus\backend\controller\TradetypeController.class
+com\campus\backend\entity\ContactPage.class
 com\campus\backend\mapper\ReplyMapper.class
 com\campus\backend\mapper\CommodityMapper.class
 com\campus\backend\service\impl\AiServiceImpl.class
@@ -116,6 +122,7 @@ com\campus\backend\common\lang\Result.class
 com\campus\backend\service\impl\ReplyServiceImpl.class
 com\campus\backend\service\impl\IdentifierServiceImpl.class
 com\campus\backend\service\impl\PostServiceImpl.class
+com\campus\backend\service\ContactsService.class
 com\campus\backend\mapper\IdentifierMapper.class
 com\campus\backend\mapper\CollectMapper.class
 com\campus\backend\mapper\SchoolMapper.class

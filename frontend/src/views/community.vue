@@ -339,7 +339,7 @@
                 {{item.commentNum}}
               </el-col>
               <el-divider direction="vertical"/>
-              <el-col v-if="item.collectFlag" :span="4">
+              <el-col v-if="item.collectFlag" :span="4" v-on:click="disCollect(item.id)">
                 <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%;color: #88b0ef">
                   <StarFilled/>
                 </el-icon>
@@ -443,6 +443,11 @@
       <el-row>
         <el-col :span="24">
           <Pic @handleSelect="picSelect"></Pic>
+        </el-col>
+      </el-row>
+      <el-row style="margin-top: 2%">
+        <el-col>
+          <el-button v-on:click="picDialogVisible = false">确认上传</el-button>
         </el-col>
       </el-row>
     </template>
@@ -581,7 +586,6 @@ export default {
           message: '已复制分享内容到剪贴板',
           type: 'success',
         })
-        console.log(id)
         _this.$axios.post("community/doForward", {cid: id}).then(res =>{
           _this.getList(_this.currentPage, 0)
         })
@@ -720,6 +724,19 @@ export default {
 
       })
     },
+    dislike(id) {
+      let _this = this
+      let temp = {
+        uid: _this.userId,
+        objectId: id,
+        type: 0,
+        flag: false
+      }
+      _this.$axios.post('/community/doLike', temp).then(res => {
+        _this.getList(_this.currentPage, 0)
+
+      })
+    },
     //收藏
     collect(id){
       let _this = this
@@ -728,16 +745,41 @@ export default {
         pid: id
       }
       _this.$axios.post("/community/doCollect", temp).then(res => {
-        _this.getList(_this.currentPage, 0)
+
         ElNotification({
           title: 'Success',
           message: '收藏成功',
           type: 'success',
         })
+        _this.getList(_this.currentPage, 0)
       }).catch(res =>{
         ElNotification({
           title: 'Error',
           message: '收藏失败',
+          type: 'error',
+        })
+      })
+    },
+    disCollect(id){
+      let _this = this
+      let temp = {
+        uid: _this.userId,
+        objectIds: [id]
+      }
+      _this.$axios.post("/community/deleteCollectByIds", temp).then(res => {
+        if (res.data.code == 200) {
+          ElNotification({
+            title: 'Success',
+            message: '取消收藏成功',
+            type: 'success',
+          })
+          _this.getList(_this.currentPage, 0)
+        }
+
+      }).catch(res => {
+        ElNotification({
+          title: 'Error',
+          message: '取消收藏失败',
           type: 'error',
         })
       })
@@ -823,7 +865,8 @@ export default {
     handleClose(){
       let _this = this
       _this.picDialogVisible = false
-    }
+    },
+
   },
 
 
