@@ -7,6 +7,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.campus.backend.common.lang.Result;
 import com.campus.backend.entity.*;
 import com.campus.backend.mapper.*;
+import com.campus.backend.service.CommodityService;
+import com.campus.backend.service.SchoolService;
+import com.campus.backend.service.TradetypeService;
 import com.campus.backend.service.UserService;
 import com.campus.backend.tool.GetIpAddressUtil;
 import lombok.Data;
@@ -53,6 +56,15 @@ public class TradeController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    SchoolService schoolService;
+
+    @Autowired
+    TradetypeService tradetypeService;
+
+    @Autowired
+    CommodityService commodityService;
+
     /**
      * 发布商品
      * @param commodity
@@ -72,10 +84,18 @@ public class TradeController {
             String kindNames="";
             for (int i = 0; i < kindSplit.length; i++) {
                 int kindId = Integer.parseInt(kindSplit[i]);
+                Tradetype t = tradetypeService.getById(kindId);
+                t.setCount(t.getCount()+1);
+                tradetypeService.saveOrUpdate(t);
+
                 Tradetype tradetype = tradetypeMapper.selectById(kindId);
                 kindNames+=tradetype.getTradetypename();
                 if(i!=kindSplit.length-1)  kindNames+=",";
             }
+            School s = schoolService.getById(commodity.getUniversity());
+            s.setTradecount(s.getTradecount()+1);
+            schoolService.saveOrUpdate(s);
+
             commodity.setKindName(kindNames);
 
             commodityMapper.insert(commodity);
@@ -201,7 +221,18 @@ public class TradeController {
         int count=0;
         try {
             User u = userService.getById(info.getUid());
-            System.out.println(u.getStandard());
+            Commodity c = commodityService.getById(info.getObjectIds().get(0));
+            School s = schoolService.getById(c.getUniversity());
+            s.setTradecount(s.getTradecount()-1);
+            schoolService.saveOrUpdate(s);
+
+            String[] kindSplit = c.getKind().split(",");
+            for (int i = 0; i < kindSplit.length; i++) {
+                int kindId = Integer.parseInt(kindSplit[i]);
+                Tradetype t = tradetypeService.getById(kindId);
+                t.setCount(t.getCount()-1);
+                tradetypeService.saveOrUpdate(t);
+            }
             if(u.getStandard() == 9){
                 LambdaQueryWrapper<Commodity> lqw=new LambdaQueryWrapper<>();
                 lqw.in(Commodity::getId,info.getObjectIds());

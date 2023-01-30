@@ -168,6 +168,7 @@ export default {
       _this.$axios.post("ai/send", {request: _this.serviceData}).then(res=>{
 
         _this.chatList.push({who: 1, content: res.data.data})
+        _this.serviceData = ''
       })
     },
     returnSend() {

@@ -31,6 +31,7 @@ public class School implements Serializable {
 
     private Integer count;
     private Integer contentcount;
+    private Integer tradecount;
 
 
 }

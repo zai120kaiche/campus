@@ -26,6 +26,9 @@
         <el-row v-if="selectFlag == 3" style="color: #88b0ef">我的交易</el-row>
         <el-row v-else v-on:click="changeSelectFlag(3)">我的交易</el-row>
         <el-divider style="margin-top: 3%;margin-bottom: 3%"></el-divider>
+        <el-row v-if="selectFlag == 5" style="color: #88b0ef">我的评论</el-row>
+        <el-row v-else v-on:click="changeSelectFlag(5)">我的评论</el-row>
+        <el-divider style="margin-top: 3%;margin-bottom: 3%"></el-divider>
         <el-row v-if="selectFlag == 4" style="color: #88b0ef">个人信息</el-row>
         <el-row v-else v-on:click="changeSelectFlag(4)">个人信息</el-row>
       </el-card>
@@ -171,6 +174,38 @@
             style="width: 100%; margin: 0; bottom: 0; position: absolute"
         />
       </el-card>
+      <el-card v-if="selectFlag == 5" style="min-height: 80%; position: absolute; width: 55%">
+        <el-table :data="commentData"
+                  border style="width: 100%"
+                  empty-text="NAN">
+          <el-table-column prop="content" label="内容" width="180" show-overflow-tooltip="true"/>
+          <el-table-column prop="date" label="时间" width="180" show-overflow-tooltip="true"/>
+          <el-table-column fixed="right" label="操作" width="160">
+            <template #default="scope">
+              <el-popconfirm title="确定删除该评论吗?"
+                             @confirm="commentDelete(scope.row.id)"
+                             confirm-button-text="确定"
+                             cancel-button-text="取消"
+              >
+                <template #reference>
+                  <el-button link type="primary" size="small">删除</el-button>
+                </template>
+              </el-popconfirm>
+              <el-button link type="primary" size="small" v-on:click="forDetail(scope.row.parentId)">查看详情</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <el-pagination
+            @current-change="commentCurrentPageChange"
+            :current-page="commentCurrentPage"
+            layout="prev, pager, next"
+            :total="commentTotal"
+            :page-size="10"
+            style="width: 100%; margin: 0; bottom: 0; position: absolute"
+        />
+      </el-card>
+
       <el-card v-if="selectFlag == 4" style="text-align: center">
         <el-row>
           <el-col :offset="10">
@@ -368,6 +403,10 @@ export default {
       collectTradeTotal: 0,
       collectTradeData: [],
 
+      commentCurrentPage: 1,
+      commentTotal: 0,
+      commentData: [],
+
       send: {
         uid: 0,
         current: 1,
@@ -531,6 +570,15 @@ export default {
         _this.postData = res.data.data.records
       })
     },
+    commentCurrentPageChange(currentPage) {
+      let _this = this
+      _this.send.current = currentPage
+      _this.commentCurrentPage = currentPage
+      _this.$axios.post("community/getAllCommentById", _this.send).then(res => {
+        console.log(res.data.data)
+        _this.commentData = res.data.data.records
+      })
+    },
     collectPostCurrentPageChange(currentPage) {
       let _this = this
       _this.collectSend.current = currentPage
@@ -575,29 +623,42 @@ export default {
         _this.search(0)
       } else if (index == 3) {
         _this.search(1)
+      } else if(index == 5){
+        _this.search(2)
       }
     },
     search(res) {
       let _this = this
-
+      let current = 0
+      if(res==0){
+        current = _this.postCurrentPage
+      }else if(res == 1){
+        current = _this.tradeCurrentPage
+      }else if(res==2){
+        current = _this.commentCurrentPage
+      }
       let temp = {
         uid: _this.userInfo.id,
-        current: res == 0 ? _this.postCurrentPage : _this.tradeCurrentPage,
+        current: current,
         order: 1,
       }
-      console.log(temp)
       _this.send = temp
       if (res == 0) {
         _this.$axios.post("community/getPostById", temp).then(res => {
-          console.log(res.data.data)
           _this.postData = res.data.data.records
           _this.postTotal = res.data.data.total
         })
-      } else {
+      } else if(res == 1) {
         _this.$axios.post("trade/getCommodityById", temp).then(res => {
-          console.log(res.data.data)
           _this.tradeData = res.data.data.records
           _this.tradeTotal = res.data.data.total
+        })
+      } else if(res == 2){
+        console.log(temp)
+        _this.$axios.post("community/getAllCommentById", temp).then(res => {
+          console.log(res.data.data)
+          _this.commentData = res.data.data.records
+          _this.commentTotal = res.data.data.total
         })
       }
     },
@@ -713,7 +774,9 @@ export default {
         _this.drawer = true
       })
     },
+    commentDelete(id){
 
+    }
 
   }
 }

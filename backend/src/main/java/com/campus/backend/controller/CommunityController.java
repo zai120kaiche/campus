@@ -7,6 +7,8 @@ import com.campus.backend.common.lang.Result;
 import com.campus.backend.entity.*;
 import com.campus.backend.mapper.*;
 import com.campus.backend.service.PostService;
+import com.campus.backend.service.SchoolService;
+import com.campus.backend.service.TypeService;
 import com.campus.backend.service.UserService;
 import com.campus.backend.tool.GetIpAddressUtil;
 import javafx.geometry.Pos;
@@ -64,6 +66,15 @@ public class CommunityController {
     @Autowired
     private TypeMapper typeMapper;
 
+    @Autowired
+    private SchoolService schoolService;
+
+    @Autowired
+    private PostService postService;
+
+    @Autowired
+    private TypeService typeService;
+
 //发帖
     @PostMapping("/doPost")
     public Object doPost(@RequestBody Post post, HttpServletRequest request){
@@ -77,11 +88,18 @@ public class CommunityController {
             String kindNames="";
             for (int i = 0; i < kindSplit.length; i++) {
                 int kindId = Integer.parseInt(kindSplit[i]);
+                Type t = typeService.getById(kindId);
+                t.setCount(t.getCount()+1);
+                typeService.saveOrUpdate(t);
                 Type type = typeMapper.selectById(kindId);
                 kindNames+=type.getTypename();
                 if(i!=kindSplit.length-1)  kindNames+=",";
             }
             post.setKindName(kindNames);
+            School s = schoolService.getById(post.getUniversity());
+            s.setContentcount(s.getContentcount()+1);
+            schoolService.saveOrUpdate(s);
+
 
             postMapper.insert(post);
         }catch (Exception e)
@@ -549,7 +567,7 @@ public class CommunityController {
     @PostMapping("/getAllCommentById")
     public Object getAllCommentById(@RequestBody MyPostInfo info)
     {
-        IPage<MyComment> page=new Page<>(info.getCurrent(),pageSize);
+        IPage<MyComment> page=new Page<>(info.getCurrent(),10);
         try {
             OrderType orderType = OrderType.values()[info.getOrder()];
             switch (orderType)
@@ -567,9 +585,12 @@ public class CommunityController {
                 if(record.getFlag()==1)
                     record.setLikeFlag(isLike(TableType.floor,info.getUid(),record.getId()));
                 else if(record.getFlag()==2)
+                {
                     record.setLikeFlag(isLike(TableType.reply,info.getUid(),record.getId()));
+                    if(record.getOthers()!=null)
+                        record.setOthersName(getUserName(record.getOthers()));
+                }
                 record.setUserName(getUserName(record.getOwner()));
-                record.setOthersName(getUserName(record.getOthers()));
             }
         }catch (Exception e)
         {
@@ -585,8 +606,20 @@ public class CommunityController {
         int count=0;
         try {
             User u = userService.getById(info.getUid());
-            System.out.println(u.getStandard());
+            Post p = postService.getById(info.getObjectIds().get(0));
+            School s = schoolService.getById(p.getUniversity());
+            s.setContentcount(s.getContentcount()-1);
+            schoolService.saveOrUpdate(s);
+            String[] kindSplit = p.getKind().split(",");
+            for (int i = 0; i < kindSplit.length; i++) {
+                int kindId = Integer.parseInt(kindSplit[i]);
+                Type t = typeService.getById(kindId);
+                t.setCount(t.getCount()-1);
+                typeService.saveOrUpdate(t);
+            }
+
             if(u.getStandard() == 9){
+
                 LambdaQueryWrapper<Post> lqw=new LambdaQueryWrapper<>();
                 lqw.in(Post::getId,info.getObjectIds());
                 count = postMapper.delete(lqw);
@@ -595,6 +628,9 @@ public class CommunityController {
                 lqw.in(Post::getId,info.getObjectIds()).eq(Post::getOwner,info.getUid());
                 count = postMapper.delete(lqw);
             }
+
+
+
 
         }catch (Exception e)
         {

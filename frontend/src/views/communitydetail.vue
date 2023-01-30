@@ -134,21 +134,27 @@
                     <el-col :span="6" :offset="10">{{reply.date.split("T")[0]}}</el-col>
                   </el-row>
                   <el-row style="margin-top: 2%" >
-                    <el-container >
-                      <el-main style="padding: 0">
-                        <el-link style="word-wrap:break-word; word-break:break-all;" >{{reply.content}}</el-link>
+                    <el-container>
+                      <el-container >
+                        <el-main style="padding: 0">
+                          <el-link style="word-wrap:break-word; word-break:break-all;" >{{reply.content}}</el-link>
 
-                      </el-main>
-                      <el-aside width="10%">
-                        <el-icon v-if="reply.likeFlag" style="color: #88b0ef" v-on:click="doReplyDislike(reply.id)"><Pointer /></el-icon>
-                        <el-icon v-else v-on:click="doReplyLike(reply.id)"><Pointer /></el-icon>
-                        {{reply.likeNum}}
-                      </el-aside>
+                        </el-main>
+                        <el-aside width="10%">
+                          <el-icon v-if="reply.likeFlag" style="color: #88b0ef" v-on:click="doReplyDislike(reply.id)"><Pointer /></el-icon>
+                          <el-icon v-else v-on:click="doReplyLike(reply.id)"><Pointer /></el-icon>
+                          {{reply.likeNum}}
+                        </el-aside>
+
+                      </el-container>
+                      <el-footer style="padding: 0">
+                        <el-row>
+                          <el-col :offset="15">
+                            <el-button style="border-color: transparent;color: grey">回复</el-button>
+                          </el-col>
+                        </el-row>
+                      </el-footer>
                     </el-container>
-
-
-
-
 
                   </el-row>
                   <el-divider></el-divider>

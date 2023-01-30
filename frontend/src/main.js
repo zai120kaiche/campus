@@ -20,7 +20,32 @@ import SlideVerify from 'vue-monoplasty-slide-verify';
 import 'animate.css/animate.min.css'
 //引入复制到剪贴板
 import VueClipboard from 'vue-clipboard2'
+
+import dataV from '@jiaminghi/data-view';
+// 引入全局css
+import './assets/scss/style.scss';
+// 按需引入vue-awesome图标
+import Icon from 'vue-awesome/components/Icon';
+import 'vue-awesome/icons/chart-bar.js';
+import 'vue-awesome/icons/chart-area.js';
+import 'vue-awesome/icons/chart-pie.js';
+import 'vue-awesome/icons/chart-line.js';
+import 'vue-awesome/icons/align-left.js';
+
+//引入echart
+//4.x 引用方式
+import echarts from 'echarts'
+
+
+
 const app = createApp(App)
+//5.x 引用方式为按需引用
+//希望使用5.x版本的话,需要在package.json中更新版本号,并切换引用方式
+//import * as echarts from 'echarts'
+app.config.globalProperties.$echarts= echarts
+app.config.productionTip = false;
+app.use(dataV)
+
 app.config.globalProperties.$axios=axios
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)

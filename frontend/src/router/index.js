@@ -33,6 +33,10 @@ const routes = [
     path: '/index/community/detail/:communityId',
     name: 'communitydetail',
     component:() => import('../views/communitydetail')
+  },{
+    path: '/back/control/dataAnalyse',
+    name: 'index',
+    component:() => import('../views/dataAnalyse')
   }
 ]
 
