@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +57,13 @@ public class ChatController {
         if(chat.getSend() != chat.getRecv()){
             try {
                 count=chatMapper.insert(chat);
+                Contacts contacts=new Contacts();
+                contacts.setOwner(chat.getSend());
+                contacts.setOthers(chat.getRecv());
+                refreshContactList(contacts);
+                contacts.setOwner(chat.getRecv());
+                contacts.setOthers(chat.getSend());
+                refreshContactList(contacts);
             }catch (Exception e)
             {
                 e.printStackTrace();
@@ -96,6 +104,8 @@ public class ChatController {
                 contentItem=new ChatContentItem();
                 contentItem.setContent(chat.getContent());
                 contentItem.setTime(chat.getTime());
+                contentItem.setWithdraw(chat.isWithdraw());
+                contentItem.setId(chat.getId());
                 if(chat.getSend()==requestBody.getSend())
                     contentItem.setMine(true);
                 else contentItem.setMine(false);
@@ -103,6 +113,13 @@ public class ChatController {
             }
             pages.setInfo(page);
             pages.setRecords(ChatContent);
+
+            LambdaQueryWrapper<Chat> lqw1=new LambdaQueryWrapper<>();
+            lqw1.eq(Chat::getSend,requestBody.getRecv())
+                    .eq(Chat::getRecv,requestBody.getSend());
+            Chat chat=new Chat();
+            chat.setRead(true);
+            chatMapper.update(chat,lqw1);
         }catch (Exception e)
         {
             e.printStackTrace();
@@ -111,8 +128,33 @@ public class ChatController {
         return Result.succ(pages);
     }
 
+    @PostMapping("/doWithdraw")
+    public Object doWithdraw(@RequestBody WithdrawRequest request)
+    {
+        int i=0;
+        try {
+            LambdaQueryWrapper<Chat> lqw=new LambdaQueryWrapper<>();
+            lqw.eq(Chat::getId,request.getId())
+                    .eq(Chat::getSend,request.getUid());
+            Chat chat = chatMapper.selectOne(lqw);
+            if(chat==null)
+                return Result.fail("doWithdraw失败,参数有误");
+            else {
+                chat.setWithdraw(true);
+                i = chatMapper.updateById(chat);
+            }
+
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return Result.fail("doWithdraw失败");
+        }
+        return Result.succ(i);
+    }
+
+
     /**
-     * 在发起聊天或者收到信息时的时候保存这个联系人列表项
+     * 在发起私聊时使用
      * @param contacts 包含（均不为空）：
      *                 owner：当前用户id,
      *                 others：对方id
@@ -176,8 +218,16 @@ public class ChatController {
             ContactItem contactItem;
             List<ContactItem> list=new ArrayList<>();
             for (Contacts record : pages.getRecords()) {
-                User user1 = userMapper.selectById(record.getOthers());
                 contactItem=new ContactItem();
+                User user1 = userMapper.selectById(record.getOthers());
+                LambdaQueryWrapper<Chat> lqw1=new LambdaQueryWrapper<>();
+                lqw1.eq(Chat::getSend,record.getOthers())
+                        .eq(Chat::getRecv,request.getUid())
+                        .eq(Chat::isRead,false);
+                Chat chat = chatMapper.selectOne(lqw1);
+                if(chat==null)
+                    contactItem.setHasMessage(false);
+                else contactItem.setHasMessage(true);
                 contactItem.setOthers(user1.getId());
                 contactItem.setUsername(user1.getUsername());
                 contactItem.setAvatar(user1.getAvatar());
@@ -194,5 +244,27 @@ public class ChatController {
         return Result.succ(contactPage);
     }
 
+    private int refreshContactList(Contacts contacts)
+    {
+        int count=0;
+        try {
+            LambdaQueryWrapper<Contacts> lqw=new LambdaQueryWrapper<>();
+            lqw.eq(Contacts::getOwner,contacts.getOwner())
+                    .eq(Contacts::getOthers,contacts.getOthers());
+            Contacts contacts1 = contactsMapper.selectOne(lqw);
+            if(contacts1==null)
+                count=contactsMapper.insert(contacts);
+            else
+            {
+                contacts1.setTime(LocalDateTime.now());
+                count=contactsMapper.updateById(contacts1);
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return 0;
+        }
+        return count;
+    }
 
 }

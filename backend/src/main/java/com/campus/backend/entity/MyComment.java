@@ -31,4 +31,11 @@ public class MyComment {
     private boolean likeFlag=false;
     private String userName;
     private String othersName;
+
+    private Integer pid;
+    private String postUsername;
+    private String postTitle;
+
+    private String floorUsername;
+    private String floorContent;
 }

@@ -36,5 +36,9 @@ public class Chat implements Serializable {
 
     private LocalDateTime time;
 
+    private boolean withdraw;
+
+    private boolean read;
+
 
 }

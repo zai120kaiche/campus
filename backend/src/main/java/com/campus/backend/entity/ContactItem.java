@@ -7,4 +7,5 @@ public class ContactItem {
     private Integer others;
     private String username;
     private String avatar;
+    private boolean hasMessage;
 }
