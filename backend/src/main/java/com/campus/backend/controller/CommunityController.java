@@ -581,16 +581,28 @@ public class CommunityController {
                 default:
                     break;
             }
+            int pid;
             for (MyComment record : page.getRecords()) {
-                if(record.getFlag()==1)
+                if(record.getFlag()==1) //一级评论
+                {
                     record.setLikeFlag(isLike(TableType.floor,info.getUid(),record.getId()));
-                else if(record.getFlag()==2)
+                    pid=record.getParentId();
+                }
+                else  //二级评论
                 {
                     record.setLikeFlag(isLike(TableType.reply,info.getUid(),record.getId()));
                     if(record.getOthers()!=null)
                         record.setOthersName(getUserName(record.getOthers()));
+                    Floor floor = floorMapper.selectById(record.getParentId());
+                    pid=floor.getPid();
+                    record.setFloorContent(floor.getContent());
+                    record.setFloorUsername(getUserName(floor.getOwner()));
                 }
                 record.setUserName(getUserName(record.getOwner()));
+                record.setPid(pid);
+                Post post = postMapper.selectById(pid);
+                record.setPostUsername(getUserName(post.getOwner()));
+                record.setPostTitle(post.getTitle());
             }
         }catch (Exception e)
         {
