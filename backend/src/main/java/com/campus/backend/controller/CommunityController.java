@@ -75,6 +75,9 @@ public class CommunityController {
     @Autowired
     private TypeService typeService;
 
+    @Autowired
+    private NotificationMapper notificationMapper;
+
 //发帖
     @PostMapping("/doPost")
     public Object doPost(@RequestBody Post post, HttpServletRequest request){
@@ -308,9 +311,20 @@ public class CommunityController {
             String ip = GetIpAddressUtil.getIpInfo(request);
             floor.setLocation(ip);
             floorMapper.insert(floor);
+
             Post post = postMapper.selectById(floor.getPid());
             post.setCommentNum(post.getCommentNum()+1);
             postMapper.updateById(post);
+
+
+            Notification notification=new Notification();
+            notification.setNotifier(floor.getOwner());
+            notification.setReceiver(post.getOwner());
+            notification.setOuterid(floor.getId());
+            notification.setReference(floor.getPid());
+            notification.setType(TableType.post.getKey());
+            notificationMapper.insert(notification);
+
         }catch (Exception e)
         {
             e.printStackTrace();
@@ -329,6 +343,23 @@ public class CommunityController {
             Floor floor = floorMapper.selectById(reply.getFid());
             floor.setReplyNum(floor.getReplyNum()+1);
             floorMapper.updateById(floor);
+
+            Notification notification=new Notification();
+            notification.setNotifier(reply.getOwner());
+            notification.setOuterid(reply.getId());
+            if(reply.getOthers()!=null)
+            {
+                notification.setReceiver(reply.getOthers());
+                notification.setReference(reply.getReference());
+                notification.setType(TableType.reply.getKey());
+            }
+            else {
+                notification.setReceiver(floor.getOwner());
+                notification.setReference(reply.getFid());
+                notification.setType(TableType.floor.getKey());
+            }
+            notificationMapper.insert(notification);
+
         }catch (Exception e)
         {
             e.printStackTrace();

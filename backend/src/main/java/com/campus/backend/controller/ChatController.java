@@ -114,12 +114,7 @@ public class ChatController {
             pages.setInfo(page);
             pages.setRecords(ChatContent);
 
-            LambdaQueryWrapper<Chat> lqw1=new LambdaQueryWrapper<>();
-            lqw1.eq(Chat::getSend,requestBody.getRecv())
-                    .eq(Chat::getRecv,requestBody.getSend());
-            Chat chat=new Chat();
-            chat.setRead(true);
-            chatMapper.update(chat,lqw1);
+            setRead(requestBody.getRecv(),requestBody.getSend());
         }catch (Exception e)
         {
             e.printStackTrace();
@@ -213,7 +208,7 @@ public class ChatController {
 
             IPage<Contacts> pages=new Page<>(request.getCurrent(),pageSize);
             LambdaQueryWrapper<Contacts> lqw=new LambdaQueryWrapper();
-            lqw.eq(Contacts::getOwner,request.getUid());
+            lqw.eq(Contacts::getOwner,request.getUid()).orderByDesc(Contacts::getTime);
             contactsMapper.selectPage(pages,lqw);
             ContactItem contactItem;
             List<ContactItem> list=new ArrayList<>();
@@ -244,6 +239,34 @@ public class ChatController {
         return Result.succ(contactPage);
     }
 
+    @PostMapping("/setAllRead")
+    public Object setAllRead(@RequestBody Integer uid)
+    {
+        try {
+            setRead(null,uid);
+        }catch (Exception e)
+        {
+            return Result.fail("setAllRead失败");
+        }
+        return Result.succ();
+    }
+
+    @PostMapping("/hasMessage")
+    public Object hasMessage(@RequestBody Integer uid)
+    {
+        try {
+            LambdaQueryWrapper<Chat> lqw=new LambdaQueryWrapper<>();
+            lqw.eq(Chat::getRecv,uid)
+                    .eq(Chat::isRead,false);
+            Chat chat = chatMapper.selectOne(lqw);
+            if(chat!=null) return Result.succ(true);
+            else return Result.succ(false);
+        }catch (Exception e)
+        {
+            return Result.fail("hasMessage失败");
+        }
+    }
+
     private int refreshContactList(Contacts contacts)
     {
         int count=0;
@@ -265,6 +288,23 @@ public class ChatController {
             return 0;
         }
         return count;
+    }
+
+    private int setRead(Integer send,Integer recv)
+    {
+        LambdaQueryWrapper<Chat> lqw=new LambdaQueryWrapper<>();
+        try {
+            lqw.eq(Chat::getRecv,recv)
+                    .eq(send!=null,Chat::getSend,send);;
+            Chat chat=new Chat();
+            chat.setRead(true);
+            chatMapper.update(chat,lqw);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            return 0;
+        }
+        return 1;
     }
 
 }
