@@ -49,6 +49,8 @@ public class Reply implements Serializable {
     @TableField("OTHERS")
     private Integer others;
 
+    private Integer reference;
+
     private Integer fid;
 
     public Reply(Reply reply)
@@ -63,6 +65,7 @@ public class Reply implements Serializable {
             this.location=reply.location;
             this.others=reply.others;
             this.owner=reply.owner;
+            this.reference=reply.reference;
         }
     }
 
