@@ -30,6 +30,8 @@ public class User implements Serializable {
 
     private String username;
 
+    private String mask;
+
     private String avatar;
 
     private String password;

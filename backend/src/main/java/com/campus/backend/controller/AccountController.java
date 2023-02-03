@@ -96,6 +96,7 @@ public class AccountController {
             return Result.succ(1);
         } else {
             user.setPassword(SecureUtil.md5(user.getPassword()));
+            user.setMask(getMask(user.getUsername()));
             user.setScore(0);
             userService.saveOrUpdate(user);
         }
@@ -107,5 +108,20 @@ public class AccountController {
         User re = userService.getById(user.getId());
         re.setPassword("");
         return Result.succ(re);
+    }
+
+    private String getMask(String username)
+    {
+        int num = (int)(Math.random()*10000);
+        String s1 = SecureUtil.md5(String.valueOf(num));
+        String s2 = SecureUtil.md5(username);
+        String s="";
+        for(int i=0;i<s1.length();i++)
+        {
+            s+=s1.charAt(i);
+            s+=s2.charAt(i);
+        }
+        int r = num%(s1.length()*2-15);
+        return s.substring(r , r + 10);
     }
 }
