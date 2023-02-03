@@ -160,7 +160,13 @@ public class ChatController {
     {
         int count=0;
         try {
-            count=contactsMapper.insert(contacts);
+            LambdaQueryWrapper<Contacts> lqw=new LambdaQueryWrapper();
+            lqw.eq(Contacts::getOwner,contacts.getOwner())
+                            .eq(Contacts::getOthers,contacts.getOthers());
+            Contacts contacts1 = contactsMapper.selectOne(lqw);
+            if(contacts1==null)
+                count=contactsMapper.insert(contacts);
+            else count=refreshContactList(contacts);
         }catch (Exception e)
         {
             e.printStackTrace();
