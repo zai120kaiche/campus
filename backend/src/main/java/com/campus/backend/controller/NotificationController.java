@@ -48,11 +48,11 @@ public class NotificationController {
 
 
     @PostMapping("/hasMessage")
-    public Object hasMessage(@RequestBody CID uid)
+    public Object hasMessage(@RequestBody Integer uid)
     {
         try {
             LambdaQueryWrapper<Notification> lqw=new LambdaQueryWrapper<>();
-            lqw.eq(Notification::getReceiver,uid.getCid())
+            lqw.eq(Notification::getReceiver,uid)
                     .eq(Notification::getR,false);
             List<Notification> list = notificationMapper.selectList(lqw);
             if(list.size()!=0) return Result.succ(true);
