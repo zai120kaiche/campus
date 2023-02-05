@@ -4,25 +4,7 @@
       <h4>和{{chatInit.toUser.username}}的对话</h4>
     </template>
     <template #default>
-
-      <div v-for="item in chatList">
-        <div v-if="item.mine" class="chatBox chatBox-right" style="margin-left: 39%;margin-top: 1%">
-          {{item.content}}
-
-        </div>
-
-        <div  v-else class="chatBox chatBox-left" style="margin-top: 1%">
-          {{item.content}}
-        </div>
-        <div v-if="item.mine" style="margin-left: 39%">
-          {{item.time.split("T")[0]}}
-        </div>
-        <div v-else>
-          {{item.time.split("T")[0]}}
-        </div>
-
-      </div>
-      <div v-if="chatInit.tradeId">
+      <div v-if="chatInit.tradeId" style="margin-bottom: 5%">
         <el-card>
           <el-image
               v-if="chatInit.tradeDetail.pic != 'undefined'"
@@ -34,6 +16,34 @@
           <div>{{chatInit.tradeDetail.date.split("T")[0]}}</div>
         </el-card>
       </div>
+      <div v-for="item in chatInit.detail">
+        <div v-if="item.mine && !item.withdraw" class="chatBox chatBox-right" style="margin-left: 39%;margin-top: 1%">
+          {{item.content}}
+
+        </div>
+
+        <div  v-else-if="!item.mine && !item.withdraw" class="chatBox chatBox-left" style="margin-top: 1%">
+          {{item.content}}
+        </div>
+        <div v-if="item.mine && !item.withdraw" style="margin-left: 39%">
+          {{item.time.split("T")[0]}}<span>
+              <el-popconfirm title="确定撤回此消息吗?"
+                             @confirm="doWithdraw(item.id)"
+                             confirm-button-text="确定"
+                             cancel-button-text="取消"
+              >
+                <template #reference>
+                  <el-button style="border-color: transparent">撤回</el-button>
+                </template>
+              </el-popconfirm>
+              </span>
+        </div>
+        <div v-else-if="!item.mine && !item.withdraw">
+          {{item.time.split("T")[0]}}
+        </div>
+
+      </div>
+
     </template>
     <template #footer>
       <el-row>
@@ -60,7 +70,8 @@ export default {
       to: Number,
       tradeId: Boolean,
       toUser: {},
-      tradeDetail: {}
+      tradeDetail: {},
+      detail: []
     }
   },
   data() {
@@ -69,7 +80,8 @@ export default {
       chatData: {
         content: '',
         send: 0,
-        recv: 0
+        recv: 0,
+        pic: ''
       },
       updateDataSend: {
         current: 1,
@@ -81,6 +93,17 @@ export default {
   },
 
   methods: {
+    doWithdraw(id){
+      let _this = this
+      _this.$axios.post("chat/doWithdraw", {id: id,uid: localStorage.getItem("userId")}).then(res=>{
+        ElNotification({
+          title: 'Success',
+          message: '撤回成功',
+          type: 'success',
+        })
+        _this.updateChat()
+      })
+    },
     handleClose() {
       this.$emit("handleClose", false)
     },
@@ -89,7 +112,7 @@ export default {
       _this.updateDataSend.send = _this.chatInit.from
       _this.updateDataSend.recv = _this.chatInit.to
       _this.$axios.post("chat/getAllContent", _this.updateDataSend).then(res=>{
-        _this.chatList = res.data.data.records.reverse()
+        _this.chatInit.detail = res.data.data.records.reverse()
       })
     },
     send() {

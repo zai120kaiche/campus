@@ -40,5 +40,7 @@ public class Chat implements Serializable {
 
     private boolean r;
 
+    private String pic;
+
 
 }

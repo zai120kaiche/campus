@@ -183,7 +183,7 @@
           <el-table-column fixed="right" label="操作" width="160">
             <template #default="scope">
               <el-popconfirm title="确定删除该评论吗?"
-                             @confirm="commentDelete(scope.row.id)"
+                             @confirm="commentDelete(scope.row)"
                              confirm-button-text="确定"
                              cancel-button-text="取消"
               >
@@ -774,8 +774,28 @@ export default {
         _this.drawer = true
       })
     },
-    commentDelete(id){
-
+    commentDelete(scope){
+      let _this = this
+      let temp={
+        uid: _this.userInfo.id,
+        objectIds: [scope.id],
+        type: scope.flag
+      }
+      console.log(scope)
+      _this.$axios.post("community/deleteComment", temp).then(res=>{
+          _this.commentCurrentPageChange(_this.commentCurrentPage)
+        ElNotification({
+          title: 'Success',
+          message: '删除成功',
+          type: 'success',
+        })
+      }).catch(res=>{
+        ElNotification({
+          title: 'Error',
+          message: 'error',
+          type: 'error',
+        })
+      })
     }
 
   }

@@ -46,6 +46,7 @@ com\campus\backend\entity\Feedback.class
 com\campus\backend\controller\AIController.class
 com\campus\backend\entity\LikeFloor.class
 com\campus\backend\service\impl\FileUploadServiceImpl.class
+com\campus\backend\entity\NotificationItem.class
 com\campus\backend\entity\Floor.class
 com\campus\backend\mapper\UserMapper.class
 com\campus\backend\service\CommodityService.class
@@ -68,6 +69,7 @@ com\campus\backend\mapper\PostMapper.class
 com\campus\backend\entity\School.class
 com\campus\backend\entity\FinishInfo.class
 com\campus\backend\controller\UserController.class
+com\campus\backend\service\NotificationService.class
 com\campus\backend\util\MsmConstantUtils.class
 com\campus\backend\mapper\ContactsMapper.class
 com\campus\backend\service\FeedbackService.class
@@ -81,6 +83,7 @@ com\campus\backend\mapper\IntentionMapper.class
 com\campus\backend\shiro\AccountProfile.class
 com\campus\backend\service\SchoolService.class
 com\campus\backend\mapper\FloorMapper.class
+com\campus\backend\controller\NotificationController.class
 com\campus\backend\entity\Intention.class
 com\campus\backend\util\JwtUtils.class
 com\campus\backend\controller\TradeController.class
@@ -104,10 +107,13 @@ com\campus\backend\CodeGenerator.class
 com\campus\backend\entity\PostInfoRequestBody.class
 com\campus\backend\CodeGenerator$2.class
 com\campus\backend\controller\IdentifierController.class
+com\campus\backend\mapper\NotificationMapper.class
 com\campus\backend\mapper\TypeMapper.class
 com\campus\backend\controller\TypeController.class
+com\campus\backend\entity\Notification.class
 com\campus\backend\controller\CommunityController.class
 com\campus\backend\mapper\AiMapper.class
+com\campus\backend\entity\WithdrawRequest.class
 com\campus\backend\entity\ChatRequestBody.class
 com\campus\backend\controller\AccountController.class
 com\campus\backend\config\AliyunOssConfig.class
@@ -124,14 +130,17 @@ com\campus\backend\service\impl\IdentifierServiceImpl.class
 com\campus\backend\service\impl\PostServiceImpl.class
 com\campus\backend\service\ContactsService.class
 com\campus\backend\mapper\IdentifierMapper.class
+com\campus\backend\entity\NotificationPages.class
 com\campus\backend\mapper\CollectMapper.class
 com\campus\backend\mapper\SchoolMapper.class
 com\campus\backend\entity\Post.class
 com\campus\backend\annotation\AccessLimit.class
 com\campus\backend\shiro\JwtToken.class
 com\campus\backend\entity\CID.class
+com\campus\backend\service\impl\NotificationServiceImpl.class
 com\campus\backend\entity\CommodityPages.class
 com\campus\backend\service\FileUploadService.class
+com\campus\backend\controller\DataAnalyseController.class
 com\campus\backend\service\FloorService.class
 com\campus\backend\config\ShiroConfig.class
 com\campus\backend\controller\SchoolController.class

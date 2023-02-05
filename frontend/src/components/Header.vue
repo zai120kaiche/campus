@@ -44,6 +44,7 @@
           二手易物
         </div>
       </el-button>
+
     </el-col>
 <!--    <el-col :span="6" style="margin-top: 3%">-->
 <!--      <el-input-->
@@ -92,13 +93,14 @@
       </el-popover>
 
       <el-popover trigger="hover" placement="top" :width="160">
-        <el-row style="font-weight: bold">
+        <el-row style="font-weight: bold" v-on:click="toNoteRoom">
           <el-icon style="margin-top: 2%">
             <Message/>
           </el-icon>
           <div style="margin-left: 11%">
             通知中心
           </div>
+          <i v-if="redDotNot" class="dotClass" style="background-color: crimson ;width:7px;  height:7px;  border-radius: 50%;  "></i>
         </el-row>
         <el-row style="font-weight: bold; margin-top: 5%" v-on:click="toChatRoom">
           <el-icon style="margin-top: 2%">
@@ -107,18 +109,19 @@
           <div style="margin-left: 11%">
             私信
           </div>
+          <i v-if="redDotChat" class="dotClass" style="background-color: crimson ;width:7px;  height:7px;  border-radius: 50%;  "></i>
         </el-row>
         <el-divider style="padding-bottom: 0; margin-top: 10px; margin-bottom: 0"></el-divider>
         <el-row>
           <el-col :span="24">
-            <el-button style="background-color: transparent; border-color: transparent">
+            <el-button v-on:click="AllRead" style="background-color: transparent; border-color: transparent">
               全部已读
             </el-button>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-button style="background-color: transparent; border-color: transparent">
+            <el-button v-on:click="toChatRoom" style="background-color: transparent; border-color: transparent">
               查看所有私信
             </el-button>
           </el-col>
@@ -189,9 +192,30 @@ export default {
       avatarUrl: localStorage.getItem("userAvatar"),
       chatList: [],
       serviceData: '',
+      redDotChat: false,
+      redDotNot: false
     }
   },
+  created(){
+    this.$axios.post("chat/hasMessage", {cid: localStorage.getItem("userId")}).then(res=>{
+      this.redDotChat = res.data.data
+    }).catch(res=>{
+
+    })
+    this.$axios.post("notification/hasMessage", {cid: localStorage.getItem("userId")}).then(res=>{
+      this.redDotNot = res.data.data
+      console.log(res.data.data)
+    }).catch(res=>{
+
+    })
+  },
   methods: {
+    AllRead(){
+      let _this = this
+      _this.$axios.post("chat/setAllRead",{cid: localStorage.getItem("userId")}).then(res=>{
+        _this.redDotChat = false
+      })
+    },
     cancle() {
       let _this = this
       _this.serviceShow = false
@@ -213,6 +237,11 @@ export default {
       this.$store.commit('SET_INDEX', -1)
 
       this.$router.push("/user/chatroom")
+    },
+    toNoteRoom(){
+      this.$store.commit('SET_INDEX', -1)
+
+      this.$router.push("/user/noteroom")
     },
     getIndexed() {
       return this.$store.getters.getIndex
@@ -238,4 +267,10 @@ export default {
 
 <style scoped>
 
+.dotClass {
+  width:7px;
+  height:7px;
+  border-radius: 50%;
+  display: block;
+}
 </style>

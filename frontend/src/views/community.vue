@@ -560,7 +560,8 @@ export default {
         to: 0,
         tradeId: false,
         toUser: {
-        }
+        },
+        detail: []
       },
     }
   },
@@ -625,8 +626,12 @@ export default {
       _this.chatProp.from = localStorage.getItem("userId")
       _this.chatProp.to = userId
       _this.chatProp.toUser = _this.callUserData
+      _this.$axios.post("chat/getAllContent", {current: 1,send: localStorage.getItem("userId"),recv: userId}).then(res=>{
+        _this.chatProp.detail = res.data.data.records.reverse()
+      })
       _this.callUserFlag = false
       _this.drawer = false
+      _this.$axios.post("chat/establishContact", {owner: localStorage.getItem("userId"),others: userId})
       _this.userChatDrawer = true
     },
     toMyPost() {
@@ -825,42 +830,75 @@ export default {
         picselect += ","
       }
       picselect += _this.picList[i]
-      let temp = {
-        owner: _this.userId,
-        title: _this.title,
-        content: _this.textarea,
-        kind: typeselect,
-        university: _this.schoolBlockSelect,
-        pic: picselect
-      }
-      console.log(temp)
-      _this.$axios.post("/community/doPost", temp).then(res => {
-        if(res.data.code == 200){
-          _this.created()
-          _this.title = ''
-          _this.textarea = ''
-          _this.schoolBlockSelect = ''
-          _this.typeSelect = []
-          ElNotification({
-            title: 'Success',
-            message: '发布成功',
-            type: 'success',
-          })
-        } else {
-          ElNotification({
-            title: 'Error',
-            message: '发布失败',
-            type: 'error',
-          })
-        }
-
-      }).catch(res=>{
+      if(_this.title == ''){
         ElNotification({
           title: 'Error',
-          message: '发布失败，请登录',
+          message: '请输入标题',
           type: 'error',
         })
-      })
+      }else if(_this.textarea == ''){
+        ElNotification({
+          title: 'Error',
+          message: '请输入要发布的内容',
+          type: 'error',
+        })
+      }else if(typeselect == 'undefined'){
+        ElNotification({
+          title: 'Error',
+          message: '请选择所属类别',
+          type: 'error',
+        })
+      }else if(_this.schoolBlockSelect == null){
+        ElNotification({
+          title: 'Error',
+          message: '请选择所属学校',
+          type: 'error',
+        })
+      }else if(_this.userId == "null"){
+        ElNotification({
+          title: 'Error',
+          message: '请登录用户',
+          type: 'error',
+        })
+      }else{
+        let temp = {
+          owner: _this.userId,
+          title: _this.title,
+          content: _this.textarea,
+          kind: typeselect,
+          university: _this.schoolBlockSelect,
+          pic: picselect
+        }
+
+        _this.$axios.post("/community/doPost", temp).then(res => {
+          if(res.data.code == 200){
+            _this.created()
+            _this.title = ''
+            _this.textarea = ''
+            _this.schoolBlockSelect = ''
+            _this.typeSelect = []
+            ElNotification({
+              title: 'Success',
+              message: '发布成功',
+              type: 'success',
+            })
+          } else {
+            ElNotification({
+              title: 'Error',
+              message: '发布失败',
+              type: 'error',
+            })
+          }
+
+        }).catch(res=>{
+          ElNotification({
+            title: 'Error',
+            message: '发布失败，请登录',
+            type: 'error',
+          })
+        })
+      }
+
     },
     handleClose(){
       let _this = this

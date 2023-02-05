@@ -120,46 +120,6 @@
                 </el-container>
 
               </el-row>
-              <el-row v-if="item.replies != ''">
-                <el-col :span="3" :offset="21">
-                  <el-icon v-on:click="repliesShow(index)">
-                    <ArrowDown />
-                  </el-icon>
-                </el-col>
-              </el-row>
-              <el-card v-if="item.showReplies" style="margin-top: 2%">
-                <div v-for="(reply, index) in item.replies" style="margin-top: 2%; padding: 0">
-                  <el-row>
-                    <el-col :span="8">{{reply.userName}}</el-col>
-                    <el-col :span="6" :offset="10">{{reply.date.split("T")[0]}}</el-col>
-                  </el-row>
-                  <el-row style="margin-top: 2%" >
-                    <el-container>
-                      <el-container >
-                        <el-main style="padding: 0">
-                          <el-link style="word-wrap:break-word; word-break:break-all;" >{{reply.content}}</el-link>
-
-                        </el-main>
-                        <el-aside width="10%">
-                          <el-icon v-if="reply.likeFlag" style="color: #88b0ef" v-on:click="doReplyDislike(reply.id)"><Pointer /></el-icon>
-                          <el-icon v-else v-on:click="doReplyLike(reply.id)"><Pointer /></el-icon>
-                          {{reply.likeNum}}
-                        </el-aside>
-
-                      </el-container>
-                      <el-footer style="padding: 0">
-                        <el-row>
-                          <el-col :offset="15">
-                            <el-button style="border-color: transparent;color: grey">回复</el-button>
-                          </el-col>
-                        </el-row>
-                      </el-footer>
-                    </el-container>
-
-                  </el-row>
-                  <el-divider></el-divider>
-                </div>
-              </el-card>
               <el-row v-if="item.doReplyLimit && doReplyShow" style="margin-top: 2%">
                 <el-col :span="20"><el-input
 
@@ -172,6 +132,15 @@
                   <el-button style="margin-top: 20%" v-on:click="doReply(index)">发送</el-button>
                 </el-col>
               </el-row>
+              <el-row v-if="item.replies != ''">
+                <el-col :span="3" :offset="21">
+                  <el-icon v-on:click="repliesShow(index)">
+                    <ArrowDown />
+                  </el-icon>
+                </el-col>
+              </el-row>
+
+
             </div>
           </el-card>
 
@@ -260,6 +229,80 @@
       </div>
     </template>
   </el-drawer>
+  <el-drawer v-model="showRepliesFlag" :direction="'rtl'">
+    <template #header>
+      <h4>{{originComment}}</h4>
+    </template>
+    <template #default>
+
+        <div v-for="(reply, index) in currentReplies" style="margin-top: 2%; padding: 0">
+
+          <el-row>
+            <el-col :span="8" v-if="reply.others == null">{{reply.userName}}</el-col>
+            <el-col :span="8" v-else>
+              {{reply.userName}}
+              <div style="margin-left: 1%;margin-right: 1%;color: #919191">回复</div>
+              {{reply.othersName}}
+            </el-col>
+            <el-col :span="6" :offset="10">{{reply.date.split("T")[0]}}</el-col>
+          </el-row>
+          <el-row style="margin-top: 2%" >
+            <el-container>
+              <el-container >
+                <el-main style="padding: 0">
+                  <el-link style="word-wrap:break-word; word-break:break-all;" >{{reply.content}}</el-link>
+
+                </el-main>
+                <el-aside width="10%">
+                  <el-icon v-if="reply.likeFlag" style="color: #88b0ef" v-on:click="doReplyDislike(reply.id)"><Pointer /></el-icon>
+                  <el-icon v-else v-on:click="doReplyLike(reply.id)"><Pointer /></el-icon>
+                  {{reply.likeNum}}
+                </el-aside>
+
+              </el-container>
+              <el-footer style="padding: 0;margin-bottom: 5%" height="100%">
+                <el-row v-if="reply.others == null">
+                  <el-col :offset="21" :span="3">
+                    <el-button style="border-color: transparent;color: grey;background-color: transparent" v-on:click="doOthersShowFunc(reply, index)">回复</el-button>
+                  </el-col>
+                </el-row>
+
+
+                <el-row v-if="reply.doOthersShow && othersShow" style="margin-top: 2%">
+                  <el-col :span="18"><el-input
+                      v-model="othersText"
+                      :rows="2"
+                      type="textarea"
+                      placeholder="请发表回复"
+                  /></el-col>
+                  <el-col :span="3" :offset="1">
+                    <el-button style="margin-top: 20%" v-on:click="doOthers(index)">发送</el-button>
+                  </el-col>
+                </el-row>
+
+              </el-footer>
+            </el-container>
+
+          </el-row>
+          <el-divider style="padding: 0;margin: 0"></el-divider>
+        </div>
+
+    </template>
+    <template #footer>
+      <el-row style="margin-top: 2%">
+        <el-col :span="20"><el-input
+
+            v-model="replyText"
+            :rows="2"
+            type="textarea"
+            placeholder="请发表评论"
+        /></el-col>
+        <el-col :span="3" :offset="1">
+          <el-button style="margin-top: 20%" v-on:click="doReply(currentIndex)">发送</el-button>
+        </el-col>
+      </el-row>
+    </template>
+  </el-drawer>
   <Chat :show="userChatDrawer" :chatInit="chatProp" @handleClose="chatHandleClose"></Chat>
 
 
@@ -279,6 +322,7 @@ export default {
   },
   data() {
     return {
+      othersText: '',
       likeFlag: false,
       collectFlag: false,
       callUserFlag: false,
@@ -289,7 +333,8 @@ export default {
         to: 0,
         tradeId: false,
         toUser: {
-        }
+        },
+        detail: []
       },
       doReplyShow: false,
       doReplyLimit: -1,
@@ -302,7 +347,16 @@ export default {
       srcList: [],
       userId: localStorage.getItem("userId"),
       commentText: '',
-      replyText: ''
+      replyText: '',
+
+      othersShow: false,
+      othersIndex: -1,
+      othersIndex2: -1,
+
+      showRepliesFlag: false,
+      originComment: '',
+      currentReplies: [],
+      currentIndex: -1
     }
   },
   created() {
@@ -354,8 +408,12 @@ export default {
       _this.chatProp.from = localStorage.getItem("userId")
       _this.chatProp.to = userId
       _this.chatProp.toUser = _this.callUserData
+      _this.$axios.post("chat/getAllContent", {current: 1,send: localStorage.getItem("userId"),recv: userId}).then(res=>{
+        _this.chatProp.detail = res.data.data.records.reverse()
+      })
       _this.callUserFlag = false
       _this.drawer = false
+      _this.$axios.post("chat/establishContact", {owner: localStorage.getItem("userId"),others: userId})
       _this.userChatDrawer = true
     },
     //点赞
@@ -412,7 +470,6 @@ export default {
           type: 'error',
         })
       })
-
     },
     disCollect(id){
       let _this = this
@@ -493,6 +550,9 @@ export default {
       }
       _this.$axios.post("/community/getPostInfo", temp).then(res =>{
         _this.commentDetail = res.data.data
+        if(_this.showRepliesFlag){
+          _this.repliesShow(_this.currentIndex)
+        }
         console.log(_this.commentDetail)
       })
     },
@@ -533,25 +593,49 @@ export default {
       let temp = {
         content: _this.replyText,
         owner: _this.userId,
-        fid: _this.commentDetail[index].floor.id
+        fid: _this.commentDetail[index].floor.id,
+        reference: _this.showRepliesFlag?_this.commentDetail[_this.currentIndex].reply[index].id:_this.commentDetail[index].floor.id
       }
       _this.$axios.post("/community/doReply", temp).then(res =>{
         _this.replyText = ''
         _this.getComment()
+        _this.repliesShow(index)
+      })
+    },
+    doOthers(index){
+      let _this = this
+      let temp = {
+        content: _this.othersText,
+        owner: _this.currentReplies[index].owner,
+        fid: _this.commentDetail[_this.currentIndex].floor.id,
+        others: _this.userId,
+        reference: _this.userId
+      }
+      _this.$axios.post("/community/doReply", temp).then(res =>{
+        _this.othersText = ''
+        _this.getComment()
+
       })
     },
     repliesShow(index) {
       let _this = this
+      _this.showRepliesFlag = true
+      _this.currentIndex = index
+      _this.currentReplies = _this.commentDetail[index].replies
+      _this.originComment = _this.commentDetail[index].floor.content
+    },
 
-      if(_this.repliesShowLimit == -1){
-        _this.repliesShowLimit = index
-
-      } else{
-
-        _this.commentDetail[_this.repliesShowLimit].showReplies = false
-        _this.repliesShowLimit = index
+    doOthersShowFunc(reply, index){
+      let _this = this
+      _this.othersShow = !_this.othersShow
+      if(_this.othersIndex == -1){
+        _this.othersIndex = index
       }
-      _this.commentDetail[index].showReplies = true
+      _this.currentReplies[_this.othersIndex].doOthersShow = false
+      _this.othersIndex = index
+      _this.currentReplies[_this.othersIndex].doOthersShow = true
+
+
     },
 
     doFloorLike(id){

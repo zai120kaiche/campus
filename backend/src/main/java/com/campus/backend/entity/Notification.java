@@ -40,7 +40,7 @@ public class Notification implements Serializable {
 
     private LocalDateTime time;
 
-    private Boolean read;
+    private Boolean r;
 
 
 }

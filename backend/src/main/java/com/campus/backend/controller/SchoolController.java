@@ -50,7 +50,7 @@ public class SchoolController {
         if(temp.getId() == null){
             temp.setCount(0);
             temp.setContentcount(0);
-            System.out.println(temp);
+            temp.setTradecount(0);
             schoolService.saveOrUpdate(temp);
             return Result.succ(temp);
         } else {

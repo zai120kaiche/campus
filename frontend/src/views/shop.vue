@@ -463,6 +463,10 @@ export default {
       _this.chatProp.to = owner
       _this.chatProp.tradeId = true
       _this.chatProp.tradeDetail = _this.tradeDetail
+      _this.$axios.post("chat/getAllContent", {current: 1,send: localStorage.getItem("userId"),recv: owner}).then(res=>{
+        _this.chatProp.detail = res.data.data.records.reverse()
+      })
+      _this.$axios.post("chat/establishContact", {owner: localStorage.getItem("userId"),others: owner})
       _this.$axios.post("user/index", {id: owner}).then(res=>{
         _this.chatProp.toUser = res.data.data
       }).catch(res=>{
@@ -605,7 +609,20 @@ export default {
           message: '请选择所属学校',
           type: 'error',
         })
-      } else {
+      } else if(_this.postData.price == null){
+        ElNotification({
+          title: 'Error',
+          message: '请输入期待价格',
+          type: 'error',
+        })
+      } else if(isNaN(_this.postData.price)){
+        ElNotification({
+          title: 'Error',
+          message: '请输入正确的价格形式（数字）',
+          type: 'error',
+        })
+      }else {
+        console.log(_this.postData)
         _this.$axios.post("/trade/addCommodity", _this.postData).then(res => {
           _this.postData.content = ''
           _this.tradeTypeSelect = []
@@ -615,6 +632,11 @@ export default {
           _this.picList = []
           _this.postData.price = null
           _this.getGoodList(_this.selectData.current, 0)
+          ElNotification({
+            title: 'Success',
+            message: '发布成功',
+            type: 'success',
+          })
         }).catch(res=>{
           ElNotification({
             title: 'Error',

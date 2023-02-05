@@ -11,8 +11,8 @@
 
       </el-row>
     </el-header>
-    <el-container style="margin-left: 10%; margin-right: 10%">
-      <el-aside width="60%">
+    <el-container style="margin-left: 10%; margin-right: 7%">
+      <el-aside width="58%">
 
 
         <el-image style="width: 100%; height: 90%; z-index: -1;" :src="require('../assets/images/login_back.png')"
@@ -675,6 +675,12 @@ export default {
         localStorage.setItem("userAvatar", res.data.data.avatar)
         this.$store.commit('SET_INDEX', 3)
         this.$router.push({name: "user", params: {flag: 4}})
+      }).catch(res=>{
+        ElNotification({
+          title: 'Error',
+          message: '密码不正确',
+          type: 'error',
+        })
       })
     },
     handleSelect(key) {

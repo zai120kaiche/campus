@@ -212,7 +212,7 @@ public class ChatController {
             User user = userMapper.selectById(request.getUid());
             if(user==null) return Result.fail("getContactList失败");
 
-            IPage<Contacts> pages=new Page<>(request.getCurrent(),pageSize);
+            IPage<Contacts> pages=new Page<>(request.getCurrent(),7);
             LambdaQueryWrapper<Contacts> lqw=new LambdaQueryWrapper();
             lqw.eq(Contacts::getOwner,request.getUid()).orderByDesc(Contacts::getTime);
             contactsMapper.selectPage(pages,lqw);
@@ -225,8 +225,8 @@ public class ChatController {
                 lqw1.eq(Chat::getSend,record.getOthers())
                         .eq(Chat::getRecv,request.getUid())
                         .eq(Chat::isR,false);
-                Chat chat = chatMapper.selectOne(lqw1);
-                if(chat==null)
+                List<Chat> chats = chatMapper.selectList(lqw1);
+                if(chats.size()==0)
                     contactItem.setHasMessage(false);
                 else contactItem.setHasMessage(true);
                 contactItem.setOthers(user1.getId());
@@ -246,10 +246,10 @@ public class ChatController {
     }
 
     @PostMapping("/setAllRead")
-    public Object setAllRead(@RequestBody Integer uid)
+    public Object setAllRead(@RequestBody CID uid)
     {
         try {
-            setRead(null,uid);
+            setRead(null,uid.getCid());
         }catch (Exception e)
         {
             return Result.fail("setAllRead失败");
@@ -258,14 +258,14 @@ public class ChatController {
     }
 
     @PostMapping("/hasMessage")
-    public Object hasMessage(@RequestBody Integer uid)
+    public Object hasMessage(@RequestBody CID uid)
     {
         try {
             LambdaQueryWrapper<Chat> lqw=new LambdaQueryWrapper<>();
-            lqw.eq(Chat::getRecv,uid)
+            lqw.eq(Chat::getRecv,uid.getCid())
                     .eq(Chat::isR,false);
-            Chat chat = chatMapper.selectOne(lqw);
-            if(chat!=null) return Result.succ(true);
+            List<Chat> chats = chatMapper.selectList(lqw);
+            if(chats.size()!=0) return Result.succ(true);
             else return Result.succ(false);
         }catch (Exception e)
         {

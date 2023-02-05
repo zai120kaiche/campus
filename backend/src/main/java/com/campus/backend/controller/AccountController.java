@@ -98,6 +98,7 @@ public class AccountController {
             user.setPassword(SecureUtil.md5(user.getPassword()));
             user.setMask(getMask(user.getUsername()));
             user.setScore(0);
+            user.setStandard(0);
             userService.saveOrUpdate(user);
         }
         return Result.succ();

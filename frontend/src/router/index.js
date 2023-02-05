@@ -26,6 +26,10 @@ const routes = [
     name: 'chatroom',
     component:() => import('../views/chatroom')
   },{
+    path: '/user/noteroom',
+    name: 'noteroom',
+    component:() => import('../views/noteroom')
+  },{
     path: '/user/info',
     name: 'userinfo',
     component:() => import('../views/userinfo')
