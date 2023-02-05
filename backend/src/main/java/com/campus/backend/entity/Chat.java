@@ -38,7 +38,7 @@ public class Chat implements Serializable {
 
     private boolean withdraw;
 
-    private boolean read;
+    private boolean r;
 
 
 }

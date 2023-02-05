@@ -224,7 +224,7 @@ public class ChatController {
                 LambdaQueryWrapper<Chat> lqw1=new LambdaQueryWrapper<>();
                 lqw1.eq(Chat::getSend,record.getOthers())
                         .eq(Chat::getRecv,request.getUid())
-                        .eq(Chat::isRead,false);
+                        .eq(Chat::isR,false);
                 Chat chat = chatMapper.selectOne(lqw1);
                 if(chat==null)
                     contactItem.setHasMessage(false);
@@ -263,7 +263,7 @@ public class ChatController {
         try {
             LambdaQueryWrapper<Chat> lqw=new LambdaQueryWrapper<>();
             lqw.eq(Chat::getRecv,uid)
-                    .eq(Chat::isRead,false);
+                    .eq(Chat::isR,false);
             Chat chat = chatMapper.selectOne(lqw);
             if(chat!=null) return Result.succ(true);
             else return Result.succ(false);
@@ -303,7 +303,7 @@ public class ChatController {
             lqw.eq(Chat::getRecv,recv)
                     .eq(send!=null,Chat::getSend,send);;
             Chat chat=new Chat();
-            chat.setRead(true);
+            chat.setR(true);
             chatMapper.update(chat,lqw);
         }catch (Exception e)
         {
