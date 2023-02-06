@@ -158,6 +158,15 @@
             </el-col>
           </el-row>
           <el-row>
+            <el-col :offset="2">请再次输入密码</el-col>
+          </el-row>
+          <el-row>
+            <el-col :offset="2">
+              <el-input show-password style="margin-top: 1%; width: 80%" v-model="repeatPassword" placeholder="请再次输入密码"/>
+            </el-col>
+          </el-row>
+
+          <el-row>
             <el-col :offset="2">验证码</el-col>
           </el-row>
           <el-row>
@@ -459,6 +468,7 @@ export default {
       userVisible: false,
       //flag判断注册还是登录
       loginOrRegister: true,
+      repeatPassword: ''
 
     }
   },
@@ -618,24 +628,32 @@ export default {
       } else {
         _this.registerData.phone = _this.sendData.phoneOrEmail
       }
-      console.log(_this.registerData)
-      _this.$axios.post('/register', _this.registerData).then(res =>{
-        console.log(res.data)
-        if(res.data.data == 1){
-          ElNotification({
-            title: 'Error',
-            message: '账号已存在，请直接登录',
-            type: 'error',
-          })
-        } else {
-          ElNotification({
-            title: 'Success',
-            message: '注册成功',
-            type: 'success',
-          })
-        }
-        _this.login()
-      })
+      if(_this.repeatPassword != _this.registerData.password){
+        ElNotification({
+          title: 'Error',
+          message: '请检查两次密码是否一致',
+          type: 'error',
+        })
+      }else{
+        _this.$axios.post('/register', _this.registerData).then(res =>{
+          console.log(res.data)
+          if(res.data.data == 1){
+            ElNotification({
+              title: 'Error',
+              message: '账号已存在，请直接登录',
+              type: 'error',
+            })
+          } else {
+            ElNotification({
+              title: 'Success',
+              message: '注册成功',
+              type: 'success',
+            })
+          }
+          _this.login()
+        })
+      }
+
     },
     loginSend() {
       let _this = this

@@ -14,6 +14,14 @@ const routes = [
     name: 'shop',
     component:() => import('../views/shop.vue')
   },{
+    path: '/index/activity',
+    name: 'activity',
+    component:() => import('../views/activity.vue')
+  },{
+    path: '/index/activity/detail/:activityId',
+    name: 'activitydetail',
+    component:() => import('../views/activitydetail')
+  },{
     path: '/back/control',
     name: 'control',
     component:() => import('../views/control')

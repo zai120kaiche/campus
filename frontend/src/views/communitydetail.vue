@@ -609,8 +609,9 @@ export default {
         owner: _this.currentReplies[index].owner,
         fid: _this.commentDetail[_this.currentIndex].floor.id,
         others: _this.userId,
-        reference: _this.userId
+        reference: _this.currentReplies[index].id
       }
+      console.log(temp)
       _this.$axios.post("/community/doReply", temp).then(res =>{
         _this.othersText = ''
         _this.getComment()

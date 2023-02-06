@@ -1,6 +1,7 @@
 package com.campus.backend.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 public class NotificationItem extends Notification{
@@ -19,4 +20,9 @@ public class NotificationItem extends Notification{
 
     private String username;
     private String content;
+
+    public NotificationItem(Notification n)
+    {
+        super(n);
+    }
 }

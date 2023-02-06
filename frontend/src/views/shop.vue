@@ -342,7 +342,7 @@
         <el-main style="padding: 0">
           <el-carousel height="150px" indicator-position="outside" v-if="tradeDetail.pic != 'undefined'">
             <el-carousel-item v-for="item in tradeDetail.pic" :key="item">
-              <el-image :src="item"></el-image>
+              <el-image :src="item" v-on:click="handlePictureCardPreview(item)"></el-image>
             </el-carousel-item>
           </el-carousel>
         </el-main>
@@ -353,6 +353,9 @@
           </el-row>
         </el-aside>
       </el-container>
+      <el-dialog v-model="dialogVisible" >
+        <img w-full :src="dialogImageUrl" alt="Preview Image" style="width: 100%"/>
+      </el-dialog>
     </template>
     <template #footer>
       <div style="flex: auto">
@@ -390,6 +393,8 @@ export default {
   },
   data() {
     return {
+      dialogImageUrl: '',
+      dialogVisible :false,
       keyWord: '',
       userChatDrawer: false,
       chatProp: {
@@ -454,6 +459,10 @@ export default {
     }
   },
   methods: {
+    handlePictureCardPreview(uploadFile) {
+      this.dialogImageUrl = uploadFile
+      this.dialogVisible = true
+    },
     chatHandleClose(res){
       this.userChatDrawer = false
     },

@@ -15,7 +15,7 @@
           学生社区
         </div>
       </el-button>
-      <el-button v-if="index == 2 || index == 3 || index == -1"
+      <el-button v-if="index == 2 || index == 3 || index == -1 || index == 4"
                  style="background-color: transparent; border-color: transparent; font-size: large; color: #919191"
                  v-on:click="changeCommunity">
         <el-icon style="margin-right: 1%">
@@ -34,7 +34,7 @@
           二手易物
         </div>
       </el-button>
-      <el-button v-if="index == 1 || index == 3 || index == -1"
+      <el-button v-if="index == 1 || index == 3 || index == -1 || index == 4"
                  style="background-color: transparent; border-color: transparent; font-size: large; color: #919191"
                  v-on:click="changeGood">
         <el-icon style="margin-right: 1%">
@@ -45,6 +45,25 @@
         </div>
       </el-button>
 
+      <el-button v-if="index == 4"
+                 style="background-color: transparent; border-color: transparent; font-size: large; color: #333333">
+        <el-icon style="margin-right: 1%">
+          <Compass/>
+        </el-icon>
+        <div>
+          活动集锦
+        </div>
+      </el-button>
+      <el-button v-if="index == 1 || index == 2 || index == 3 || index == -1"
+                 style="background-color: transparent; border-color: transparent; font-size: large; color: #919191"
+                 v-on:click="changeActivity">
+        <el-icon style="margin-right: 1%">
+          <Compass/>
+        </el-icon>
+        <div>
+          活动集锦
+        </div>
+      </el-button>
     </el-col>
 <!--    <el-col :span="6" style="margin-top: 3%">-->
 <!--      <el-input-->
@@ -204,7 +223,6 @@ export default {
     })
     this.$axios.post("notification/hasMessage", {cid: localStorage.getItem("userId")}).then(res=>{
       this.redDotNot = res.data.data
-      console.log(res.data.data)
     }).catch(res=>{
 
     })
@@ -260,6 +278,11 @@ export default {
       this.$store.commit('SET_INDEX', 3)
 
       this.$router.push({name: "user", params: {flag: 4}})
+    },
+    changeActivity() {
+      this.$store.commit('SET_INDEX', 4)
+
+      this.$router.push("/index/activity")
     }
   }
 }

@@ -48,11 +48,11 @@ public class NotificationController {
 
 
     @PostMapping("/hasMessage")
-    public Object hasMessage(@RequestBody Integer uid)
+    public Object hasMessage(@RequestBody CID uid)
     {
         try {
             LambdaQueryWrapper<Notification> lqw=new LambdaQueryWrapper<>();
-            lqw.eq(Notification::getReceiver,uid)
+            lqw.eq(Notification::getReceiver,uid.getCid())
                     .eq(Notification::getR,false);
             List<Notification> list = notificationMapper.selectList(lqw);
             if(list.size()!=0) return Result.succ(true);
@@ -75,7 +75,7 @@ public class NotificationController {
             NotificationItem item;
             List<NotificationItem> list=new ArrayList<>();
             for (Notification record : pages.getRecords()) {
-                item=new NotificationItem();
+                item=new NotificationItem(record);
                 item.setUsername(getUserName(record.getNotifier()));
                 if(record.getType()== TableType.post.getKey())
                 {
@@ -97,6 +97,7 @@ public class NotificationController {
                     item.setContent(reply.getContent());
                 }
                 else if(record.getType()==TableType.reply.getKey()){
+                    System.out.println(record);
                     Reply reply = replyMapper.selectById(record.getReference());
                     item.setRid(reply.getId());
                     item.setReplyUserName(getUserName(reply.getOwner()));

@@ -343,6 +343,9 @@
       </span>
     </template>
   </el-dialog>
+  <el-dialog v-model="dialogVisible" >
+    <img w-full :src="dialogImageUrl" alt="Preview Image" style="width: 100%"/>
+  </el-dialog>
 
 </template>
 
@@ -418,7 +421,9 @@ export default {
         order: 1,
       },
       tradeDetail: {},
-      drawer: false
+      drawer: false,
+      dialogImageUrl: '',
+      dialogVisible :false,
 
     }
   },
