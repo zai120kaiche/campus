@@ -92,24 +92,24 @@
           <Service/>
         </el-icon>
       </el-button>
-      <el-popover trigger="hover" placement="top" :width="160">
-        <el-row style="font-weight: bold">
-          <el-icon style="margin-top: 2%">
-            <Grid/>
-          </el-icon>
-          <div style="margin-left: 11%">
-            签到
-          </div>
-        </el-row>
-        <template #reference>
-          <el-button
-              style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">
-            <el-icon>
-              <Ticket/>
-            </el-icon>
-          </el-button>
-        </template>
-      </el-popover>
+<!--      <el-popover trigger="hover" placement="top" :width="160">-->
+<!--        <el-row style="font-weight: bold">-->
+<!--          <el-icon style="margin-top: 2%">-->
+<!--            <Grid/>-->
+<!--          </el-icon>-->
+<!--          <div style="margin-left: 11%">-->
+<!--            签到-->
+<!--          </div>-->
+<!--        </el-row>-->
+<!--        <template #reference>-->
+<!--          <el-button-->
+<!--              style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">-->
+<!--            <el-icon>-->
+<!--              <Ticket/>-->
+<!--            </el-icon>-->
+<!--          </el-button>-->
+<!--        </template>-->
+<!--      </el-popover>-->
 
       <el-popover trigger="hover" placement="top" :width="160">
         <el-row style="font-weight: bold" v-on:click="toNoteRoom">

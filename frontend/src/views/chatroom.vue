@@ -124,7 +124,6 @@ export default {
       let _this = this
       _this.chatData.send = _this.userId
       _this.chatData.recv = _this.to
-      console.log(_this.chatData)
       _this.$axios.post("chat/addContent", _this.chatData).then(res=>{
         if(res.data.code == 200){
           _this.chatData.content = ''
@@ -152,7 +151,7 @@ export default {
       _this.$axios.post("chat/getAllContent", {current: 1,send: localStorage.getItem("userId"),recv: userId}).then(res=>{
 
         _this.chatDetail = res.data.data.records.reverse()
-        console.log(_this.chatDetail)
+
         _this.to = userId
       })
 
@@ -161,7 +160,7 @@ export default {
       let _this = this
       _this.$axios.post("chat/getContactList", {uid: _this.userId, current: currentPage}).then(res=>{
         _this.chatList = res.data.data.records
-        console.log(res.data.data)
+
         _this.pageSize = res.data.data.total
       })
     },

@@ -106,7 +106,7 @@ export default {
   },
   methods: {
     handleClick(tab, event) {
-      console.log(tab, event);
+
     }
   }
 }
@@ -117,7 +117,7 @@ import { ref } from 'vue';
 const activeName = ref('first')
 
 // const handleClick = (tab: TabsPaneContext, event: Event) => {
-//   console.log(tab, event)
+
 // }
 </script>
 

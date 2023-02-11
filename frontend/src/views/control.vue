@@ -585,14 +585,28 @@ export default {
     }
   },
   created() {
-    this.typeList(0)
-    this.schoolList(0)
-    this.tradeTypeList(0)
-    this.postList()
-    this.goodList()
-    this.getActivityList(0)
+    this.check()
+
+
   },
   methods: {
+    check(){
+      this.$axios.post("userStandardCheck",{id: localStorage.getItem("userId")}).then(res=>{
+        this.init()
+      }).catch(res=>{
+        this.$router.push("/index/community")
+      })
+    },
+    init(){
+
+        this.typeList(0)
+        this.schoolList(0)
+        this.tradeTypeList(0)
+        this.postList()
+        this.goodList()
+        this.getActivityList(0)
+
+    },
     activityDelete(id){
       let _this = this
       _this.$axios.post("activity/delete", {uid: localStorage.getItem("userId"), aid: id}).then(res=>{
@@ -601,14 +615,14 @@ export default {
     },
     activityDetail(id){
       let _this = this
-      console.log(id)
+
       _this.$router.push({
         name: 'activitydetail',
         params: {activityId: id.id}
       })
     },
     activityEdit(detail){
-      console.log(detail)
+
       let _this = this
       _this.activityAddData = detail
       _this.activityActiveIndex = 1
@@ -714,7 +728,7 @@ export default {
           type: 'error',
         })
       } else {
-        console.log(_this.activityAddData)
+
         _this.$axios.post("activity/add", _this.activityAddData).then(res => {
           let tem = {
             owner: localStorage.getItem("userId"),
@@ -918,7 +932,7 @@ export default {
     tradeTypeEdit(type) {
       let changeType = type
       let _this = this
-      console.log(changeType)
+
       ElMessageBox.prompt('请输入要修改的名称', '商品类目修改', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
@@ -951,10 +965,10 @@ export default {
     },
     postTableChange(currentPage) {
       let _this = this
-      console.log(currentPage)
+
       _this.selectPost.current = currentPage
       _this.$axios.post("community/getPostList", _this.selectPost).then(res => {
-        console.log(res.data.data.records)
+
         _this.postTableData = res.data.data.records
         _this.postTotal = res.data.data.total
       })
@@ -966,7 +980,7 @@ export default {
         uid: localStorage.getItem("userId"),
         objectIds: [id.id]
       }
-      console.log(temp)
+
       _this.$axios.post("community/deletePostsByIds", temp).then(res => {
         ElNotification({
           title: 'Success',
@@ -1018,7 +1032,7 @@ export default {
         uid: localStorage.getItem("userId"),
         objectIds: [id.id]
       }
-      console.log(temp)
+
       _this.$axios.post("trade/deleteCommodity", temp).then(res => {
         ElNotification({
           title: 'Success',

@@ -1,14 +1,18 @@
 package com.campus.backend.common.lang;
 
+import com.campus.backend.entity.PostCommentItem;
 import com.campus.backend.entity.oss;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
+
 @Data
 public class Result implements Serializable {
     private int code;//200-correct,!200-error
     private  String msg;
     private  Object data;
+    private int total;
 
     public static Result succ() {
 
@@ -36,6 +40,14 @@ public class Result implements Serializable {
         r.setCode(code);
         r.setMsg(msg);
         r.setData(data);
+        return r;
+    }
+
+    public static Object succ(List<PostCommentItem> postCommentItems, Long total) {
+        Result r = new Result();
+        r.setCode(200);
+        r.setData(postCommentItems);
+        r.setTotal(Math.toIntExact(total));
         return r;
     }
 

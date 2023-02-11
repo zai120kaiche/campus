@@ -46,6 +46,10 @@ const routes = [
     name: 'communitydetail',
     component:() => import('../views/communitydetail')
   },{
+    path: '/index/whisper/detail/:whisperId',
+    name: 'whisperdetail',
+    component:() => import('../views/whisperdetail')
+  },{
     path: '/back/control/dataAnalyse',
     name: 'index',
     component:() => import('../views/dataAnalyse')

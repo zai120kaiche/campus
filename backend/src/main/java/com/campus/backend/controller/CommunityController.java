@@ -404,11 +404,13 @@ public class CommunityController {
     public Object getPostInfo(@RequestBody PostInfoRequestBody requestBody)
     {
         List<PostCommentItem> postCommentItems=new ArrayList<>();
+        Long total = Long.valueOf(0);
         try {
             Post post = postMapper.selectById(requestBody.getPid());
             post.setViewNum(post.getViewNum()+1);
             postMapper.updateById(post);
             IPage<Floor> floorPage=new Page<>(requestBody.getCurrent(),pageSize);
+
             OrderType orderType = OrderType.values()[requestBody.getOrder()];
             LambdaQueryWrapper<Floor> lqw=new LambdaQueryWrapper<>();
             lqw.eq(Floor::getPid,requestBody.getPid());
@@ -426,6 +428,7 @@ public class CommunityController {
             floorMapper.selectPage(floorPage,lqw);
 
             List<Floor> floors=floorPage.getRecords();
+            total = floorPage.getTotal();
             PostCommentItem postCommentItem;
             for (int i = 0; i < floors.size(); i++) {
                 Floor floor = floors.get(i);
@@ -461,7 +464,8 @@ public class CommunityController {
             e.printStackTrace();
             return Result.fail("getPostInfo失败");
         }
-        return Result.succ(postCommentItems);
+
+        return Result.succ(postCommentItems,total);
     }
 //获取二级评论
     @PostMapping("/getReplies")

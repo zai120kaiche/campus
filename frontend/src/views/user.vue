@@ -191,7 +191,7 @@
                   <el-button link type="primary" size="small">删除</el-button>
                 </template>
               </el-popconfirm>
-              <el-button link type="primary" size="small" v-on:click="forDetail(scope.row.parentId)">查看详情</el-button>
+              <el-button link type="primary" size="small" v-on:click="forDetail(scope.row.pid)">查看详情</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -449,7 +449,7 @@ export default {
       _this.dialog = true
       if (_this.changeUserInfo.phone != '') {
         _this.sendData.phoneOrEmail = _this.changeUserInfo.phone
-        console.log(_this.sendData)
+
         _this.$axios.post('/identify/send', _this.sendData).then(res => {
           ElNotification({
             title: 'Success',
@@ -491,7 +491,7 @@ export default {
       })
     },
     handlePictureCardPreview(uploadFile) {
-      console.log(uploadFile)
+
       this.dialogImageUrl = uploadFile.response.data.returnImgeUrl
       this.dialogVisible = true
     },
@@ -543,7 +543,7 @@ export default {
       let _this = this
     },
     handleSelect(res) {
-      console.log(res)
+
       let _this = this
       _this.activeIndex = res
       let temp = {
@@ -554,13 +554,13 @@ export default {
       _this.collectSend = temp
       if (res == 0) {
         _this.$axios.post("community/getCollect", temp).then(res => {
-          console.log(res.data.data)
+
           _this.collectPostData = res.data.data.records
           _this.collectPostTotal = res.data.data.total
         })
       } else {
         _this.$axios.post("trade/getCollect", temp).then(res => {
-          console.log(res.data.data)
+
           _this.collectTradeData = res.data.data.records
           _this.collectTradeTotal = res.data.data.total
         })
@@ -571,7 +571,7 @@ export default {
       _this.send.current = currentPage
       _this.postCurrentPage = currentPage
       _this.$axios.post("community/getPostById", _this.send).then(res => {
-        console.log(res.data.data)
+
         _this.postData = res.data.data.records
       })
     },
@@ -580,8 +580,9 @@ export default {
       _this.send.current = currentPage
       _this.commentCurrentPage = currentPage
       _this.$axios.post("community/getAllCommentById", _this.send).then(res => {
-        console.log(res.data.data)
+
         _this.commentData = res.data.data.records
+        console.log(_this.commentData)
       })
     },
     collectPostCurrentPageChange(currentPage) {
@@ -589,7 +590,7 @@ export default {
       _this.collectSend.current = currentPage
       _this.collectPostCurrentPage = currentPage
       _this.$axios.post("community/getCollect", _this.collectSend).then(res => {
-        console.log(res.data.data)
+
         _this.collectPostData = res.data.data.records
       })
     },
@@ -598,7 +599,7 @@ export default {
       _this.send.current = currentPage
       _this.tradeCurrentPage = currentPage
       _this.$axios.post("trade/getCommodityById", _this.send).then(res => {
-        console.log(res.data.data)
+
         _this.tradeData = res.data.data.records
       })
     },
@@ -607,7 +608,7 @@ export default {
       _this.collectSend.current = currentPage
       _this.collectTradeCurrentPage = currentPage
       _this.$axios.post("trade/getCollect", _this.collectSend).then(res => {
-        console.log(res.data.data)
+
         _this.collectTradeData = res.data.data.records
       })
     },
@@ -659,16 +660,16 @@ export default {
           _this.tradeTotal = res.data.data.total
         })
       } else if(res == 2){
-        console.log(temp)
+
         _this.$axios.post("community/getAllCommentById", temp).then(res => {
-          console.log(res.data.data)
+
           _this.commentData = res.data.data.records
           _this.commentTotal = res.data.data.total
         })
       }
     },
     postDelete(res) {
-      console.log(res)
+
       let _this = this
       let temp = {
         uid: _this.userInfo.id,
@@ -766,7 +767,7 @@ export default {
       let _this = this
       _this.$axios.post("/trade/view", {cid: id}).then(res => {
         _this.tradeDetail = res.data.data
-        console.log(_this.tradeDetail.pic)
+
         if (_this.tradeDetail.pic.search(",") != -1 && _this.tradeDetail.pic != null) {
           _this.tradeDetail.pic = _this.tradeDetail.pic.split(",")
         } else {
@@ -775,7 +776,7 @@ export default {
           _this.tradeDetail.pic = temp
         }
 
-        console.log(_this.tradeDetail)
+
         _this.drawer = true
       })
     },
@@ -786,7 +787,7 @@ export default {
         objectIds: [scope.id],
         type: scope.flag
       }
-      console.log(scope)
+
       _this.$axios.post("community/deleteComment", temp).then(res=>{
           _this.commentCurrentPageChange(_this.commentCurrentPage)
         ElNotification({

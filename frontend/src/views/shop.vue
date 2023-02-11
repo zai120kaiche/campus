@@ -22,11 +22,11 @@
         </div>
         <el-divider style="padding-bottom: 0; margin-top: 10px; margin-bottom: 0"></el-divider>
       </el-card>
-      <el-card style="margin-top: 10%">
+<!--      <el-card style="margin-top: 10%">-->
 
-      </el-card>
+<!--      </el-card>-->
     </el-aside>
-    <el-main class="animate__animated animate__fadeInDown" style="padding: 0">
+    <el-main v-if="!conventionFlag" class="animate__animated animate__fadeInDown" style="padding: 0">
       <el-card>
         <el-input
             v-model="postData.content"
@@ -252,6 +252,9 @@
 
 
     </el-main>
+    <el-main v-else>
+      <el-image :src="require('@/assets/images/shop.jpg')" :preview-src-list="[require('@/assets/images/shop.jpg')]"></el-image>
+    </el-main>
     <el-aside class="animate__animated animate__fadeInRight" width="14%" style="margin-right: 7%; margin-left: 4%">
 
       <el-card>
@@ -292,13 +295,12 @@
         <el-row>
           <el-col :span="12">
             <div style="font-weight: bold">
-              平台公告
-
+              二手社区公约
             </div>
           </el-col>
           <el-col :span="8" :offset="4">
-            <div style="color: #919191">
-              进入
+            <div style="color: #919191" v-on:click="conventionFlag = true">
+              查看
               <el-icon style="margin-right: 0; margin-left: 0">
                 <ArrowRightBold/>
               </el-icon>
@@ -393,6 +395,7 @@ export default {
   },
   data() {
     return {
+      conventionFlag: false,
       dialogImageUrl: '',
       dialogVisible :false,
       keyWord: '',
@@ -533,7 +536,7 @@ export default {
       let _this = this
       _this.$axios.post("/trade/view", {cid: id}).then(res => {
         _this.tradeDetail = res.data.data
-        console.log(_this.tradeDetail)
+
         if (_this.tradeDetail.pic.search(",") != -1 && _this.tradeDetail.pic != null) {
           _this.tradeDetail.pic = _this.tradeDetail.pic.split(",")
         } else {
@@ -542,7 +545,7 @@ export default {
           _this.tradeDetail.pic = temp
         }
 
-        console.log(_this.tradeDetail)
+
         _this.drawer = true
       })
     },
@@ -552,7 +555,7 @@ export default {
       _this.selectData.current = current
       _this.$axios.post("/trade/getCommodity", _this.selectData).then(res => {
         _this.goodList = res.data.data.records
-        console.log(_this.goodList)
+
       })
     },
     getGoodList(current, flag) {
@@ -570,7 +573,7 @@ export default {
 
       }
       _this.$axios.post("/trade/getCommodity", _this.selectData).then(res => {
-        console.log(res.data.data)
+
         _this.goodList = res.data.data.records
         _this.currentTotal = res.data.data.total
       })
@@ -631,7 +634,7 @@ export default {
           type: 'error',
         })
       }else {
-        console.log(_this.postData)
+
         _this.$axios.post("/trade/addCommodity", _this.postData).then(res => {
           _this.postData.content = ''
           _this.tradeTypeSelect = []
@@ -675,6 +678,7 @@ export default {
       let _this = this
       _this.currentTradeType = index
       _this.currentTradeTypeName = name
+      _this.conventionFlag = false
       _this.selectData.type = index
       _this.getGoodList(1, 0)
 
@@ -682,7 +686,7 @@ export default {
     picSelect(res) {
       let _this = this
       _this.picList.push(res)
-      console.log(_this.picList)
+
     },
     handleClose() {
       let _this = this

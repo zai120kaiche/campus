@@ -1,5 +1,6 @@
 com\campus\backend\entity\ActivityInfo.class
 com\campus\backend\entity\FloorItem.class
+com\campus\backend\mapper\WhisperReplyMapper.class
 com\campus\backend\service\TradetypeService.class
 com\campus\backend\service\AiService.class
 com\campus\backend\tool\GetIpAddressUtil.class
@@ -14,9 +15,11 @@ com\campus\backend\service\impl\UserServiceImpl.class
 com\campus\backend\service\impl\CollectServiceImpl.class
 com\campus\backend\CodeGenerator$1.class
 com\campus\backend\controller\CommunityController$1.class
+com\campus\backend\mapper\WhisperFloorMapper.class
 com\campus\backend\tool\PhoneUtil.class
 com\campus\AIDraw\AIservice\openAIUtil.class
 com\campus\backend\entity\LikePost.class
+com\campus\backend\entity\WhisperPostCommentItem.class
 com\campus\backend\mapper\TradetypeMapper.class
 com\campus\backend\service\impl\TradetypeServiceImpl.class
 com\campus\backend\entity\Type.class
@@ -73,6 +76,7 @@ com\campus\backend\service\impl\IntentionServiceImpl.class
 com\campus\backend\entity\OrderType.class
 com\campus\backend\mapper\PostMapper.class
 com\campus\backend\entity\School.class
+com\campus\backend\controller\WhisperController.class
 com\campus\backend\entity\FinishInfo.class
 com\campus\backend\controller\UserController.class
 com\campus\backend\service\NotificationService.class
@@ -99,6 +103,7 @@ com\campus\backend\common\dto\LoginDto.class
 com\campus\backend\entity\ActivityCollect.class
 com\campus\backend\entity\SearchConditionOfCommodity.class
 com\campus\backend\entity\ActivitySearch.class
+com\campus\backend\entity\WhisperReply.class
 com\campus\backend\controller\ChatController.class
 com\campus\backend\entity\LikeType.class
 com\campus\backend\mapper\ChatMapper.class
@@ -124,12 +129,14 @@ com\campus\backend\controller\CommunityController.class
 com\campus\backend\mapper\AiMapper.class
 com\campus\backend\entity\WithdrawRequest.class
 com\campus\backend\entity\ChatRequestBody.class
+com\campus\backend\mapper\WhisperPostMapper.class
 com\campus\backend\controller\AccountController.class
 com\campus\backend\config\AliyunOssConfig.class
 com\campus\backend\service\impl\ChatServiceImpl.class
 com\campus\backend\config\CorsConfig.class
 com\campus\backend\service\impl\SchoolServiceImpl.class
 com\campus\backend\service\impl\FeedbackServiceImpl.class
+com\campus\backend\entity\WhisperFloor.class
 com\campus\backend\service\impl\TypeServiceImpl.class
 com\campus\backend\entity\CommodityItem.class
 com\campus\backend\config\RedisConfig.class
@@ -140,6 +147,7 @@ com\campus\backend\service\impl\PostServiceImpl.class
 com\campus\backend\service\ContactsService.class
 com\campus\backend\mapper\IdentifierMapper.class
 com\campus\backend\entity\NotificationPages.class
+com\campus\backend\entity\WhisperPost.class
 com\campus\backend\mapper\CollectMapper.class
 com\campus\backend\mapper\SchoolMapper.class
 com\campus\backend\controller\ActivityCollectController.class

@@ -32,8 +32,8 @@
       <el-card style="margin-bottom: 3%">
         <el-input v-model="activitySelectData.keyWord" placeholder="请输入您要查找的内容">
           <template #append>
-            <el-button style="background-color: transparent; border-color: transparent">
-              <el-icon v-on:click="searchActivity">
+            <el-button style="background-color: transparent; border-color: transparent" v-on:click="searchActivity">
+              <el-icon >
                 <Search/>
               </el-icon>
 
@@ -46,16 +46,16 @@
           <el-aside width="40%">
 
 
-            <el-image v-if="item.pic.search(',')!=-1" :fit="'contain'" :src="item.pic.split(',')[0]"
+            <el-image v-if="item.pic.search(',')!=-1" :fit="'scale-down'" :src="item.pic.split(',')[0]"
                       v-on:click="handlePictureCardPreview(item.pic.split(',')[0])"></el-image>
 
-            <el-image :fit="'contain'" v-else :src="item.pic"
+            <el-image :fit="'scale-down'" v-else :src="item.pic"
                       v-on:click="handlePictureCardPreview(item.pic)"></el-image>
 
           </el-aside>
-          <el-main>
+          <el-main v-on:click="toDetail(item.id)">
             <router-link :to="{name: 'activitydetail', params: {activityId: item.id}}">
-              <h4 style="font-weight: bold; font-size: large">{{ item.title }}</h4>
+              <h4 style="font-weight: bold; font-size: large;word-wrap:break-word; word-break:break-all">{{ item.title }}</h4>
               <div style="margin-top: 2%"></div>
               <div style="word-wrap:break-word; word-break:break-all;
               text-overflow:ellipsis;overflow:hidden;display:-webkit-box;
@@ -117,6 +117,12 @@ export default {
     }
   },
   methods: {
+    toDetail(id){
+      this.$router.push({
+        name: 'activitydetail',
+        params: {activityId: id}
+      })
+    },
     searchActivity(){
       let _this = this
       _this.activitySelectData.order = 2
@@ -137,6 +143,7 @@ export default {
     },
     getActivityList(currentPage) {
       let _this = this
+
       _this.$axios.post("activity/search/?currentPage=" + currentPage, _this.activitySelectData).then(res => {
         _this.activityPageTotal = res.data.data.total
         _this.activityList = res.data.data.records
@@ -144,7 +151,7 @@ export default {
           _this.postShow = res.data.data.records
           _this.flag = true
         }
-        console.log(_this.activityList)
+
       })
     },
     activityPageChange(currentPage) {

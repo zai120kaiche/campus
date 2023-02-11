@@ -25,7 +25,7 @@
         <el-row>
           <el-carousel indicator-position="outside" style="width: 100%" height="200px">
             <el-carousel-item v-for="item in activityDetail.pic" :key="item">
-              <el-image :src="item" v-on:click="handlePictureCardPreview(item)"></el-image>
+              <el-image :src="item" v-on:click="handlePictureCardPreview(item)" fit="contain"></el-image>
             </el-carousel-item>
           </el-carousel>
         </el-row>
@@ -127,12 +127,9 @@ export default {
       _this.$axios.post("activity/detail", {cid: _this.activityId}).then(res=>{
         _this.activityDetail = res.data.data
         _this.activityDetail.date = _this.activityDetail.date.split("T")[0]
-        if(_this.activityDetail.pic.search(",")!=-1){
-          _this.activityDetail.pic = _this.activityDetail.pic.split(",")
-        }
 
+        _this.activityDetail.pic = _this.activityDetail.pic.split(",")
 
-        console.log(res.data.data)
       })
     }
   },

@@ -33,6 +33,20 @@ public class AccountController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @PostMapping("userStandardCheck")
+    public Result check(@RequestBody User user){
+        try{
+            User u = userService.getById(user.getId());
+            if (u.getStandard() == 9){
+                return Result.succ();
+            }else{
+                return Result.fail("");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @AccessLimit(seconds=30,days = 60*60*24, perCount = 5, dayCount = 500, needLogin = false)
     @PostMapping("/login")
     public Result login(@Validated @RequestBody LoginDto loginDto, HttpServletResponse response) {

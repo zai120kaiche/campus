@@ -26,7 +26,7 @@
         <div style="margin-top: 6%;margin-bottom: 5%; font-weight: bold; font-size: xx-large">{{postDetail.title}}</div>
         <el-row style="margin-left: 5%"><el-image v-for="item in postDetail.pic" style="width: 150px; height: 150px;
                   margin-right: 5%" :src="item" :fit="'fill'"
-                                                  :preview-src-list="postDetail.pic"/></el-row>
+                                                  preview-teleported="true"     :preview-src-list="postDetail.pic"/></el-row>
 
         <div style="word-wrap:break-word; word-break:break-all;
               margin-top: 5%;margin-left: 8%;margin-right: 8%;
@@ -142,6 +142,15 @@
 
 
             </div>
+            <el-pagination
+                @current-change="getComment"
+                :current-page="currentPage"
+                layout="prev, pager, next"
+                :total="currentTotal"
+                :page-size="5"
+                style="width: 100%; margin: 0"
+            />
+
           </el-card>
 
 
@@ -322,6 +331,8 @@ export default {
   },
   data() {
     return {
+      currentPage: 1,
+      currentTotal: 0,
       othersText: '',
       likeFlag: false,
       collectFlag: false,
@@ -362,7 +373,7 @@ export default {
   created() {
     this.initParams()
     this.init()
-    this.getComment()
+    this.getComment(1)
 
   },
   methods: {
@@ -428,7 +439,7 @@ export default {
       }
       _this.$axios.post('/community/doLike', temp).then(res => {
         _this.init()
-        console.log(_this.likeFlag)
+
         _this.likeFlag = !_this.likeFlag
       })
     },
@@ -442,7 +453,7 @@ export default {
       }
       _this.$axios.post('/community/doLike', temp).then(res => {
         _this.init()
-        console.log(_this.likeFlag)
+
         _this.likeFlag = !_this.likeFlag
 
       })
@@ -516,7 +527,6 @@ export default {
     init() {
       let _this = this
 
-      console.log(_this.likeFlag)
       let temp = {
         id: _this.communityId
       }
@@ -540,38 +550,49 @@ export default {
         })
       })
     },
-    getComment(){
+    getComment(currentPage){
       let _this = this
       let temp = {
         uid: _this.userId,
         pid: _this.communityId,
-        current: 1,
-        order: 0
+        current: currentPage,
+        order: 1
       }
+      _this.currentPage = currentPage
       _this.$axios.post("/community/getPostInfo", temp).then(res =>{
+
         _this.commentDetail = res.data.data
         if(_this.showRepliesFlag){
           _this.repliesShow(_this.currentIndex)
         }
-        console.log(_this.commentDetail)
+        _this.currentTotal = res.data.total
+
       })
     },
     //一级评论
     doComment() {
       let _this = this
-      let temp = {
-        content: _this.commentText,
-        pid: _this.postDetail.id,
-        owner: _this.userId
+      if(_this.commentText == ''){
+        ElNotification({
+          title: 'Error',
+          message: '请填写评论内容',
+          type: 'error',
+        })
+      }else{
+        let temp = {
+          content: _this.commentText,
+          pid: _this.postDetail.id,
+          owner: _this.userId
+        }
+
+        _this.$axios.post("/community/doComment", temp).then(res =>{
+          _this.commentText = ''
+          _this.getComment(_this.currentPage)
+        })
       }
-      _this.$axios.post("/community/doComment", temp).then(res =>{
-        _this.commentText = ''
-        _this.getComment()
-      })
+
     },
     doReplyShowFunc(index){
-
-
       let _this = this
 
       if(_this.doReplyLimit == -1){
@@ -590,33 +611,51 @@ export default {
     //二级评论
     doReply(index){
       let _this = this
-      let temp = {
-        content: _this.replyText,
-        owner: _this.userId,
-        fid: _this.commentDetail[index].floor.id,
-        reference: _this.showRepliesFlag?_this.commentDetail[_this.currentIndex].reply[index].id:_this.commentDetail[index].floor.id
+      if(_this.replyText == ''){
+        ElNotification({
+          title: 'Error',
+          message: '请填写评论内容',
+          type: 'error',
+        })
+      }else{
+        let temp = {
+          content: _this.replyText,
+          owner: _this.userId,
+          fid: _this.commentDetail[index].floor.id,
+          reference: _this.showRepliesFlag?_this.commentDetail[_this.currentIndex].reply[index].id:_this.commentDetail[index].floor.id
+        }
+        _this.$axios.post("/community/doReply", temp).then(res =>{
+          _this.replyText = ''
+          _this.getComment(_this.currentPage)
+          _this.repliesShow(index)
+        })
       }
-      _this.$axios.post("/community/doReply", temp).then(res =>{
-        _this.replyText = ''
-        _this.getComment()
-        _this.repliesShow(index)
-      })
+
     },
     doOthers(index){
       let _this = this
-      let temp = {
-        content: _this.othersText,
-        owner: _this.currentReplies[index].owner,
-        fid: _this.commentDetail[_this.currentIndex].floor.id,
-        others: _this.userId,
-        reference: _this.currentReplies[index].id
-      }
-      console.log(temp)
-      _this.$axios.post("/community/doReply", temp).then(res =>{
-        _this.othersText = ''
-        _this.getComment()
+      if(_this.othersText == ''){
+        ElNotification({
+          title: 'Error',
+          message: '请填写回复内容',
+          type: 'error',
+        })
+      }else{
+        let temp = {
+          content: _this.othersText,
+          owner: _this.currentReplies[index].owner,
+          fid: _this.commentDetail[_this.currentIndex].floor.id,
+          others: _this.userId,
+          reference: _this.currentReplies[index].id
+        }
 
-      })
+        _this.$axios.post("/community/doReply", temp).then(res =>{
+          _this.othersText = ''
+          _this.getComment(_this.currentPage)
+
+        })
+      }
+
     },
     repliesShow(index) {
       let _this = this
@@ -648,7 +687,7 @@ export default {
         flag: true
       }
       _this.$axios.post("community/doLike", temp).then(res=>{
-        _this.getComment()
+        _this.getComment(_this.currentPage)
       })
     },
     doFloorDislike(id){

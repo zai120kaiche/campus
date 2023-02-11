@@ -600,11 +600,11 @@ export default {
     smsSendSucc() {
       let _this = this
       _this.sliderCheck = true
-      console.log(_this.sliderCheck)
+
     },
     smsSendFail() {
       let _this = this
-      console.log(_this.sliderCheck)
+
     },
     smsCheck() {
       let _this = this
@@ -636,7 +636,7 @@ export default {
         })
       }else{
         _this.$axios.post('/register', _this.registerData).then(res =>{
-          console.log(res.data)
+
           if(res.data.data == 1){
             ElNotification({
               title: 'Error',
@@ -658,7 +658,7 @@ export default {
     loginSend() {
       let _this = this
       _this.$axios.post('login', _this.loginData).then(res =>{
-        console.log(res.data.data)
+
         localStorage.setItem("userId", res.data.data.id)
         localStorage.setItem("userAvatar", res.data.data.avatar)
         this.$store.commit('SET_INDEX', 3)
@@ -688,7 +688,7 @@ export default {
         password: 1
       }
       _this.$axios.post('/login', temp).then(res =>{
-        console.log(res.data.data)
+
         localStorage.setItem("userId", res.data.data.id)
         localStorage.setItem("userAvatar", res.data.data.avatar)
         this.$store.commit('SET_INDEX', 3)
