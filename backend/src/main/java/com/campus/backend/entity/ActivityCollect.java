@@ -28,5 +28,7 @@ public class ActivityCollect implements Serializable {
     @TableId(value = "aid")
     private Integer aid;
 
+    private Boolean pass;
+
 
 }
