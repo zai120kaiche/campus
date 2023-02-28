@@ -1,5 +1,62 @@
 <template>
-  <el-drawer v-if="show" v-model="showChat" :direction="'ltr'" :before-close="handleClose">
+  <el-drawer v-if="show && !isPhone" v-model="showChat" :direction="'ltr'" :before-close="handleClose">
+    <template #header>
+      <h4>和{{chatInit.toUser.username}}的对话</h4>
+    </template>
+    <template #default>
+      <div v-if="chatInit.tradeId" style="margin-bottom: 5%">
+        <el-card>
+          <el-image
+              v-if="chatInit.tradeDetail.pic != 'undefined'"
+              :src="chatInit.tradeDetail.pic.length == 1?chatInit.tradeDetail.pic:chatInit.tradeDetail.pic[0]"
+              class="image"
+              style="border-radius: 5px"
+          />
+          <div>{{chatInit.tradeDetail.content}}</div>
+          <div>{{chatInit.tradeDetail.date.split("T")[0]}}</div>
+        </el-card>
+      </div>
+      <div v-for="item in chatInit.detail">
+        <div v-if="item.mine && !item.withdraw" class="chatBox chatBox-right" style="margin-left: 39%;margin-top: 1%">
+          {{item.content}}
+
+        </div>
+
+        <div  v-else-if="!item.mine && !item.withdraw" class="chatBox chatBox-left" style="margin-top: 1%">
+          {{item.content}}
+        </div>
+        <div v-if="item.mine && !item.withdraw" style="margin-left: 39%">
+          {{item.time.split("T")[0]}}<span>
+              <el-popconfirm title="确定撤回此消息吗?"
+                             @confirm="doWithdraw(item.id)"
+                             confirm-button-text="确定"
+                             cancel-button-text="取消"
+              >
+                <template #reference>
+                  <el-button style="border-color: transparent">撤回</el-button>
+                </template>
+              </el-popconfirm>
+              </span>
+        </div>
+        <div v-else-if="!item.mine && !item.withdraw">
+          {{item.time.split("T")[0]}}
+        </div>
+
+      </div>
+
+    </template>
+    <template #footer>
+      <el-row>
+        <el-col :span="18">
+          <el-input placeholder="请输入您要发送的消息" v-model="chatData.content" type="textarea" rows="3"></el-input>
+        </el-col>
+        <el-col :span="4" :offset="1">
+          <el-button style="border-color: transparent" v-on:click="send">发送</el-button>
+        </el-col>
+      </el-row>
+    </template>
+  </el-drawer>
+  <el-drawer v-if="show && isPhone" v-model="showChat" :direction="'btt'" size="88%" :before-close="handleClose">
     <template #header>
       <h4>和{{chatInit.toUser.username}}的对话</h4>
     </template>
@@ -60,6 +117,7 @@
 
 <script>
 import {ElNotification} from "element-plus";
+import {inject} from "vue";
 
 export default {
   name: "Chat",
@@ -88,7 +146,8 @@ export default {
         send: null,
         recv: null
       },
-      chatList: []
+      chatList: [],
+      isPhone: inject('isPhone')
     }
   },
 

@@ -3,7 +3,7 @@
   <img src="../assets/images/wave.png" alt="" class="ourpage" style="position: fixed;background-color: transparent">
   <Header></Header>
 
-  <el-container style="margin-bottom: 5%">
+  <el-container v-if="!isPhone" style="margin-bottom: 5%">
     <el-aside class="animate__animated animate__fadeInLeft" width="14%" style="margin-left: 7%; margin-right: 4%">
       <el-card>
         <div style="font-weight: bold">
@@ -220,8 +220,8 @@
           </el-row>
           <el-row style="color: #333333">
             <el-col :span="12">{{ item.collectNum }}人想要</el-col>
-            <el-col :span="12" style="margin-top: 2%">
-              <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+            <el-col :span="12" style="">
+              <el-icon style="margin-right: 15%; margin-left: 15%">
                 <View/>
               </el-icon>
               {{ item.viewNum }}
@@ -312,6 +312,271 @@
       </el-card>
     </el-aside>
   </el-container>
+  <el-container v-else style="margin-left: 2%;margin-right: 2%;margin-top: 5%">
+    <el-header style="padding-left: 0;padding-right: 0;margin-bottom: 2%">
+      <el-card >
+        <el-row>
+          <el-col :span="12">
+            <div style="font-weight: bold">
+              二手社区公约
+            </div>
+          </el-col>
+          <el-col :span="4" :offset="8">
+            <div v-if="!conventionFlag" style="color: #919191" v-on:click="conventionFlag = true">
+              查看
+              <el-icon style="margin-right: 0; margin-left: 0">
+                <ArrowRightBold/>
+              </el-icon>
+            </div>
+            <div v-if="conventionFlag" style="color: #919191" v-on:click="conventionFlag = false">
+              返回
+              <el-icon style="margin-right: 0; margin-left: 0">
+                <ArrowRightBold/>
+              </el-icon>
+            </div>
+
+          </el-col>
+        </el-row>
+
+      </el-card>
+    </el-header>
+    <el-main v-if="!conventionFlag" class="animate__animated animate__fadeInDown" style="padding: 0">
+      <el-card>
+        <el-input
+            v-model="postData.content"
+            clearable
+            placeholder="请输入你需要的商品"
+        />
+        <el-row style="margin-top: 3%;">
+          <el-input placeholder="请输入您期待的价格" v-model="postData.price">
+
+          </el-input>
+        </el-row>
+
+
+        <el-row style="margin-top: 3%" :gutter="8">
+          <el-col :span="12">
+
+
+            <el-row style="font-weight: bold">
+
+              <el-col>
+                <el-select
+                    v-model="tradeTypeSelect"
+                    placeholder="# 类别"
+                    style="width: 100%"
+                    filterable
+                    multiple
+                >
+                  <el-option
+                      v-for="item in tradeTypeTableData"
+                      :key="item.tradetypename"
+                      :label="item.tradetypename"
+                      :value="item.id"
+                  />
+                </el-select>
+              </el-col>
+
+            </el-row>
+
+
+          </el-col>
+          <el-col :span="12">
+
+
+            <el-row style="font-weight: bold">
+
+              <el-col>
+                <el-select
+                    v-model="postData.university"
+                    placeholder="所属学校"
+                    style="width: 100%"
+                    filterable
+                >
+                  <el-option
+                      v-for="item in schoolTableData"
+                      :key="item.schoolname"
+                      :label="item.schoolname"
+                      :value="item.id"
+                  />
+                </el-select>
+              </el-col>
+
+            </el-row>
+
+
+          </el-col>
+
+
+        </el-row>
+        <el-row style="margin-top: 2%">
+          <el-col :span="6">
+
+
+            <el-row style="font-weight: bold">
+
+
+              <el-col>
+
+                <el-button style="font-weight: lighter" @click="picDialogVisible = true">
+                  <el-icon style="margin-right: 5%">
+                    <Picture/>
+                  </el-icon>
+                  图片
+                </el-button>
+              </el-col>
+
+
+            </el-row>
+
+
+          </el-col>
+          <el-col :span="6">
+            <el-row style="font-weight: bold">
+
+              <el-col>
+                <el-select
+                    v-model="postData.tradeFlag"
+                    placeholder="出/收"
+                    style="width: 100%"
+                    filterable
+                >
+                  <el-option
+                      v-for="item in butOrSaleList"
+                      :key="item.name"
+                      :label="item.name"
+                      :value="item.value"
+                  />
+                </el-select>
+              </el-col>
+
+            </el-row>
+          </el-col>
+<!--          <el-col :span="1">-->
+<!--            <el-popover trigger="hover" placement="bottom" :width="160">-->
+
+<!--              <el-row style="font-weight: bold; margin-top: 5%">-->
+<!--                <el-icon style="margin-top: 2%">-->
+<!--                  <Clock/>-->
+<!--                </el-icon>-->
+<!--                <div style="margin-left: 11%">-->
+<!--                  定时发布-->
+<!--                </div>-->
+<!--              </el-row>-->
+<!--              <el-row style="font-weight: bold; margin-top: 5%">-->
+<!--                <el-icon style="margin-top: 2%">-->
+<!--                  <Top/>-->
+<!--                </el-icon>-->
+<!--                <div style="margin-left: 11%">-->
+<!--                  积分发急收-->
+<!--                </div>-->
+<!--              </el-row>-->
+<!--              <template #reference>-->
+<!--                <el-button-->
+<!--                    style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">-->
+<!--                  <el-icon>-->
+<!--                    <MoreFilled/>-->
+<!--                  </el-icon>-->
+<!--                </el-button>-->
+<!--              </template>-->
+<!--            </el-popover>-->
+<!--          </el-col>-->
+
+          <el-col :span="3" :offset="8">
+            <el-button style="background-color: #A2C9FC" v-on:click="doGoodPost">发送</el-button>
+          </el-col>
+        </el-row>
+        <el-row></el-row>
+      </el-card>
+      <el-card style="margin-top: 1%">
+        <el-row>
+          <el-col :span="6">
+            <el-icon style="color: #88b0ef; margin-top: 2%">
+              <Promotion/>
+            </el-icon>
+            物品查找
+          </el-col>
+          <el-col :span="18">
+            <el-input placeholder="请输入您想查找的物品名称"
+                      v-model="keyWord"
+            >
+              <template #append>
+                <el-button style="background-color: transparent; border-color: transparent">
+                  <el-icon v-on:click="getGoodList(1, 2)">
+                    <Search/>
+                  </el-icon>
+
+                </el-button>
+              </template>
+
+            </el-input>
+          </el-col>
+        </el-row>
+      </el-card>
+      <el-row>
+
+        <el-card v-for="(item, index) in goodList"
+                 style="margin-top: 1%; width: 45%; margin-right: 2%; margin-left: 3%"
+                 v-on:click="getTradeDetail(item.id)">
+
+
+          <el-image
+              v-if="item.pic != 'undefined' && item.pic != null"
+              :src="item.pic.split(',')[0]"
+              class="image"
+              style="border-radius: 5px"
+          />
+          <div style="text-align: center;color: #333333;word-wrap:break-word; word-break:break-all;
+              text-overflow:ellipsis;overflow:hidden;display:-webkit-box;
+              -webkit-line-clamp:1;-webkit-box-orient:vertical;">{{ item.content }}
+          </div>
+          <el-row style="color: #333333">
+            <el-col :span="12">￥ {{ item.price }}</el-col>
+            <el-col v-if="item.tradeFlag" :span="3" :offset="9"
+                    style="font-weight: bold; font-size: large; color: crimson">出
+            </el-col>
+            <el-col v-else :span="4" :offset="8" style="font-weight: bold; font-size: large; color: #7AC23C">收</el-col>
+          </el-row>
+          <el-row style="color: #333333;margin-top: 5%">
+            <el-col :span="12">{{ item.collectNum }}人想要</el-col>
+            <el-col :span="12" style="">
+              <el-icon style="margin-right: 15%; margin-left: 15%">
+                <View/>
+              </el-icon>
+              {{ item.viewNum }}
+            </el-col>
+          </el-row>
+
+          <div :span="6" style="color: #919191; font-weight: lighter; font-size: xx-small">学校:
+            {{ item.universityName }}
+          </div>
+          <div :span="14" style="color: #919191; font-weight: lighter; font-size: xx-small">时间:
+            {{ item.date.split("T")[0] }}
+          </div>
+
+
+        </el-card>
+      </el-row>
+
+      <el-card style="margin-top: 1%; padding: 0">
+        <el-pagination
+            @current-change="currentPageChange"
+            :current-page="currentPage"
+            layout="prev, pager, next"
+            :total="currentTotal"
+            :page-size="9"
+            style="width: 100%; margin: 0"
+        />
+      </el-card>
+
+
+    </el-main>
+    <el-main v-else>
+      <el-image :src="require('@/assets/images/shop.jpg')" :preview-src-list="[require('@/assets/images/shop.jpg')]"></el-image>
+    </el-main>
+
+
+  </el-container>
   <el-dialog
       v-model="picDialogVisible"
       title="添加图片"
@@ -334,7 +599,7 @@
   </el-dialog>
   <Footer></Footer>
   <Tool></Tool>
-  <el-drawer v-model="drawer" :direction="'rtl'">
+  <el-drawer v-if="!isPhone" v-model="drawer" :direction="'rtl'">
     <template #header>
       <h4 v-if="tradeDetail.tradeFlag">出</h4>
       <h4 v-else>收</h4>
@@ -367,6 +632,39 @@
       </div>
     </template>
   </el-drawer>
+  <el-drawer v-if="isPhone" size="88%" v-model="drawer" :direction="'btt'">
+    <template #header>
+      <h4 v-if="tradeDetail.tradeFlag">出</h4>
+      <h4 v-else>收</h4>
+    </template>
+    <template #default>
+      <el-container style="height: 100%">
+        <el-main style="padding: 0">
+          <el-carousel height="150px" indicator-position="outside" v-if="tradeDetail.pic != 'undefined'">
+            <el-carousel-item v-for="item in tradeDetail.pic" :key="item">
+              <el-image :src="item" v-on:click="handlePictureCardPreview(item)" :preview-src-list="tradeDetail.pic"></el-image>
+            </el-carousel-item>
+          </el-carousel>
+        </el-main>
+        <el-aside width="60%">
+          <el-row
+              style="word-wrap:break-word; word-break:break-all;margin-left: 10%; margin-right: 10%;font-size: large">
+            {{ tradeDetail.content }}
+          </el-row>
+        </el-aside>
+      </el-container>
+      <el-dialog v-model="dialogVisible" >
+        <img w-full :src="dialogImageUrl" alt="Preview Image" style="width: 100%"/>
+      </el-dialog>
+    </template>
+    <template #footer>
+      <div style="flex: auto">
+        <el-button type="primary" @click="collectClick(tradeDetail.id)">收藏</el-button>
+        <el-button type="primary" @click="callSaler(tradeDetail.id, tradeDetail.owner)">联系卖家</el-button>
+        <el-button type="primary" @click="saleOnLine(tradeDetail.id, tradeDetail.owner)">线上交易</el-button>
+      </div>
+    </template>
+  </el-drawer>
   <Chat :show="userChatDrawer" :chatInit="chatProp" @handleClose="chatHandleClose"></Chat>
 </template>
 
@@ -377,6 +675,7 @@ import Pic from "@/components/Pic"
 import {ElNotification} from "element-plus";
 import Tool from "@/components/Tool";
 import Chat from "@/components/Chat";
+import {inject} from "vue";
 
 export default {
   name: "shop",
@@ -395,6 +694,7 @@ export default {
   },
   data() {
     return {
+      isPhone: inject('isPhone'),
       conventionFlag: false,
       dialogImageUrl: '',
       dialogVisible :false,

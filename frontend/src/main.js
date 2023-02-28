@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import {createApp, reactive} from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -45,11 +45,12 @@ const app = createApp(App)
 app.config.globalProperties.$echarts= echarts
 app.config.productionTip = false;
 app.use(dataV)
-
 app.config.globalProperties.$axios=axios
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
+
+
 app.use(ElementPlus)
 app.use(VueClipboard)
 app.use(SlideVerify)

@@ -2,7 +2,7 @@
   <div class="page_back page_this"></div>
   <img src="../assets/images/wave.png" alt="" class="ourpage" style="position: fixed;background-color: transparent">
   <Header></Header>
-  <el-container >
+  <el-container v-if="!isPhone">
     <el-main style="padding: 0;margin-left: 12%; margin-right: 3%;">
       <el-card class="  animate__animated animate__fadeIn "  >
         <el-row v-on:click="goOff" style="margin-bottom: 2%">
@@ -194,32 +194,175 @@
         </el-row>
       </el-card>
 
-      <el-card style="margin-top: 10%">
-        <el-row>
-          <el-col :span="12">
-            <div style="font-weight: bold">
-              社区公告
 
-            </div>
-          </el-col>
-          <el-col :span="8" :offset="4">
-            <div style="color: #919191">
-              进入
-              <el-icon style="margin-right: 0; margin-left: 0">
-                <ArrowRightBold/>
-              </el-icon>
-            </div>
-
-          </el-col>
-        </el-row>
-
-      </el-card>
     </el-aside>
 
 
   </el-container>
+  <el-container v-else style="margin-left: 2%; margin-right: 2%;">
+    <el-main style="padding: 0;">
+      <el-card class="  animate__animated animate__fadeIn "  >
+        <el-row v-on:click="goOff" style="margin-bottom: 2%">
+          <el-icon style="margin-top: 0.5%"><ArrowLeftBold /></el-icon>
+          返回
+        </el-row>
+        <el-row gutter="20">
+          <el-col :span="5" v-on:click="callUserInfo(postDetail.owner)">
+            <el-avatar :src="postDetail.avatar"></el-avatar>
+          </el-col>
+
+
+          <el-col :span="15" style="margin-top: 4%" v-on:click="callUserInfo(postDetail.owner)">{{postDetail.authorname}}</el-col>
+
+
+        </el-row>
+        <el-row style="margin-top: 3%">
+          <el-col :span="12" style="color: #919191; font-weight: lighter; font-size: xx-small">类别: {{postDetail.kindName}}</el-col>
+          <el-col :span="12" style="color: #919191; font-weight: lighter; font-size: xx-small">学校: {{postDetail.universityName}}
+          </el-col>
+        </el-row>
+
+        <div style="margin-top: 6%;margin-bottom: 5%; font-weight: bold; font-size: xx-large">{{postDetail.title}}</div>
+        <el-row style="margin-left: 5%"><el-image v-for="item in postDetail.pic" style="width: 150px; height: 150px;
+                  margin-right: 5%" :src="item" :fit="'fill'"
+                                                  preview-teleported="true"     :preview-src-list="postDetail.pic"/></el-row>
+
+        <div style="word-wrap:break-word; word-break:break-all;
+              margin-top: 5%;margin-left: 8%;margin-right: 8%;
+              font-size: large">{{ postDetail.content }}
+        </div>
+
+        <el-row style="margin-top: 5%;">
+          <el-col :offset="2" :span="4">
+            <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+              <View/>
+            </el-icon>
+            {{postDetail.viewNum}}
+          </el-col >
+
+
+          <el-col v-if="likeFlag" :span="4" v-on:click="dislike(postDetail.id)">
+            <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%; color: #88b0ef">
+              <Pointer />
+            </el-icon>
+            {{postDetail.likeNum}}
+          </el-col>
+          <el-col v-else :span="4" v-on:click="like(postDetail.id)">
+            <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+              <Pointer/>
+            </el-icon>
+            {{postDetail.likeNum}}
+          </el-col>
+
+          <el-col :span="4">
+            <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+              <ChatDotSquare/>
+            </el-icon>
+            {{postDetail.commentNum}}
+          </el-col>
+
+          <el-col v-if="collectFlag" :span="4" v-on:click="disCollect(postDetail.id)">
+            <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%;color: #88b0ef">
+              <StarFilled/>
+            </el-icon>
+            {{postDetail.collectNum}}
+          </el-col>
+          <el-col v-else :span="4" v-on:click="collect(postDetail.id)">
+            <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+              <Star/>
+            </el-icon>
+            {{postDetail.collectNum}}
+          </el-col>
+
+          <el-col :span="4" v-on:click="doCopy('ecampus.chat/index/community/detail/' + postDetail.id, postDetail.id)">
+            <el-icon style="margin-top: 2%; margin-right: 15%; margin-left: 15%">
+              <Share/>
+            </el-icon>
+            {{postDetail.forwardNum}}
+          </el-col>
+        </el-row>
+      </el-card>
+
+
+      <el-card style="margin-top: 1%">
+        <el-row >评论</el-row>
+        <el-row style="margin-top: 2%">
+          <el-col :span="19">
+            <el-input
+                v-model="commentText"
+                :rows="2"
+                type="textarea"
+                placeholder="请发表评论"
+            />
+          </el-col>
+          <el-col :span="3" :offset="1">
+            <el-button style="margin-top: 20%" v-on:click="doComment">发送</el-button>
+          </el-col>
+
+          <el-card style="margin-top: 2%; width: 100%">
+            <div v-for="(item, index) in commentDetail" style="margin-top: 2%">
+              <el-row>
+                <el-col :span="8">{{item.floor.userName}}</el-col>
+                <el-col :span="8" :offset="8">{{item.floor.date.split("T")[0]}}</el-col>
+              </el-row>
+              <el-row style="margin-top: 2%" >
+                <el-container style="margin-bottom: 2%">
+                  <el-main style="padding: 0">
+                    <el-link style="word-wrap:break-word; word-break:break-all;" v-on:click="doReplyShowFunc(index)">{{item.floor.content}}</el-link>
+
+                  </el-main>
+                  <el-aside width="10%">
+                    <el-icon v-if="item.floor.likeFlag" style="color: #88b0ef" v-on:click="doFloorDislike(item.floor.id)"><Pointer /></el-icon>
+                    <el-icon v-else v-on:click="doFloorLike(item.floor.id)"><Pointer /></el-icon>
+                    {{item.floor.likeNum}}
+                  </el-aside>
+                </el-container>
+
+              </el-row>
+              <el-row v-if="item.doReplyLimit && doReplyShow" style="margin-top: 2%">
+                <el-col :span="18"><el-input
+
+                    v-model="replyText"
+                    :rows="2"
+                    type="textarea"
+                    placeholder="请发表评论"
+                /></el-col>
+                <el-col :span="3" :offset="1">
+                  <el-button style="margin-top: 20%" v-on:click="doReply(index)">发送</el-button>
+                </el-col>
+              </el-row>
+              <el-row v-if="item.replies != ''">
+                <el-col :span="3" :offset="21">
+                  <el-icon v-on:click="repliesShow(index)">
+                    <ArrowDown />
+                  </el-icon>
+                </el-col>
+              </el-row>
+
+
+            </div>
+            <el-pagination
+                @current-change="getComment"
+                :current-page="currentPage"
+                layout="prev, pager, next"
+                :total="currentTotal"
+                :page-size="5"
+                style="width: 100%; margin: 0"
+            />
+
+          </el-card>
+
+
+        </el-row>
+      </el-card>
+
+    </el-main>
+
+
+
+  </el-container>
   <Footer></Footer>
-  <el-drawer v-model="callUserFlag" :direction="'ltr'">
+  <el-drawer v-if="!isPhone" v-model="callUserFlag" :direction="'ltr'">
     <template #header>
 
       <h4>{{callUserData.username}}</h4>
@@ -238,7 +381,7 @@
       </div>
     </template>
   </el-drawer>
-  <el-drawer v-model="showRepliesFlag" :direction="'rtl'">
+  <el-drawer v-if="!isPhone" v-model="showRepliesFlag" :direction="'rtl'">
     <template #header>
       <h4>{{originComment}}</h4>
     </template>
@@ -312,6 +455,99 @@
       </el-row>
     </template>
   </el-drawer>
+  <el-drawer v-if="isPhone" v-model="callUserFlag" size="88%" :direction="'btt'">
+    <template #header>
+
+      <h4>{{callUserData.username}}</h4>
+    </template>
+    <template #default>
+      <el-avatar :src="callUserData.avatar"></el-avatar>
+      <el-card>
+        <el-row>
+          联系方式：{{callUserData.email?callUserData.email:'暂未绑定'}}
+        </el-row>
+      </el-card>
+    </template>
+    <template #footer>
+      <div style="flex: auto">
+        <el-button type="primary" @click="callUser(callUserData.id)">私聊</el-button>
+      </div>
+    </template>
+  </el-drawer>
+  <el-drawer v-if="isPhone" v-model="showRepliesFlag" size="88%" :direction="'btt'">
+    <template #header>
+      <h4>{{originComment}}</h4>
+    </template>
+    <template #default>
+
+      <div v-for="(reply, index) in currentReplies" style="margin-top: 2%; padding: 0">
+
+        <el-row>
+          <el-col :span="8" v-if="reply.others == null">{{reply.userName}}</el-col>
+          <el-col :span="8" v-else>
+            {{reply.userName}}
+            <div style="margin-left: 1%;margin-right: 1%;color: #919191">回复</div>
+            {{reply.othersName}}
+          </el-col>
+          <el-col :span="6" :offset="10">{{reply.date.split("T")[0]}}</el-col>
+        </el-row>
+        <el-row style="margin-top: 2%" >
+          <el-container>
+            <el-container >
+              <el-main style="padding: 0">
+                <el-link style="word-wrap:break-word; word-break:break-all;" >{{reply.content}}</el-link>
+
+              </el-main>
+              <el-aside width="10%">
+                <el-icon v-if="reply.likeFlag" style="color: #88b0ef" v-on:click="doReplyDislike(reply.id)"><Pointer /></el-icon>
+                <el-icon v-else v-on:click="doReplyLike(reply.id)"><Pointer /></el-icon>
+                {{reply.likeNum}}
+              </el-aside>
+
+            </el-container>
+            <el-footer style="padding: 0;margin-bottom: 5%" height="100%">
+              <el-row v-if="reply.others == null">
+                <el-col :offset="21" :span="3">
+                  <el-button style="border-color: transparent;color: grey;background-color: transparent" v-on:click="doOthersShowFunc(reply, index)">回复</el-button>
+                </el-col>
+              </el-row>
+
+
+              <el-row v-if="reply.doOthersShow && othersShow" style="margin-top: 2%">
+                <el-col :span="18"><el-input
+                    v-model="othersText"
+                    :rows="2"
+                    type="textarea"
+                    placeholder="请发表回复"
+                /></el-col>
+                <el-col :span="3" :offset="1">
+                  <el-button style="margin-top: 20%" v-on:click="doOthers(index)">发送</el-button>
+                </el-col>
+              </el-row>
+
+            </el-footer>
+          </el-container>
+
+        </el-row>
+        <el-divider style="padding: 0;margin: 0"></el-divider>
+      </div>
+
+    </template>
+    <template #footer>
+      <el-row style="margin-top: 2%">
+        <el-col :span="19"><el-input
+
+            v-model="replyText"
+            :rows="2"
+            type="textarea"
+            placeholder="请发表评论"
+        /></el-col>
+        <el-col :span="3" :offset="1">
+          <el-button style="margin-top: 20%" v-on:click="doReply(currentIndex)">发送</el-button>
+        </el-col>
+      </el-row>
+    </template>
+  </el-drawer>
   <Chat :show="userChatDrawer" :chatInit="chatProp" @handleClose="chatHandleClose"></Chat>
 
 
@@ -322,6 +558,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Chat from "@/components/Chat";
 import {ElNotification} from "element-plus";
+import {inject} from "vue";
 export default {
   name: "communitydetail",
   components: {
@@ -331,6 +568,7 @@ export default {
   },
   data() {
     return {
+      isPhone: inject('isPhone'),
       currentPage: 1,
       currentTotal: 0,
       othersText: '',

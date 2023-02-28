@@ -2,7 +2,41 @@
   <div>
 
 
-    <el-drawer v-model="serviceShow" :direction="'rtl'">
+    <el-drawer v-if="!isPhone" v-model="serviceShow" :direction="'rtl'">
+      <template #header>
+        <h4>客服咨询</h4>
+      </template>
+      <template #default>
+        <el-card  style="width: 100%; height: 100%; overflow: auto">
+          <div v-for="item in chatList">
+            <div v-if="item.who == 0" class="chatBox chatBox-right" style="margin-left: 39%;margin-top: 1%">
+              {{item.content}}
+            </div>
+            <div  v-if="item.who == 1" class="chatBox chatBox-left" style="margin-top: 1%">
+              {{item.content}}
+            </div>
+          </div>
+        </el-card>
+      </template>
+      <template #footer>
+        <el-row gutter="20" style="">
+          <el-col :span="15"><el-input v-model="serviceData"
+                                       placeholder="请输入问题"
+                                       clearable
+                                       type="textarea"
+                                       :rows="3"
+          ></el-input></el-col>
+          <el-col :span="2" >
+            <el-button v-on:click="serviceSend">查询</el-button>
+          </el-col>
+          <el-col :span="2" :offset="2">
+            <el-button v-on:click="cancle">取消</el-button>
+          </el-col>
+
+        </el-row>
+      </template>
+    </el-drawer>
+    <el-drawer v-if="isPhone" v-model="serviceShow" size="88%" :direction="'btt'">
       <template #header>
         <h4>客服咨询</h4>
       </template>
@@ -38,8 +72,38 @@
     </el-drawer>
 
 
+    <el-drawer v-if="!isPhone" v-model="returnShow" :direction="'rtl'">
+      <template #header>
+        <h4>意见反馈及投诉</h4>
+      </template>
+      <template #default>
+        <el-input v-model="returnData"
+                  placeholder="请输入您要反馈的问题"
+                  clearable
+                  type="textarea"
+                  :rows="12"
+                  v-if="!showThank"
+        ></el-input>
+        <div v-else>
+          <h4>您的意见已送达，稍后将有客服人员与您进行联系</h4>
+        </div>
+      </template>
+      <template #footer>
+        <el-row gutter="20" style="">
+          <el-col :span="2" :offset="15" v-if="!showThank">
+            <el-button v-on:click="returnSend">发送</el-button>
+          </el-col>
+          <el-col :span="2" :offset="15" v-else>
+            <el-button v-on:click="showThank = false">继续反馈</el-button>
+          </el-col>
+          <el-col :span="2" :offset="2">
+            <el-button v-on:click="returnShow = false, showThank = false">取消</el-button>
+          </el-col>
 
-    <el-drawer v-model="returnShow" :direction="'rtl'">
+        </el-row>
+      </template>
+    </el-drawer>
+    <el-drawer v-if="isPhone" v-model="returnShow" size="88%" :direction="'btt'">
       <template #header>
         <h4>意见反馈及投诉</h4>
       </template>
@@ -120,6 +184,7 @@
 </template>
 <script>
 import {ElNotification} from "element-plus";
+import {inject} from "vue";
 
 export default {
   // 组件名字
@@ -137,6 +202,7 @@ export default {
   },
   data() {
     return {
+      isPhone: inject('isPhone'),
       serviceShow: false,
       returnShow: false,
       serviceData: '',

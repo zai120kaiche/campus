@@ -3,7 +3,7 @@
 
   <img src="../assets/images/wave.png" alt="" class="ourpage" style="position: fixed;background-color: transparent">
   <Header></Header>
-  <el-card v-for="(item, index) in list" style="margin-top: 2%;margin-left: 20%;margin-right: 20%" v-on:click="forDetail(item.pid)" >
+  <el-card v-if="!isPhone" v-for="(item, index) in list" style="margin-top: 2%;margin-left: 20%;margin-right: 20%" v-on:click="forDetail(item.pid)" >
     <el-row>
       <el-col :span="6">{{item.title}}</el-col>
       <el-col :span="7" :offset="11">{{item.time.split('T')[0]+' '}}{{item.time.split('T')[1]}}</el-col>
@@ -12,7 +12,26 @@
       您的评论"{{item.content}}"有了新的回复，点击前往查看
     </div>
   </el-card>
-  <el-card style="margin-top: 3%;margin-left: 20%;margin-right: 20%">
+  <el-card v-if="!isPhone" style="margin-top: 3%;margin-left: 20%;margin-right: 20%">
+    <el-pagination
+        @current-change="init"
+        :current-page="currentPage"
+        layout="prev, pager, next"
+        :total="pageTotal"
+        :page-size="10"
+        style="width: 100%; margin: 0"
+    />
+  </el-card>
+  <el-card v-if="isPhone" v-for="(item, index) in list" style="margin-top: 2%;margin-left: 2%;margin-right: 2%" v-on:click="forDetail(item.pid)" >
+    <el-row>
+      <el-col :span="6">{{item.title}}</el-col>
+      <el-col :span="7" :offset="11">{{item.time.split('T')[0]+' '}}{{item.time.split('T')[1]}}</el-col>
+    </el-row>
+    <div style="margin-top: 2%">
+      您的评论"{{item.content}}"有了新的回复，点击前往查看
+    </div>
+  </el-card>
+  <el-card v-if="isPhone" style="margin-top: 3%;margin-left: 2%;margin-right: 2%">
     <el-pagination
         @current-change="init"
         :current-page="currentPage"
@@ -32,6 +51,7 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import {inject} from "vue";
 
 export default {
   name: "noteroom",
@@ -41,6 +61,7 @@ export default {
   },
   data() {
     return {
+      isPhone: inject('isPhone'),
       currentPage: 1,
       pageTotal: 0,
       userId: localStorage.getItem("userId"),

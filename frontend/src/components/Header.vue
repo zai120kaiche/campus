@@ -1,11 +1,16 @@
 <template>
   <el-row style="background-color: transparent; font-weight: bold; font-size: x-large">
-    <el-col :offset="2" :span="4">
+    <el-col v-if="!isPhone" :offset="2" :span="4">
       <el-image style="width: 80%; height: 80%; z-index: 1; background-color: transparent"
                 :src="require('../assets/images/logo.png')"
                 :fit="'fill'"></el-image>
     </el-col>
-    <el-col :span="8" style="margin-top: 3%">
+    <el-col v-else :span="6">
+      <el-image style="width: 100%; height: 100%; z-index: 1; background-color: transparent"
+                :src="require('../assets/images/logo.png')"
+                :fit="'fill'"></el-image>
+    </el-col>
+    <el-col v-if="!isPhone" :span="8" style="margin-top: 3%">
       <el-button v-if="index == 1"
                  style="background-color: transparent; border-color: transparent; font-size: large; color: #333333">
         <el-icon style="margin-right: 1%">
@@ -84,7 +89,7 @@
 
 <!--      </el-input>-->
 <!--    </el-col>-->
-    <el-col :span="5" :offset="5" style="margin-top: 2%">
+    <el-col v-if="!isPhone" :span="5" :offset="5" style="margin-top: 2%">
       <el-button
           v-on:click="service"
           style="background-color: transparent; border-color: transparent; font-size: large; color: #333333; padding: 0">
@@ -159,6 +164,44 @@
       <el-avatar v-on:click="changeUser" :size="40" :src="avatarUrl=='null'?'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png':avatarUrl" style="margin-left: 12%"/>
 
     </el-col>
+    <el-col v-if="isPhone" style="position: absolute;right: 6px">
+      <el-menu
+          :default-active="activeIndex"
+          class="el-menu-demo"
+          mode="vertical"
+          @select="handleSelect"
+          active-text-color="transprent"
+          style="z-index: 99;background-color: transparent;"
+      >
+        <el-sub-menu index="1">
+          <template #title style="background-color: transparent">菜单</template>
+          <el-menu-item index="1-1" style="background-color: transparent">
+            <el-avatar  :size="30" :src="avatarUrl=='null'?'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png':avatarUrl" style="margin-right: 10%"/>
+            用户中心
+          </el-menu-item>
+          <el-menu-item index="1-2" style="background-color: transparent"><el-icon style="margin-top: 1%">
+            <House/>
+          </el-icon>学生社区</el-menu-item>
+          <el-menu-item index="1-3"><el-icon style="margin-top: 1%">
+            <Money/>
+          </el-icon>二手易物</el-menu-item>
+          <el-menu-item index="1-4"><el-icon style="margin-top: 1%">
+            <Compass/>
+          </el-icon>活动集锦</el-menu-item>
+          <el-sub-menu index="1-5">
+            <template #title><el-icon>
+              <Bell/>
+            </el-icon>站内信息</template>
+            <el-menu-item index="1-5-1"><el-icon style="margin-top: 2%">
+              <Message/>
+            </el-icon>通知中心</el-menu-item>
+            <el-menu-item index="1-5-2"><el-icon style="margin-top: 2%">
+              <ChatRound/>
+            </el-icon>私信</el-menu-item>
+          </el-sub-menu>
+        </el-sub-menu>
+      </el-menu>
+    </el-col>
   </el-row>
   <el-drawer v-model="serviceShow" :direction="'rtl'">
     <template #header>
@@ -199,6 +242,7 @@
 
 <script>
 import {Search} from '@element-plus/icons-vue'
+import {getCurrentInstance, inject} from "vue";
 
 export default {
   name: "Header",
@@ -212,10 +256,15 @@ export default {
       chatList: [],
       serviceData: '',
       redDotChat: false,
-      redDotNot: false
+      redDotNot: false,
+      activeIndex: 1,
+      isPhone: inject('isPhone')
+
     }
   },
   created(){
+
+    console.log(this.isPhone)
     this.$axios.post("chat/hasMessage", {cid: localStorage.getItem("userId")}).then(res=>{
       this.redDotChat = res.data.data
     }).catch(res=>{
@@ -228,6 +277,31 @@ export default {
     })
   },
   methods: {
+    handleSelect(res){
+      console.log(res)
+      switch (res){
+        case '1-1':{
+          this.changeUser()
+          break
+        }
+        case '1-2':{
+          this.changeCommunity()
+          break
+        }case '1-3':{
+          this.changeGood()
+          break
+        }case '1-4':{
+          this.changeActivity()
+          break
+        }case '1-5-1':{
+          this.toNoteRoom()
+          break
+        }case '1-5-2':{
+          this.toChatRoom()
+          break
+        }
+      }
+    },
     AllRead(){
       let _this = this
       _this.$axios.post("chat/setAllRead",{cid: localStorage.getItem("userId")}).then(res=>{

@@ -2,7 +2,7 @@
   <div class="page_back page_this"></div>
   <img src="../assets/images/wave.png" alt="" class="ourpage" style="position: fixed;background-color: transparent">
   <Header></Header>
-  <el-container v-if="userInfo.id != 'null'" style="margin-left: 10%; margin-right: 10%; height: 100%">
+  <el-container v-if="userInfo.id != 'null' && !isPhone" style="margin-left: 10%; margin-right: 10%; height: 100%">
     <el-aside width="30%" style="margin-right: 5%">
       <el-card style="text-align: center">
         <el-row>
@@ -247,7 +247,7 @@
           <el-row style="margin-top: 2%; margin-left: 3%" v-if="changeInfoFlag">
             <el-row>
               <el-col :span="8">
-                用户名：
+                用户昵称：
               </el-col>
               <el-col :span="15">
                 <el-input :placeholder="userInfo.username" v-model="changeUserInfo.username"
@@ -301,11 +301,298 @@
       </el-card>
     </el-main>
   </el-container>
-  <el-card v-else style="text-align: center;width: 70%; margin-right: 15%;margin-left: 15%;height: 30%;position: absolute">
+  <el-container v-if="userInfo.id != 'null' && isPhone" style="margin-left: 2%; margin-right: 2%; height: 100%">
+    <el-main style="padding: 0">
+      <el-card style="padding: 0;margin-top: 2%;margin-bottom: 2%">
+        <el-dropdown>
+          <el-button type="primary" style="background-color: white;color: #333333;border-color: transparent">
+            更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item v-on:click="changeSelectFlag(1)">我的收藏</el-dropdown-item>
+              <el-dropdown-item v-on:click="changeSelectFlag(2)">我的发帖</el-dropdown-item>
+              <el-dropdown-item v-on:click="changeSelectFlag(3)">我的交易</el-dropdown-item>
+              <el-dropdown-item v-on:click="changeSelectFlag(5)">我的评论</el-dropdown-item>
+              <el-dropdown-item v-on:click="changeSelectFlag(4)">我的信息</el-dropdown-item>
+
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+
+      </el-card>
+
+      <el-card v-if="selectFlag == 1" style="min-height: 80%; position: absolute; width: 96%">
+        <el-menu
+            :default-active="activeIndex"
+            class="el-menu-demo"
+            mode="horizontal"
+            :ellipsis="false"
+            @select="handleSelect"
+        >
+          <el-menu-item index="0">帖子</el-menu-item>
+          <div class="flex-grow"/>
+          <el-menu-item index="1">二手易物</el-menu-item>
+        </el-menu>
+        <div v-if="activeIndex == 0">
+          <el-table :data="collectPostData"
+                    border style="width: 100%"
+                    empty-text="NAN">
+            <el-table-column prop="title" label="标题" width="180" show-overflow-tooltip="true"/>
+            <el-table-column fixed="right" label="操作" width="160">
+              <template #default="scope">
+                <el-popconfirm title="确定取消收藏吗?"
+                               @confirm="collectPostDelete(scope.row.id)"
+                               confirm-button-text="确定"
+                               cancel-button-text="取消"
+                >
+                  <template #reference>
+                    <el-button link type="primary" size="small">取消收藏</el-button>
+                  </template>
+                </el-popconfirm>
+                <el-button link type="primary" size="small" v-on:click="forDetail(scope.row.id)">查看详情</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+
+          <el-pagination
+              @current-change="collectPostCurrentPageChange"
+              :current-page="collectPostCurrentPage"
+              layout="prev, pager, next"
+              :total="collectPostTotal"
+              :page-size="8"
+              style="width: 100%; margin: 0; bottom: 0; position: absolute"
+          />
+        </div>
+        <div v-if="activeIndex == 1">
+          <el-table :data="collectTradeData"
+                    border style="width: 100%"
+                    empty-text="NAN">
+            <el-table-column prop="content" label="内容" width="180" show-overflow-tooltip="true"/>
+            <el-table-column fixed="right" label="操作" width="160">
+              <template #default="scope">
+                <el-popconfirm title="确定取消收藏吗?"
+                               @confirm="collectTradeDelete(scope.row.id)"
+                               confirm-button-text="确定"
+                               cancel-button-text="取消"
+                >
+                  <template #reference>
+                    <el-button link type="primary" size="small">取消收藏</el-button>
+                  </template>
+                </el-popconfirm>
+                <el-button link type="primary" size="small" v-on:click="getTradeDetail(scope.row.id)">查看详情</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+
+          <el-pagination
+              @current-change="collectTradeCurrentPageChange"
+              :current-page="collectTradeCurrentPage"
+              layout="prev, pager, next"
+              :total="collectTradeTotal"
+              :page-size="8"
+              style="width: 100%; margin: 0; bottom: 0; position: absolute"
+          />
+        </div>
+
+
+      </el-card>
+      <el-card v-if="selectFlag == 2" style="min-height: 80%; position: absolute; width: 96%">
+        <el-table :data="postData"
+                  border style="width: 100%"
+                  empty-text="NAN">
+          <el-table-column prop="title" label="标题" width="180" show-overflow-tooltip="true"/>
+          <el-table-column fixed="right" label="操作" width="160">
+            <template #default="scope">
+              <el-popconfirm title="确定删除发帖吗?"
+                             @confirm="postDelete(scope.row.id)"
+                             confirm-button-text="确定"
+                             cancel-button-text="取消"
+              >
+                <template #reference>
+                  <el-button link type="primary" size="small">删除</el-button>
+                </template>
+              </el-popconfirm>
+              <el-button link type="primary" size="small" v-on:click="forDetail(scope.row.id)">查看详情</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+
+
+        <el-pagination
+            @current-change="postCurrentPageChange"
+            :current-page="postCurrentPage"
+            layout="prev, pager, next"
+            :total="postTotal"
+            :page-size="10"
+            style="width: 100%; margin: 0; bottom: 0; position: absolute"
+        />
+      </el-card>
+      <el-card v-if="selectFlag == 3" style="min-height: 80%; position: absolute; width: 96%">
+        <el-table :data="tradeData"
+                  border style="width: 100%"
+                  empty-text="NAN">
+          <el-table-column prop="content" label="内容" width="180" show-overflow-tooltip="true"/>
+          <el-table-column fixed="right" label="操作" width="160">
+            <template #default="scope">
+              <el-popconfirm title="确定删除商品吗?"
+                             @confirm="tradeDelete(scope.row.id)"
+                             confirm-button-text="确定"
+                             cancel-button-text="取消"
+              >
+                <template #reference>
+                  <el-button link type="primary" size="small">删除</el-button>
+                </template>
+              </el-popconfirm>
+              <el-button link type="primary" size="small" v-on:click="getTradeDetail(scope.row.id)">查看详情</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <el-pagination
+            @current-change="tradeCurrentPageChange"
+            :current-page="tradeCurrentPage"
+            layout="prev, pager, next"
+            :total="tradeTotal"
+            :page-size="10"
+            style="width: 100%; margin: 0; bottom: 0; position: absolute"
+        />
+      </el-card>
+      <el-card v-if="selectFlag == 5" style="min-height: 80%; position: absolute; width: 96%">
+        <el-table :data="commentData"
+                  border style="width: 100%"
+                  empty-text="NAN">
+          <el-table-column prop="content" label="内容" width="180" show-overflow-tooltip="true"/>
+          <el-table-column fixed="right" label="操作" width="160">
+            <template #default="scope">
+              <el-popconfirm title="确定删除该评论吗?"
+                             @confirm="commentDelete(scope.row)"
+                             confirm-button-text="确定"
+                             cancel-button-text="取消"
+              >
+                <template #reference>
+                  <el-button link type="primary" size="small">删除</el-button>
+                </template>
+              </el-popconfirm>
+              <el-button link type="primary" size="small" v-on:click="forDetail(scope.row.pid)">查看详情</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <el-pagination
+            @current-change="commentCurrentPageChange"
+            :current-page="commentCurrentPage"
+            layout="prev, pager, next"
+            :total="commentTotal"
+            :page-size="10"
+            style="width: 100%; margin: 0; bottom: 0; position: absolute"
+        />
+      </el-card>
+
+      <el-card v-if="selectFlag == 4" style="text-align: center">
+        <el-row>
+          <el-col :offset="10">
+            <el-link v-on:click="logout">
+              登出
+              <el-icon><Right /></el-icon>
+            </el-link>
+
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-avatar size="large" :src="userInfo.avatar" v-if="!changeInfoFlag">
+
+            </el-avatar>
+            <el-upload
+                v-if="changeInfoFlag"
+                v-model:file-list="fileList"
+                action="http://49.232.222.169:8081/api/pri/file/upload"
+                list-type="picture-card"
+                class="upload-demo"
+                :on-preview="handlePictureCardPreview"
+                :on-remove="handleRemove"
+                :on-success="handleSucc"
+                :limit="1">
+              <el-icon>
+                <Plus/>
+              </el-icon>
+            </el-upload>
+          </el-col>
+        </el-row>
+        <el-row style="margin-top: 5%">
+          <el-col style="font-weight: bold" v-if="!changeInfoFlag">
+            {{ userInfo.username }}
+          </el-col>
+
+        </el-row>
+        <div style="font-weight: bold;text-align: left">
+          <el-row style="margin-top: 2%; margin-left: 3%" v-if="changeInfoFlag">
+            <el-row>
+              <el-col :span="8">
+                用户昵称：
+              </el-col>
+              <el-col :span="12">
+                <el-input :placeholder="userInfo.username" v-model="changeUserInfo.username"
+                          style="width: 180%"></el-input>
+              </el-col>
+            </el-row>
+          </el-row>
+          <el-row style="margin-top: 2%; margin-left: 3%">
+            <div v-if="!changeInfoFlag">
+              电子邮箱：{{ userInfo.email ? userInfo.email : '暂未绑定' }}
+            </div>
+            <div v-else>
+              <el-row>
+                <el-col :span="8">
+                  电子邮箱：
+                </el-col>
+                <el-col :span="12">
+                  <el-input :placeholder="userInfo.email" v-model="changeUserInfo.email" style="width: 180%"></el-input>
+                </el-col>
+              </el-row>
+            </div>
+          </el-row>
+
+          <el-row style="margin-top: 2%; margin-left: 3%">
+            <div v-if="!changeInfoFlag">
+              联系方式：{{ userInfo.phone ? userInfo.phone : '暂未绑定' }}
+            </div>
+            <div v-else>
+              <el-row>
+                <el-col :span="8">
+                  联系方式：
+                </el-col>
+                <el-col :span="12">
+                  <el-input :placeholder="userInfo.phone" v-model="changeUserInfo.phone" style="width: 180%"></el-input>
+                </el-col>
+              </el-row>
+            </div>
+          </el-row>
+          <el-row style="margin-top: 2%; margin-left: 3%" v-if="!changeInfoFlag">
+            已有积分：{{ userInfo.score }}
+          </el-row>
+        </div>
+        <el-row style="margin-top: 5%">
+          <el-col :offset="10" >
+            <el-button v-if="!changeInfoFlag" style="border-color: transparent" v-on:click="changeInfoFlag = true">
+              修改信息
+            </el-button>
+            <el-button v-else v-on:click="sendSms">确认修改</el-button>
+          </el-col>
+        </el-row>
+      </el-card>
+    </el-main>
+  </el-container>
+  <el-card v-if="userInfo.id == 'null' && !isPhone" style="text-align: center;width: 70%; margin-right: 15%;margin-left: 15%;height: 30%;position: absolute">
     <br>
     <h2>你还没有登录，点击前往</h2><el-link v-on:click="login"><h2>登录</h2></el-link>
   </el-card>
-  <el-drawer v-model="drawer" :direction="'rtl'">
+  <el-card v-if="userInfo.id == 'null' && isPhone" style="text-align: center;width: 95%; margin-right: 2%;margin-left: 2%;height: 30%;position: absolute">
+    <br>
+    <h2>你还没有登录，点击前往</h2><el-link v-on:click="login"><h2>登录</h2></el-link>
+  </el-card>
+  <el-drawer v-if="!isPhone" v-model="drawer" :direction="'rtl'">
     <template #header>
       <h4 v-if="tradeDetail.tradeFlag">出</h4>
       <h4 v-else>收</h4>
@@ -329,7 +616,45 @@
     </template>
 
   </el-drawer>
-  <el-dialog v-model="dialog" title="验证码确认">
+  <el-drawer v-if="isPhone" v-model="drawer" size="88%" :direction="'btt'">
+    <template #header>
+      <h4 v-if="tradeDetail.tradeFlag">出</h4>
+      <h4 v-else>收</h4>
+    </template>
+    <template #default>
+      <el-container style="height: 100%">
+        <el-main style="padding: 0">
+          <el-carousel height="150px" indicator-position="outside" v-if="tradeDetail.pic != 'undefined'">
+            <el-carousel-item v-for="item in tradeDetail.pic" :key="item">
+              <el-image :src="item"></el-image>
+            </el-carousel-item>
+          </el-carousel>
+        </el-main>
+        <el-aside width="60%">
+          <el-row
+              style="word-wrap:break-word; word-break:break-all;margin-left: 10%; margin-right: 10%;font-size: large">
+            {{ tradeDetail.content }}
+          </el-row>
+        </el-aside>
+      </el-container>
+    </template>
+
+  </el-drawer>
+  <el-dialog v-if="!isPhone" v-model="dialog" title="验证码确认">
+    <div v-if="changeUserInfo.phone != ''">我们将向手机号：{{ changeUserInfo.phone }}发送验证码，请注意查收</div>
+    <div v-else-if="changeUserInfo.email != ''">我们将向邮箱：{{ changeUserInfo.email }}发送验证码，请注意查收</div>
+    <div v-else>请至少填写手机号或邮箱中的一项</div>
+    <el-input placeholder="请输入验证码" v-model="sms" style="margin-top: 5%"></el-input>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialog = false">关闭</el-button>
+        <el-button type="primary" @click="checkSms">
+          确认修改
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <el-dialog width="90%" v-if="isPhone" v-model="dialog" title="验证码确认">
     <div v-if="changeUserInfo.phone != ''">我们将向手机号：{{ changeUserInfo.phone }}发送验证码，请注意查收</div>
     <div v-else-if="changeUserInfo.email != ''">我们将向邮箱：{{ changeUserInfo.email }}发送验证码，请注意查收</div>
     <div v-else>请至少填写手机号或邮箱中的一项</div>
@@ -352,6 +677,7 @@
 <script>
 import Header from "@/components/Header";
 import {ElNotification} from "element-plus";
+import {inject} from "vue";
 
 export default {
   name: "user",
@@ -367,6 +693,7 @@ export default {
   },
   data() {
     return {
+      isPhone: inject('isPhone'),
       sendData: {
         identifier: 0,
         phoneOrEmail: ''
