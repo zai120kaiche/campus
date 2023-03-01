@@ -23,6 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 
+import static com.campus.backend.tool.EmailUtil.get_code_6bit;
+import static com.campus.backend.tool.EmailUtil.send_email;
+import static com.campus.backend.tool.PhoneUtil.send_phone;
+
 
 @RestController
 public class AccountController {
@@ -32,6 +36,18 @@ public class AccountController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @PostMapping("/AlipayTest")
+    public Result test(){
+        String code=get_code_6bit();
+        String phoneOrEmail = "19801283183";
+
+
+        send_phone(phoneOrEmail, code);
+
+
+        return Result.succ();
+    }
 
     @PostMapping("userStandardCheck")
     public Result check(@RequestBody User user){

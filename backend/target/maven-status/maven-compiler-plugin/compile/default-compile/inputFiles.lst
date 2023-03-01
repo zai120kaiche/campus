@@ -12,8 +12,10 @@ D:\campus\backend\src\main\java\com\campus\backend\service\impl\PostServiceImpl.
 D:\campus\backend\src\main\java\com\campus\backend\tool\GetIpAddressUtil.java
 D:\campus\backend\src\main\java\com\campus\backend\service\FileUploadService.java
 D:\campus\backend\src\main\java\com\campus\backend\controller\ActivityController.java
+D:\campus\backend\src\main\java\com\campus\backend\controller\AlipayController.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\WhisperPostCommentItem.java
 D:\campus\backend\src\main\java\com\campus\backend\controller\UserController.java
+D:\campus\backend\src\main\java\com\campus\backend\service\SignService.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\SearchCondition.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\WhisperReply.java
 D:\campus\backend\src\main\java\com\campus\backend\controller\FeedbackController.java
@@ -28,6 +30,7 @@ D:\campus\backend\src\main\java\com\campus\backend\entity\Type.java
 D:\campus\backend\src\main\java\com\campus\backend\util\MsmConstantUtils.java
 D:\campus\backend\src\main\java\com\campus\backend\redis\RedisOperator.java
 D:\campus\backend\src\main\java\com\campus\backend\service\UserService.java
+D:\campus\backend\src\main\java\com\campus\backend\mapper\SignMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\service\impl\IntentionServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\SchoolMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\controller\TradeController.java
@@ -38,6 +41,7 @@ D:\campus\backend\src\main\java\com\campus\backend\entity\LikePost.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\ReplyItem.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\LikeFloorMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\WhisperFloor.java
+D:\campus\backend\src\main\java\com\campus\backend\config\AlipayConfig.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\WithdrawRequest.java
 D:\campus\backend\src\main\java\com\campus\backend\service\impl\CommodityServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\ChatRequestBody.java
@@ -60,12 +64,16 @@ D:\campus\backend\src\main\java\com\campus\backend\entity\ActivityCollect.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\ChatContentItem.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\ContactRequest.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\FloorMapper.java
+D:\campus\backend\src\main\java\com\campus\backend\entity\DateCondition.java
+D:\campus\backend\src\main\java\com\campus\backend\mapper\ActivitySignMapper.java
+D:\campus\backend\src\main\java\com\campus\backend\entity\ActivitySign.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\Reply.java
 D:\campus\backend\src\main\java\com\campus\backend\service\FloorService.java
 D:\campus\backend\src\main\java\com\campus\backend\controller\IdentifierController.java
 D:\campus\backend\src\main\java\com\campus\backend\service\impl\ActivityCollectServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\PostPages.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\CID.java
+D:\campus\backend\src\main\java\com\campus\backend\service\ActivitySignService.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\IdentifierMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\common\lang\Result.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\CommentMapper.java
@@ -95,10 +103,13 @@ D:\campus\backend\src\main\java\com\campus\backend\entity\Floor.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\Intention.java
 D:\campus\backend\src\main\java\com\campus\backend\service\impl\FeedbackServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\controller\CommunityController.java
+D:\campus\backend\src\main\java\com\campus\backend\controller\ActivitySignController.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\ContactsMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\util\JwtUtils.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\NotificationPages.java
+D:\campus\backend\src\main\java\com\campus\backend\service\impl\ActivitySignServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\service\CollectService.java
+D:\campus\backend\src\main\java\com\campus\backend\entity\Sign.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\ActivityMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\service\impl\ContactsServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\Activity.java
@@ -112,7 +123,9 @@ D:\campus\backend\src\main\java\com\campus\backend\CodeGenerator.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\CommodityMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\BackendApplication.java
 D:\campus\backend\src\main\java\com\campus\backend\common\dto\LoginDto.java
+D:\campus\backend\src\main\java\com\campus\backend\entity\SignInfo.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\CollectMapper.java
+D:\campus\backend\src\main\java\com\campus\backend\controller\SignController.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\MyComment.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\ReplyMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\service\ContactsService.java
@@ -125,11 +138,13 @@ D:\campus\backend\src\main\java\com\campus\backend\service\AiService.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\PostCommentItem.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\RepliesInfoRequestBody.java
 D:\campus\backend\src\main\java\com\campus\backend\controller\AIController.java
+D:\campus\backend\src\main\java\com\campus\backend\service\AlipayService.java
 D:\campus\backend\src\main\java\com\campus\backend\service\impl\ActivityServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\shiro\AccountRealm.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\oss.java
 D:\campus\backend\src\main\java\com\campus\backend\service\ReplyService.java
 D:\campus\backend\src\main\java\com\campus\backend\tool\EmailUtil.java
+D:\campus\backend\src\main\java\com\campus\backend\entity\ActivitySignInfo.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\Notification.java
 D:\campus\backend\src\main\java\com\campus\backend\service\IdentifierService.java
 D:\campus\backend\src\main\java\com\campus\backend\config\ShiroConfig.java
@@ -144,6 +159,7 @@ D:\campus\backend\src\main\java\com\campus\backend\config\CorsConfig.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\Collect.java
 D:\campus\backend\src\main\java\com\campus\backend\controller\AccountController.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\ossMapper.java
+D:\campus\backend\src\main\java\com\campus\backend\service\impl\AlipayServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\service\TradetypeService.java
 D:\campus\backend\src\main\java\com\campus\backend\config\AliyunOssConfig.java
 D:\campus\backend\src\main\java\com\campus\backend\service\impl\TypeServiceImpl.java
@@ -152,6 +168,7 @@ D:\campus\backend\src\main\java\com\campus\backend\entity\FloorItem.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\Pages.java
 D:\campus\backend\src\main\java\com\campus\backend\config\RedisConfig.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\LikeReply.java
+D:\campus\backend\src\main\java\com\campus\backend\service\impl\SignServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\WhisperReplyMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\service\FeedbackService.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\FinishInfo.java
