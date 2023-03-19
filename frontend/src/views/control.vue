@@ -371,6 +371,9 @@
             <el-form-item label="活动联系方式">
               <el-input v-model="activityAddData.connectWay" type="input"/>
             </el-form-item>
+            <el-form-item label="活动费用">
+              <el-input v-model="activityAddData.money" type="input"/>
+            </el-form-item>
             <el-form-item label="活动群二维码">
               <el-upload
                   v-model:file-list="QRFileList"
@@ -518,7 +521,8 @@ export default {
         flag: null,
         grouppic: '',
         connectWay: '',
-        orgnisetime: ''
+        orgnisetime: '',
+        money: 0,
       },
 
       selectOption: 1,

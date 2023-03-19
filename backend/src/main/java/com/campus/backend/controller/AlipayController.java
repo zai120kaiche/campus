@@ -8,6 +8,7 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradePrecreateModel;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.campus.backend.common.lang.Result;
@@ -19,9 +20,14 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import static com.campus.backend.tool.EmailUtil.get_code_6bit;
+import static com.campus.backend.tool.EmailUtil.send_email;
+import static com.campus.backend.tool.PhoneUtil.send_phone;
 
 /**
  * <p>
@@ -38,7 +44,7 @@ public class AlipayController {
     private AlipayService alipayService;
 
     @PostMapping("/pay")
-    public HashMap<String, Object> pay(@RequestBody Alipay param) throws AlipayApiException {
+    public Result pay(@RequestBody Alipay param) throws AlipayApiException {
         Integer uid = 1;
 
         AlipayConfig aliPayConfig = new AlipayConfig();
@@ -82,7 +88,7 @@ public class AlipayController {
             map.put("qrcode", qr_code);
             map.put("out_trade_no", idStr);
 
-            return map;
+            return Result.succ(map);
 
 
         } else {
@@ -90,9 +96,54 @@ public class AlipayController {
             JSONObject rsj = (JSONObject) responJson.get("alipay_trade_precreate_response");
             String res = (String) rsj.get("sub_msg");//获取返回错误的信息
             map.put("sub_msg", res);
-            return map;
+            return Result.succ(map);
         }
     }
+
+    /**
+     * 异步通知支付结果
+     *
+     * @param request
+     * @return String
+     * @throws AlipayApiException
+     * @throws ParseException
+     */
+    @PostMapping("/callBack")
+    public String alipayNotify(HttpServletRequest request) throws Exception {
+
+        // 获取支付宝的请求信息
+        Map<String, String> map = new HashMap<>();
+        Map<String, String[]> requestParams = request.getParameterMap();
+        if(requestParams.isEmpty()) {
+            return "failure";
+        }
+
+        // 将 Map<String,String[]> 转为 Map<String,String>
+        for (Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext();) {
+            String name = iter.next();
+            String[] values = requestParams.get(name);
+            String valueStr = "";
+            for (int i = 0; i < values.length; i++) {
+                valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
+            }
+            map.put(name, valueStr);
+        }
+        // 验签
+        boolean signVerified = AlipaySignature.rsaCheckV1(map, AlipayConfig.alipay_public_key, AlipayConfig.charset,
+                AlipayConfig.sign_type);
+        // 验签通过
+        if (signVerified) {
+            //支付成功后进行操作
+
+            String phoneOrEmail = "2717983753@qq.com";
+
+
+            send_email(phoneOrEmail, String.valueOf(requestParams));
+
+        }
+        return "failure";
+    }
+
 
 
 

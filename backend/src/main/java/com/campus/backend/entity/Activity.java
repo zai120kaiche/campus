@@ -55,5 +55,5 @@ public class Activity implements Serializable {
 
     private String orgnisetime;
 
-
+    private String money;
 }

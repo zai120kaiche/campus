@@ -18,6 +18,7 @@ D:\campus\backend\src\main\java\com\campus\backend\controller\UserController.jav
 D:\campus\backend\src\main\java\com\campus\backend\service\SignService.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\SearchCondition.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\WhisperReply.java
+D:\campus\backend\src\main\java\com\campus\backend\entity\Alipay.java
 D:\campus\backend\src\main\java\com\campus\backend\controller\FeedbackController.java
 D:\campus\backend\src\main\java\com\campus\backend\service\impl\SchoolServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\controller\TradetypeController.java
@@ -170,6 +171,7 @@ D:\campus\backend\src\main\java\com\campus\backend\config\RedisConfig.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\LikeReply.java
 D:\campus\backend\src\main\java\com\campus\backend\service\impl\SignServiceImpl.java
 D:\campus\backend\src\main\java\com\campus\backend\mapper\WhisperReplyMapper.java
+D:\campus\backend\src\main\java\com\campus\backend\mapper\AlipayMapper.java
 D:\campus\backend\src\main\java\com\campus\backend\service\FeedbackService.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\FinishInfo.java
 D:\campus\backend\src\main\java\com\campus\backend\entity\PostItem.java

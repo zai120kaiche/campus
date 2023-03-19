@@ -7,4 +7,5 @@ import java.io.Serializable;
 @Data
 public class CID implements Serializable {
     private Integer cid;
+    private Integer uid;
 }

@@ -42,6 +42,7 @@ com\campus\backend\service\NotificationService.class
 com\campus\backend\service\FeedbackService.class
 com\campus\backend\mapper\LikeFloorMapper.class
 com\campus\backend\service\impl\FloorServiceImpl.class
+com\campus\backend\mapper\AlipayMapper.class
 com\campus\backend\service\SchoolService.class
 com\campus\backend\entity\ActivitySignInfo.class
 com\campus\backend\controller\NotificationController.class
@@ -158,6 +159,7 @@ com\campus\backend\entity\ContactPage.class
 com\campus\backend\mapper\ReplyMapper.class
 com\campus\backend\entity\ReplyItem.class
 com\campus\backend\CodeGenerator$2.class
+com\campus\backend\entity\Alipay.class
 com\campus\backend\controller\CommunityController.class
 com\campus\backend\mapper\AiMapper.class
 com\campus\backend\entity\WithdrawRequest.class

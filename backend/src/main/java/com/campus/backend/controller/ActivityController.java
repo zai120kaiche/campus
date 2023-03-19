@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.campus.backend.common.lang.Result;
 import com.campus.backend.entity.*;
+import com.campus.backend.service.ActivityCollectService;
 import com.campus.backend.service.ActivityService;
 import com.campus.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class ActivityController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    ActivityCollectService activityCollectService;
 
     @PostMapping("add")
     public Result add(@RequestBody Activity activity){
@@ -105,7 +109,9 @@ public class ActivityController {
     @PostMapping("/detail")
     public Result detail(@RequestBody CID aid){
         try {
-            return Result.succ(activityService.getById(aid.getCid()));
+            Activity a = activityService.getById(aid.getCid());
+
+            return Result.succ(a);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

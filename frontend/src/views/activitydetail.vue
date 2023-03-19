@@ -111,14 +111,15 @@
     <template #default>
       <h4>参与须知</h4>
       <div style="word-wrap:break-word; word-break:break-all;margin-top: 4%">{{activityDetail.concern}}</div>
-      <h4>联系方式</h4>
+      <h4 >联系方式</h4>
       <div style="margin-top: 4%">{{activityDetail.connectWay}}</div>
-      <h4>活动群</h4>
+      <h4 >活动群</h4>
       <el-image :src="activityDetail.grouppic" v-on:click="handlePictureCardPreview(activityDetail.grouppic)"></el-image>
     </template>
     <template #footer>
       <div style="flex: auto">
-        <el-button type="primary" @click="doClick(activityDetail.id)">报名</el-button>
+        <el-button v-if="clickFlag" type="primary" @click="doPay(activityDetail.id)">报名</el-button>
+        <el-button v-else type="primary" @click="doPay(activityDetail.id)" disabled>等待报名链接中{{second}}秒</el-button>
       </div>
     </template>
   </el-drawer>
@@ -136,7 +137,7 @@
     </template>
     <template #footer>
       <div style="flex: auto">
-        <el-button type="primary" @click="doClick(activityDetail.id)">报名</el-button>
+        <el-button type="primary" @click="doPay(activityDetail.id)">报名</el-button>
       </div>
     </template>
   </el-drawer>
@@ -162,7 +163,11 @@ export default {
       activityId: 0,
       dialogImageUrl: '',
       dialogVisible: false,
-      drawer: false
+      drawer: false,
+      clickFlag: true,
+      second: 10,
+      sms_submit: 10,
+      showPay: false,
     }
   },
   methods:{
@@ -181,6 +186,27 @@ export default {
           message: '报名失败',
           type: 'error',
         })
+      })
+    },
+    doPay(id){
+      let _this = this
+      _this.clickFlag = false
+      _this.sms_submit = 10
+      var times = setInterval(() => {
+        _this.sms_submit--; //递减
+        _this.second --
+        if (_this.sms_submit <= 0) {
+
+          clearInterval(times);
+        }
+      }, 1000); //1000毫秒后执行
+      let temp = {
+        subject: _this.activityDetail.title,
+        total_amount: _this.activityDetail.money
+      }
+      _this.$axios.post("alipay/pay", temp).then(res=>{
+        console.log(res.data.data)
+
       })
     },
     submit(){
